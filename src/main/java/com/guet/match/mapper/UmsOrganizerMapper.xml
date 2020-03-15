@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.guet.match.mapper.UmsOrganizerMapper" >
+  <resultMap id="BaseResultMap" type="com.guet.match.model.UmsOrganizer" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="open_id" property="openId" jdbcType="VARCHAR" />
+    <result column="admin_name" property="adminName" jdbcType="VARCHAR" />
+    <result column="admin_phone" property="adminPhone" jdbcType="VARCHAR" />
+    <result column="admin_ID_card" property="adminIdCard" jdbcType="VARCHAR" />
+    <result column="organizer_name" property="organizerName" jdbcType="VARCHAR" />
+    <result column="organizer_type" property="organizerType" jdbcType="INTEGER" />
+    <result column="organizer_code" property="organizerCode" jdbcType="VARCHAR" />
+    <result column="identity_document" property="identityDocument" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="last_check_id" property="lastCheckId" jdbcType="BIGINT" />
+    <result column="last_check_time" property="lastCheckTime" jdbcType="TIMESTAMP" />
+    <result column="last_check_note" property="lastCheckNote" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, username, password, open_id, admin_name, admin_phone, admin_ID_card, organizer_name, 
+    organizer_type, organizer_code, identity_document, status, last_check_id, last_check_time, 
+    last_check_note
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.guet.match.model.UmsOrganizerExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from ums_organizer
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from ums_organizer
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from ums_organizer
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.guet.match.model.UmsOrganizerExample" >
+    delete from ums_organizer
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.guet.match.model.UmsOrganizer" >
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into ums_organizer (username, password, open_id, 
+      admin_name, admin_phone, admin_ID_card, 
+      organizer_name, organizer_type, organizer_code, 
+      identity_document, status, last_check_id, 
+      last_check_time, last_check_note)
+    values (#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{openId,jdbcType=VARCHAR}, 
+      #{adminName,jdbcType=VARCHAR}, #{adminPhone,jdbcType=VARCHAR}, #{adminIdCard,jdbcType=VARCHAR}, 
+      #{organizerName,jdbcType=VARCHAR}, #{organizerType,jdbcType=INTEGER}, #{organizerCode,jdbcType=VARCHAR}, 
+      #{identityDocument,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{lastCheckId,jdbcType=BIGINT}, 
+      #{lastCheckTime,jdbcType=TIMESTAMP}, #{lastCheckNote,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.guet.match.model.UmsOrganizer" >
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into ums_organizer
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="username != null" >
+        username,
+      </if>
+      <if test="password != null" >
+        password,
+      </if>
+      <if test="openId != null" >
+        open_id,
+      </if>
+      <if test="adminName != null" >
+        admin_name,
+      </if>
+      <if test="adminPhone != null" >
+        admin_phone,
+      </if>
+      <if test="adminIdCard != null" >
+        admin_ID_card,
+      </if>
+      <if test="organizerName != null" >
+        organizer_name,
+      </if>
+      <if test="organizerType != null" >
+        organizer_type,
+      </if>
+      <if test="organizerCode != null" >
+        organizer_code,
+      </if>
+      <if test="identityDocument != null" >
+        identity_document,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="lastCheckId != null" >
+        last_check_id,
+      </if>
+      <if test="lastCheckTime != null" >
+        last_check_time,
+      </if>
+      <if test="lastCheckNote != null" >
+        last_check_note,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="openId != null" >
+        #{openId,jdbcType=VARCHAR},
+      </if>
+      <if test="adminName != null" >
+        #{adminName,jdbcType=VARCHAR},
+      </if>
+      <if test="adminPhone != null" >
+        #{adminPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="adminIdCard != null" >
+        #{adminIdCard,jdbcType=VARCHAR},
+      </if>
+      <if test="organizerName != null" >
+        #{organizerName,jdbcType=VARCHAR},
+      </if>
+      <if test="organizerType != null" >
+        #{organizerType,jdbcType=INTEGER},
+      </if>
+      <if test="organizerCode != null" >
+        #{organizerCode,jdbcType=VARCHAR},
+      </if>
+      <if test="identityDocument != null" >
+        #{identityDocument,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="lastCheckId != null" >
+        #{lastCheckId,jdbcType=BIGINT},
+      </if>
+      <if test="lastCheckTime != null" >
+        #{lastCheckTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastCheckNote != null" >
+        #{lastCheckNote,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.guet.match.model.UmsOrganizerExample" resultType="java.lang.Integer" >
+    select count(*) from ums_organizer
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update ums_organizer
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.username != null" >
+        username = #{record.username,jdbcType=VARCHAR},
+      </if>
+      <if test="record.password != null" >
+        password = #{record.password,jdbcType=VARCHAR},
+      </if>
+      <if test="record.openId != null" >
+        open_id = #{record.openId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.adminName != null" >
+        admin_name = #{record.adminName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.adminPhone != null" >
+        admin_phone = #{record.adminPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.adminIdCard != null" >
+        admin_ID_card = #{record.adminIdCard,jdbcType=VARCHAR},
+      </if>
+      <if test="record.organizerName != null" >
+        organizer_name = #{record.organizerName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.organizerType != null" >
+        organizer_type = #{record.organizerType,jdbcType=INTEGER},
+      </if>
+      <if test="record.organizerCode != null" >
+        organizer_code = #{record.organizerCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.identityDocument != null" >
+        identity_document = #{record.identityDocument,jdbcType=VARCHAR},
+      </if>
+      <if test="record.status != null" >
+        status = #{record.status,jdbcType=INTEGER},
+      </if>
+      <if test="record.lastCheckId != null" >
+        last_check_id = #{record.lastCheckId,jdbcType=BIGINT},
+      </if>
+      <if test="record.lastCheckTime != null" >
+        last_check_time = #{record.lastCheckTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.lastCheckNote != null" >
+        last_check_note = #{record.lastCheckNote,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update ums_organizer
+    set id = #{record.id,jdbcType=BIGINT},
+      username = #{record.username,jdbcType=VARCHAR},
+      password = #{record.password,jdbcType=VARCHAR},
+      open_id = #{record.openId,jdbcType=VARCHAR},
+      admin_name = #{record.adminName,jdbcType=VARCHAR},
+      admin_phone = #{record.adminPhone,jdbcType=VARCHAR},
+      admin_ID_card = #{record.adminIdCard,jdbcType=VARCHAR},
+      organizer_name = #{record.organizerName,jdbcType=VARCHAR},
+      organizer_type = #{record.organizerType,jdbcType=INTEGER},
+      organizer_code = #{record.organizerCode,jdbcType=VARCHAR},
+      identity_document = #{record.identityDocument,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=INTEGER},
+      last_check_id = #{record.lastCheckId,jdbcType=BIGINT},
+      last_check_time = #{record.lastCheckTime,jdbcType=TIMESTAMP},
+      last_check_note = #{record.lastCheckNote,jdbcType=TIMESTAMP}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.guet.match.model.UmsOrganizer" >
+    update ums_organizer
+    <set >
+      <if test="username != null" >
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="openId != null" >
+        open_id = #{openId,jdbcType=VARCHAR},
+      </if>
+      <if test="adminName != null" >
+        admin_name = #{adminName,jdbcType=VARCHAR},
+      </if>
+      <if test="adminPhone != null" >
+        admin_phone = #{adminPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="adminIdCard != null" >
+        admin_ID_card = #{adminIdCard,jdbcType=VARCHAR},
+      </if>
+      <if test="organizerName != null" >
+        organizer_name = #{organizerName,jdbcType=VARCHAR},
+      </if>
+      <if test="organizerType != null" >
+        organizer_type = #{organizerType,jdbcType=INTEGER},
+      </if>
+      <if test="organizerCode != null" >
+        organizer_code = #{organizerCode,jdbcType=VARCHAR},
+      </if>
+      <if test="identityDocument != null" >
+        identity_document = #{identityDocument,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="lastCheckId != null" >
+        last_check_id = #{lastCheckId,jdbcType=BIGINT},
+      </if>
+      <if test="lastCheckTime != null" >
+        last_check_time = #{lastCheckTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastCheckNote != null" >
+        last_check_note = #{lastCheckNote,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.guet.match.model.UmsOrganizer" >
+    update ums_organizer
+    set username = #{username,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      open_id = #{openId,jdbcType=VARCHAR},
+      admin_name = #{adminName,jdbcType=VARCHAR},
+      admin_phone = #{adminPhone,jdbcType=VARCHAR},
+      admin_ID_card = #{adminIdCard,jdbcType=VARCHAR},
+      organizer_name = #{organizerName,jdbcType=VARCHAR},
+      organizer_type = #{organizerType,jdbcType=INTEGER},
+      organizer_code = #{organizerCode,jdbcType=VARCHAR},
+      identity_document = #{identityDocument,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      last_check_id = #{lastCheckId,jdbcType=BIGINT},
+      last_check_time = #{lastCheckTime,jdbcType=TIMESTAMP},
+      last_check_note = #{lastCheckNote,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

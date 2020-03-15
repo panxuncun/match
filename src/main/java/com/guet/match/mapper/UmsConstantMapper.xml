@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.guet.match.mapper.UmsConstantMapper" >
+  <resultMap id="BaseResultMap" type="com.guet.match.model.UmsConstant" >
+    <id column="open_id" property="openId" jdbcType="VARCHAR" />
+    <result column="nick_name" property="nickName" jdbcType="VARCHAR" />
+    <result column="real_name" property="realName" jdbcType="VARCHAR" />
+    <result column="avatar_url" property="avatarUrl" jdbcType="VARCHAR" />
+    <result column="phone_number" property="phoneNumber" jdbcType="VARCHAR" />
+    <result column="ID_card_number" property="idCardNumber" jdbcType="VARCHAR" />
+    <result column="mail_address" property="mailAddress" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    open_id, nick_name, real_name, avatar_url, phone_number, ID_card_number, mail_address, 
+    create_time
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.guet.match.model.UmsConstantExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from ums_constant
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from ums_constant
+    where open_id = #{openId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from ums_constant
+    where open_id = #{openId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.guet.match.model.UmsConstantExample" >
+    delete from ums_constant
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.guet.match.model.UmsConstant" >
+    insert into ums_constant (open_id, nick_name, real_name, 
+      avatar_url, phone_number, ID_card_number, 
+      mail_address, create_time)
+    values (#{openId,jdbcType=VARCHAR}, #{nickName,jdbcType=VARCHAR}, #{realName,jdbcType=VARCHAR}, 
+      #{avatarUrl,jdbcType=VARCHAR}, #{phoneNumber,jdbcType=VARCHAR}, #{idCardNumber,jdbcType=VARCHAR}, 
+      #{mailAddress,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.guet.match.model.UmsConstant" >
+    insert into ums_constant
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="openId != null" >
+        open_id,
+      </if>
+      <if test="nickName != null" >
+        nick_name,
+      </if>
+      <if test="realName != null" >
+        real_name,
+      </if>
+      <if test="avatarUrl != null" >
+        avatar_url,
+      </if>
+      <if test="phoneNumber != null" >
+        phone_number,
+      </if>
+      <if test="idCardNumber != null" >
+        ID_card_number,
+      </if>
+      <if test="mailAddress != null" >
+        mail_address,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="openId != null" >
+        #{openId,jdbcType=VARCHAR},
+      </if>
+      <if test="nickName != null" >
+        #{nickName,jdbcType=VARCHAR},
+      </if>
+      <if test="realName != null" >
+        #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="avatarUrl != null" >
+        #{avatarUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="phoneNumber != null" >
+        #{phoneNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="idCardNumber != null" >
+        #{idCardNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="mailAddress != null" >
+        #{mailAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.guet.match.model.UmsConstantExample" resultType="java.lang.Integer" >
+    select count(*) from ums_constant
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update ums_constant
+    <set >
+      <if test="record.openId != null" >
+        open_id = #{record.openId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.nickName != null" >
+        nick_name = #{record.nickName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.realName != null" >
+        real_name = #{record.realName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.avatarUrl != null" >
+        avatar_url = #{record.avatarUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.phoneNumber != null" >
+        phone_number = #{record.phoneNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="record.idCardNumber != null" >
+        ID_card_number = #{record.idCardNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="record.mailAddress != null" >
+        mail_address = #{record.mailAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update ums_constant
+    set open_id = #{record.openId,jdbcType=VARCHAR},
+      nick_name = #{record.nickName,jdbcType=VARCHAR},
+      real_name = #{record.realName,jdbcType=VARCHAR},
+      avatar_url = #{record.avatarUrl,jdbcType=VARCHAR},
+      phone_number = #{record.phoneNumber,jdbcType=VARCHAR},
+      ID_card_number = #{record.idCardNumber,jdbcType=VARCHAR},
+      mail_address = #{record.mailAddress,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.guet.match.model.UmsConstant" >
+    update ums_constant
+    <set >
+      <if test="nickName != null" >
+        nick_name = #{nickName,jdbcType=VARCHAR},
+      </if>
+      <if test="realName != null" >
+        real_name = #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="avatarUrl != null" >
+        avatar_url = #{avatarUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="phoneNumber != null" >
+        phone_number = #{phoneNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="idCardNumber != null" >
+        ID_card_number = #{idCardNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="mailAddress != null" >
+        mail_address = #{mailAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where open_id = #{openId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.guet.match.model.UmsConstant" >
+    update ums_constant
+    set nick_name = #{nickName,jdbcType=VARCHAR},
+      real_name = #{realName,jdbcType=VARCHAR},
+      avatar_url = #{avatarUrl,jdbcType=VARCHAR},
+      phone_number = #{phoneNumber,jdbcType=VARCHAR},
+      ID_card_number = #{idCardNumber,jdbcType=VARCHAR},
+      mail_address = #{mailAddress,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where open_id = #{openId,jdbcType=VARCHAR}
+  </update>
+</mapper>

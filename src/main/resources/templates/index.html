@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.bootcss.com/vue/2.6.10/vue.js"></script>
+    <script src="https://cdn.bootcss.com/axios/0.19.0-beta.1/axios.js"></script>
+</head>
+<body>
+<div id="app">
+    {{ topic }}
+    <br>
+    <input type="text" v-model="ipt">
+    <button @click="btn">insert</button>
+    <button @click="getTopic">getTopicById</button>
+</div>
+
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            topic:null,
+            ipt:null
+        },
+        mounted() {
+            this.aaa();
+        },
+        methods: {
+
+            aaa(){
+                var that = this;
+                axios.get('http://localhost:8080/topic').then(function (response) {
+                    that.topic = response.data;
+                });
+            },
+            btn(){
+                var that = this;
+                axios({
+                    method: 'post',
+                    url: 'http://localhost:8080/insert',
+                    data: {
+                        text:that.ipt
+                    }
+                }).then(function (response) {
+                    alert(response.data)
+                });
+            },
+            getTopic(){
+                var that = this;
+                var url = 'http://localhost:8080/getTopic/'+ that.ipt;
+                axios.get(url).then(function (response) {
+                    that.topic = response.data;
+                });
+            }
+        }
+    })
+
+</script>
+</body>
+</html>

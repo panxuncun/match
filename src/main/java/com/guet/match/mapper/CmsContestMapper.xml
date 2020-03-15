@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.guet.match.mapper.CmsContestMapper" >
+  <resultMap id="BaseResultMap" type="com.guet.match.model.CmsContest" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="organizer_id" property="organizerId" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="location" property="location" jdbcType="VARCHAR" />
+    <result column="logo" property="logo" jdbcType="VARCHAR" />
+    <result column="banner" property="banner" jdbcType="VARCHAR" />
+    <result column="open_enrollment_time" property="openEnrollmentTime" jdbcType="TIMESTAMP" />
+    <result column="close_enrollment_time" property="closeEnrollmentTime" jdbcType="TIMESTAMP" />
+    <result column="contest_time" property="contestTime" jdbcType="TIMESTAMP" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="last_check_id" property="lastCheckId" jdbcType="BIGINT" />
+    <result column="last_check_time" property="lastCheckTime" jdbcType="TIMESTAMP" />
+    <result column="last_check_note" property="lastCheckNote" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.guet.match.model.CmsContest" extends="BaseResultMap" >
+    <result column="details" property="details" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, organizer_id, name, type, location, logo, banner, open_enrollment_time, close_enrollment_time, 
+    contest_time, create_time, status, last_check_id, last_check_time, last_check_note
+  </sql>
+  <sql id="Blob_Column_List" >
+    details
+  </sql>
+  <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.guet.match.model.CmsContestExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from cms_contest
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.guet.match.model.CmsContestExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from cms_contest
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from cms_contest
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from cms_contest
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.guet.match.model.CmsContestExample" >
+    delete from cms_contest
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.guet.match.model.CmsContest" >
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into cms_contest (organizer_id, name, type, 
+      location, logo, banner, 
+      open_enrollment_time, close_enrollment_time, 
+      contest_time, create_time, status, 
+      last_check_id, last_check_time, last_check_note, 
+      details)
+    values (#{organizerId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, 
+      #{location,jdbcType=VARCHAR}, #{logo,jdbcType=VARCHAR}, #{banner,jdbcType=VARCHAR}, 
+      #{openEnrollmentTime,jdbcType=TIMESTAMP}, #{closeEnrollmentTime,jdbcType=TIMESTAMP}, 
+      #{contestTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}, 
+      #{lastCheckId,jdbcType=BIGINT}, #{lastCheckTime,jdbcType=TIMESTAMP}, #{lastCheckNote,jdbcType=VARCHAR}, 
+      #{details,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.guet.match.model.CmsContest" >
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into cms_contest
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="organizerId != null" >
+        organizer_id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="location != null" >
+        location,
+      </if>
+      <if test="logo != null" >
+        logo,
+      </if>
+      <if test="banner != null" >
+        banner,
+      </if>
+      <if test="openEnrollmentTime != null" >
+        open_enrollment_time,
+      </if>
+      <if test="closeEnrollmentTime != null" >
+        close_enrollment_time,
+      </if>
+      <if test="contestTime != null" >
+        contest_time,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="lastCheckId != null" >
+        last_check_id,
+      </if>
+      <if test="lastCheckTime != null" >
+        last_check_time,
+      </if>
+      <if test="lastCheckNote != null" >
+        last_check_note,
+      </if>
+      <if test="details != null" >
+        details,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="organizerId != null" >
+        #{organizerId,jdbcType=BIGINT},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="location != null" >
+        #{location,jdbcType=VARCHAR},
+      </if>
+      <if test="logo != null" >
+        #{logo,jdbcType=VARCHAR},
+      </if>
+      <if test="banner != null" >
+        #{banner,jdbcType=VARCHAR},
+      </if>
+      <if test="openEnrollmentTime != null" >
+        #{openEnrollmentTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="closeEnrollmentTime != null" >
+        #{closeEnrollmentTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="contestTime != null" >
+        #{contestTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="lastCheckId != null" >
+        #{lastCheckId,jdbcType=BIGINT},
+      </if>
+      <if test="lastCheckTime != null" >
+        #{lastCheckTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastCheckNote != null" >
+        #{lastCheckNote,jdbcType=VARCHAR},
+      </if>
+      <if test="details != null" >
+        #{details,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.guet.match.model.CmsContestExample" resultType="java.lang.Integer" >
+    select count(*) from cms_contest
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update cms_contest
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.organizerId != null" >
+        organizer_id = #{record.organizerId,jdbcType=BIGINT},
+      </if>
+      <if test="record.name != null" >
+        name = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.type != null" >
+        type = #{record.type,jdbcType=VARCHAR},
+      </if>
+      <if test="record.location != null" >
+        location = #{record.location,jdbcType=VARCHAR},
+      </if>
+      <if test="record.logo != null" >
+        logo = #{record.logo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.banner != null" >
+        banner = #{record.banner,jdbcType=VARCHAR},
+      </if>
+      <if test="record.openEnrollmentTime != null" >
+        open_enrollment_time = #{record.openEnrollmentTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.closeEnrollmentTime != null" >
+        close_enrollment_time = #{record.closeEnrollmentTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.contestTime != null" >
+        contest_time = #{record.contestTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.status != null" >
+        status = #{record.status,jdbcType=INTEGER},
+      </if>
+      <if test="record.lastCheckId != null" >
+        last_check_id = #{record.lastCheckId,jdbcType=BIGINT},
+      </if>
+      <if test="record.lastCheckTime != null" >
+        last_check_time = #{record.lastCheckTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.lastCheckNote != null" >
+        last_check_note = #{record.lastCheckNote,jdbcType=VARCHAR},
+      </if>
+      <if test="record.details != null" >
+        details = #{record.details,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map" >
+    update cms_contest
+    set id = #{record.id,jdbcType=BIGINT},
+      organizer_id = #{record.organizerId,jdbcType=BIGINT},
+      name = #{record.name,jdbcType=VARCHAR},
+      type = #{record.type,jdbcType=VARCHAR},
+      location = #{record.location,jdbcType=VARCHAR},
+      logo = #{record.logo,jdbcType=VARCHAR},
+      banner = #{record.banner,jdbcType=VARCHAR},
+      open_enrollment_time = #{record.openEnrollmentTime,jdbcType=TIMESTAMP},
+      close_enrollment_time = #{record.closeEnrollmentTime,jdbcType=TIMESTAMP},
+      contest_time = #{record.contestTime,jdbcType=TIMESTAMP},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      status = #{record.status,jdbcType=INTEGER},
+      last_check_id = #{record.lastCheckId,jdbcType=BIGINT},
+      last_check_time = #{record.lastCheckTime,jdbcType=TIMESTAMP},
+      last_check_note = #{record.lastCheckNote,jdbcType=VARCHAR},
+      details = #{record.details,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update cms_contest
+    set id = #{record.id,jdbcType=BIGINT},
+      organizer_id = #{record.organizerId,jdbcType=BIGINT},
+      name = #{record.name,jdbcType=VARCHAR},
+      type = #{record.type,jdbcType=VARCHAR},
+      location = #{record.location,jdbcType=VARCHAR},
+      logo = #{record.logo,jdbcType=VARCHAR},
+      banner = #{record.banner,jdbcType=VARCHAR},
+      open_enrollment_time = #{record.openEnrollmentTime,jdbcType=TIMESTAMP},
+      close_enrollment_time = #{record.closeEnrollmentTime,jdbcType=TIMESTAMP},
+      contest_time = #{record.contestTime,jdbcType=TIMESTAMP},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      status = #{record.status,jdbcType=INTEGER},
+      last_check_id = #{record.lastCheckId,jdbcType=BIGINT},
+      last_check_time = #{record.lastCheckTime,jdbcType=TIMESTAMP},
+      last_check_note = #{record.lastCheckNote,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.guet.match.model.CmsContest" >
+    update cms_contest
+    <set >
+      <if test="organizerId != null" >
+        organizer_id = #{organizerId,jdbcType=BIGINT},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="location != null" >
+        location = #{location,jdbcType=VARCHAR},
+      </if>
+      <if test="logo != null" >
+        logo = #{logo,jdbcType=VARCHAR},
+      </if>
+      <if test="banner != null" >
+        banner = #{banner,jdbcType=VARCHAR},
+      </if>
+      <if test="openEnrollmentTime != null" >
+        open_enrollment_time = #{openEnrollmentTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="closeEnrollmentTime != null" >
+        close_enrollment_time = #{closeEnrollmentTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="contestTime != null" >
+        contest_time = #{contestTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="lastCheckId != null" >
+        last_check_id = #{lastCheckId,jdbcType=BIGINT},
+      </if>
+      <if test="lastCheckTime != null" >
+        last_check_time = #{lastCheckTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastCheckNote != null" >
+        last_check_note = #{lastCheckNote,jdbcType=VARCHAR},
+      </if>
+      <if test="details != null" >
+        details = #{details,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.guet.match.model.CmsContest" >
+    update cms_contest
+    set organizer_id = #{organizerId,jdbcType=BIGINT},
+      name = #{name,jdbcType=VARCHAR},
+      type = #{type,jdbcType=VARCHAR},
+      location = #{location,jdbcType=VARCHAR},
+      logo = #{logo,jdbcType=VARCHAR},
+      banner = #{banner,jdbcType=VARCHAR},
+      open_enrollment_time = #{openEnrollmentTime,jdbcType=TIMESTAMP},
+      close_enrollment_time = #{closeEnrollmentTime,jdbcType=TIMESTAMP},
+      contest_time = #{contestTime,jdbcType=TIMESTAMP},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=INTEGER},
+      last_check_id = #{lastCheckId,jdbcType=BIGINT},
+      last_check_time = #{lastCheckTime,jdbcType=TIMESTAMP},
+      last_check_note = #{lastCheckNote,jdbcType=VARCHAR},
+      details = #{details,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.guet.match.model.CmsContest" >
+    update cms_contest
+    set organizer_id = #{organizerId,jdbcType=BIGINT},
+      name = #{name,jdbcType=VARCHAR},
+      type = #{type,jdbcType=VARCHAR},
+      location = #{location,jdbcType=VARCHAR},
+      logo = #{logo,jdbcType=VARCHAR},
+      banner = #{banner,jdbcType=VARCHAR},
+      open_enrollment_time = #{openEnrollmentTime,jdbcType=TIMESTAMP},
+      close_enrollment_time = #{closeEnrollmentTime,jdbcType=TIMESTAMP},
+      contest_time = #{contestTime,jdbcType=TIMESTAMP},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=INTEGER},
+      last_check_id = #{lastCheckId,jdbcType=BIGINT},
+      last_check_time = #{lastCheckTime,jdbcType=TIMESTAMP},
+      last_check_note = #{lastCheckNote,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.guet.match.mapper.CmsEnrollmentRecordMapper" >
+  <resultMap id="BaseResultMap" type="com.guet.match.model.CmsEnrollmentRecord" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="contest_id" property="contestId" jdbcType="BIGINT" />
+    <result column="contest_group_id" property="contestGroupId" jdbcType="BIGINT" />
+    <result column="open_id" property="openId" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="mail_address" property="mailAddress" jdbcType="VARCHAR" />
+    <result column="contestant_number" property="contestantNumber" jdbcType="VARCHAR" />
+    <result column="contestant_status" property="contestantStatus" jdbcType="VARCHAR" />
+    <result column="contestant_rank" property="contestantRank" jdbcType="VARCHAR" />
+    <result column="contestant_achievement" property="contestantAchievement" jdbcType="VARCHAR" />
+    <result column="contestant_award" property="contestantAward" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, contest_id, contest_group_id, open_id, type, create_time, mail_address, contestant_number, 
+    contestant_status, contestant_rank, contestant_achievement, contestant_award
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.guet.match.model.CmsEnrollmentRecordExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from cms_enrollment_record
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from cms_enrollment_record
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from cms_enrollment_record
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.guet.match.model.CmsEnrollmentRecordExample" >
+    delete from cms_enrollment_record
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.guet.match.model.CmsEnrollmentRecord" >
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into cms_enrollment_record (contest_id, contest_group_id, open_id, 
+      type, create_time, mail_address, 
+      contestant_number, contestant_status, contestant_rank, 
+      contestant_achievement, contestant_award)
+    values (#{contestId,jdbcType=BIGINT}, #{contestGroupId,jdbcType=BIGINT}, #{openId,jdbcType=VARCHAR}, 
+      #{type,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{mailAddress,jdbcType=VARCHAR}, 
+      #{contestantNumber,jdbcType=VARCHAR}, #{contestantStatus,jdbcType=VARCHAR}, #{contestantRank,jdbcType=VARCHAR}, 
+      #{contestantAchievement,jdbcType=VARCHAR}, #{contestantAward,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.guet.match.model.CmsEnrollmentRecord" >
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into cms_enrollment_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="contestId != null" >
+        contest_id,
+      </if>
+      <if test="contestGroupId != null" >
+        contest_group_id,
+      </if>
+      <if test="openId != null" >
+        open_id,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="mailAddress != null" >
+        mail_address,
+      </if>
+      <if test="contestantNumber != null" >
+        contestant_number,
+      </if>
+      <if test="contestantStatus != null" >
+        contestant_status,
+      </if>
+      <if test="contestantRank != null" >
+        contestant_rank,
+      </if>
+      <if test="contestantAchievement != null" >
+        contestant_achievement,
+      </if>
+      <if test="contestantAward != null" >
+        contestant_award,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="contestId != null" >
+        #{contestId,jdbcType=BIGINT},
+      </if>
+      <if test="contestGroupId != null" >
+        #{contestGroupId,jdbcType=BIGINT},
+      </if>
+      <if test="openId != null" >
+        #{openId,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="mailAddress != null" >
+        #{mailAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="contestantNumber != null" >
+        #{contestantNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="contestantStatus != null" >
+        #{contestantStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="contestantRank != null" >
+        #{contestantRank,jdbcType=VARCHAR},
+      </if>
+      <if test="contestantAchievement != null" >
+        #{contestantAchievement,jdbcType=VARCHAR},
+      </if>
+      <if test="contestantAward != null" >
+        #{contestantAward,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.guet.match.model.CmsEnrollmentRecordExample" resultType="java.lang.Integer" >
+    select count(*) from cms_enrollment_record
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update cms_enrollment_record
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.contestId != null" >
+        contest_id = #{record.contestId,jdbcType=BIGINT},
+      </if>
+      <if test="record.contestGroupId != null" >
+        contest_group_id = #{record.contestGroupId,jdbcType=BIGINT},
+      </if>
+      <if test="record.openId != null" >
+        open_id = #{record.openId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.type != null" >
+        type = #{record.type,jdbcType=INTEGER},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.mailAddress != null" >
+        mail_address = #{record.mailAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="record.contestantNumber != null" >
+        contestant_number = #{record.contestantNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="record.contestantStatus != null" >
+        contestant_status = #{record.contestantStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="record.contestantRank != null" >
+        contestant_rank = #{record.contestantRank,jdbcType=VARCHAR},
+      </if>
+      <if test="record.contestantAchievement != null" >
+        contestant_achievement = #{record.contestantAchievement,jdbcType=VARCHAR},
+      </if>
+      <if test="record.contestantAward != null" >
+        contestant_award = #{record.contestantAward,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update cms_enrollment_record
+    set id = #{record.id,jdbcType=BIGINT},
+      contest_id = #{record.contestId,jdbcType=BIGINT},
+      contest_group_id = #{record.contestGroupId,jdbcType=BIGINT},
+      open_id = #{record.openId,jdbcType=VARCHAR},
+      type = #{record.type,jdbcType=INTEGER},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      mail_address = #{record.mailAddress,jdbcType=VARCHAR},
+      contestant_number = #{record.contestantNumber,jdbcType=VARCHAR},
+      contestant_status = #{record.contestantStatus,jdbcType=VARCHAR},
+      contestant_rank = #{record.contestantRank,jdbcType=VARCHAR},
+      contestant_achievement = #{record.contestantAchievement,jdbcType=VARCHAR},
+      contestant_award = #{record.contestantAward,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.guet.match.model.CmsEnrollmentRecord" >
+    update cms_enrollment_record
+    <set >
+      <if test="contestId != null" >
+        contest_id = #{contestId,jdbcType=BIGINT},
+      </if>
+      <if test="contestGroupId != null" >
+        contest_group_id = #{contestGroupId,jdbcType=BIGINT},
+      </if>
+      <if test="openId != null" >
+        open_id = #{openId,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="mailAddress != null" >
+        mail_address = #{mailAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="contestantNumber != null" >
+        contestant_number = #{contestantNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="contestantStatus != null" >
+        contestant_status = #{contestantStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="contestantRank != null" >
+        contestant_rank = #{contestantRank,jdbcType=VARCHAR},
+      </if>
+      <if test="contestantAchievement != null" >
+        contestant_achievement = #{contestantAchievement,jdbcType=VARCHAR},
+      </if>
+      <if test="contestantAward != null" >
+        contestant_award = #{contestantAward,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.guet.match.model.CmsEnrollmentRecord" >
+    update cms_enrollment_record
+    set contest_id = #{contestId,jdbcType=BIGINT},
+      contest_group_id = #{contestGroupId,jdbcType=BIGINT},
+      open_id = #{openId,jdbcType=VARCHAR},
+      type = #{type,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      mail_address = #{mailAddress,jdbcType=VARCHAR},
+      contestant_number = #{contestantNumber,jdbcType=VARCHAR},
+      contestant_status = #{contestantStatus,jdbcType=VARCHAR},
+      contestant_rank = #{contestantRank,jdbcType=VARCHAR},
+      contestant_achievement = #{contestantAchievement,jdbcType=VARCHAR},
+      contestant_award = #{contestantAward,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

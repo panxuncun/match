@@ -1,5 +1,7 @@
 package com.guet.match.model;
 
+import java.math.BigDecimal;
+
 public class CmsContestGroup {
     private Long id;
 
@@ -9,7 +11,7 @@ public class CmsContestGroup {
 
     private Integer size;
 
-    private Long price;
+    private BigDecimal price;
 
     public Long getId() {
         return id;
@@ -43,11 +45,11 @@ public class CmsContestGroup {
         this.size = size;
     }
 
-    public Long getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(Long price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 }

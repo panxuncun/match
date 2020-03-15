@@ -2,12 +2,10 @@ package com.guet.match.mapper;
 
 import com.guet.match.model.SmsTopic;
 import com.guet.match.model.SmsTopicExample;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-@Mapper
 public interface SmsTopicMapper {
     int countByExample(SmsTopicExample example);
 

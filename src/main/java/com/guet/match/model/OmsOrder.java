@@ -1,5 +1,6 @@
 package com.guet.match.model;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 public class OmsOrder {
@@ -19,7 +20,7 @@ public class OmsOrder {
 
     private String note;
 
-    private Long price;
+    private BigDecimal price;
 
     public Long getId() {
         return id;
@@ -85,11 +86,11 @@ public class OmsOrder {
         this.note = note;
     }
 
-    public Long getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(Long price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 }

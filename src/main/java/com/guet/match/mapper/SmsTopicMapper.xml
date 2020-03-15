@@ -6,9 +6,9 @@
     <result column="open_id" property="openId" jdbcType="VARCHAR" />
     <result column="contest_id" property="contestId" jdbcType="BIGINT" />
     <result column="parent_id" property="parentId" jdbcType="BIGINT" />
-    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <result column="text" property="text" jdbcType="VARCHAR" />
     <result column="attachment" property="attachment" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -69,7 +69,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    id, open_id, contest_id, parent_id, create_time, text, attachment
+    id, open_id, contest_id, parent_id, text, attachment, create_time
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.guet.match.model.SmsTopicExample" >
     select
@@ -106,10 +106,10 @@
       SELECT LAST_INSERT_ID()
     </selectKey>
     insert into sms_topic (open_id, contest_id, parent_id, 
-      create_time, text, attachment
+      text, attachment, create_time
       )
     values (#{openId,jdbcType=VARCHAR}, #{contestId,jdbcType=BIGINT}, #{parentId,jdbcType=BIGINT}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{text,jdbcType=VARCHAR}, #{attachment,jdbcType=VARCHAR}
+      #{text,jdbcType=VARCHAR}, #{attachment,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.guet.match.model.SmsTopic" >
@@ -127,14 +127,14 @@
       <if test="parentId != null" >
         parent_id,
       </if>
-      <if test="createTime != null" >
-        create_time,
-      </if>
       <if test="text != null" >
         text,
       </if>
       <if test="attachment != null" >
         attachment,
+      </if>
+      <if test="createTime != null" >
+        create_time,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -147,14 +147,14 @@
       <if test="parentId != null" >
         #{parentId,jdbcType=BIGINT},
       </if>
-      <if test="createTime != null" >
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
       <if test="text != null" >
         #{text,jdbcType=VARCHAR},
       </if>
       <if test="attachment != null" >
         #{attachment,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
@@ -179,14 +179,14 @@
       <if test="record.parentId != null" >
         parent_id = #{record.parentId,jdbcType=BIGINT},
       </if>
-      <if test="record.createTime != null" >
-        create_time = #{record.createTime,jdbcType=TIMESTAMP},
-      </if>
       <if test="record.text != null" >
         text = #{record.text,jdbcType=VARCHAR},
       </if>
       <if test="record.attachment != null" >
         attachment = #{record.attachment,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
       </if>
     </set>
     <if test="_parameter != null" >
@@ -199,9 +199,9 @@
       open_id = #{record.openId,jdbcType=VARCHAR},
       contest_id = #{record.contestId,jdbcType=BIGINT},
       parent_id = #{record.parentId,jdbcType=BIGINT},
-      create_time = #{record.createTime,jdbcType=TIMESTAMP},
       text = #{record.text,jdbcType=VARCHAR},
-      attachment = #{record.attachment,jdbcType=VARCHAR}
+      attachment = #{record.attachment,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -218,14 +218,14 @@
       <if test="parentId != null" >
         parent_id = #{parentId,jdbcType=BIGINT},
       </if>
-      <if test="createTime != null" >
-        create_time = #{createTime,jdbcType=TIMESTAMP},
-      </if>
       <if test="text != null" >
         text = #{text,jdbcType=VARCHAR},
       </if>
       <if test="attachment != null" >
         attachment = #{attachment,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
@@ -235,9 +235,9 @@
     set open_id = #{openId,jdbcType=VARCHAR},
       contest_id = #{contestId,jdbcType=BIGINT},
       parent_id = #{parentId,jdbcType=BIGINT},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
       text = #{text,jdbcType=VARCHAR},
-      attachment = #{attachment,jdbcType=VARCHAR}
+      attachment = #{attachment,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

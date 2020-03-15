@@ -1,6 +1,5 @@
 package com.guet.match.model;
 
-
 import java.util.Date;
 
 public class SmsTopic {
@@ -12,11 +11,11 @@ public class SmsTopic {
 
     private Long parentId;
 
-    private Date createTime;
-
     private String text;
 
     private String attachment;
+
+    private Date createTime;
 
     public Long getId() {
         return id;
@@ -50,14 +49,6 @@ public class SmsTopic {
         this.parentId = parentId;
     }
 
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
     public String getText() {
         return text;
     }
@@ -72,5 +63,13 @@ public class SmsTopic {
 
     public void setAttachment(String attachment) {
         this.attachment = attachment;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 }

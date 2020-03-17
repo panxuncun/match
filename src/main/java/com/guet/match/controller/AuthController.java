@@ -3,9 +3,7 @@ package com.guet.match.controller;
 import com.guet.match.dto.CommonResult;
 import com.guet.match.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -19,6 +17,7 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
+    //小程序请求身份验证，测试openid：olNo_5YB07zojzStjgfdQ5tElZKU
     @RequestMapping("auth/openid/{code}")
     public CommonResult getOpenId(@PathVariable("code")String code){
         Map map = authService.getAuth(code);
@@ -27,4 +26,5 @@ public class AuthController {
         }
         return CommonResult.success(map);
     }
+
 }

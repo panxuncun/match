@@ -59,6 +59,14 @@ public class CommonResult<T> {
         return new CommonResult<T>(ResultCode.FORBIDDEN.getCode(), ResultCode.FORBIDDEN.getMessage(), data);
     }
 
+    @Override
+    public String toString() {
+        return "CommonResult{" +
+                "code=" + code +
+                ", message='" + message + '\'' +
+                ", data=" + data +
+                '}';
+    }
 
     public long getCode() {
         return code;

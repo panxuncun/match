@@ -1,5 +1,6 @@
 package com.guet.match;
 
+import com.guet.match.controller.TopicController;
 import com.guet.match.service.AuthService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,16 +13,19 @@ import java.util.Map;
 @SpringBootTest
 class MatchApplicationTests {
 
-    //@Autowired
-    //private SmsService smsService;
+
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private TopicController topicController;
 
 
     @Test
     void contextLoads() {
         System.out.println("======");
-        authService.getAccessToken();
+        //authService.getAccessToken();
+        System.out.println(topicController.getTopicById(100L).toString());
     }
 
 

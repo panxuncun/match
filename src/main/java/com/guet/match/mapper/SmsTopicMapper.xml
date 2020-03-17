@@ -91,6 +91,15 @@
     from sms_topic
     where id = #{id,jdbcType=BIGINT}
   </select>
+
+<!--查询回复by话题id-->
+  <select id="selectCommentListByTopic" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select
+    <include refid="Base_Column_List" />
+    from sms_topic
+    where parent_id = #{id,jdbcType=BIGINT}
+  </select>
+<!--end-->
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
     delete from sms_topic
     where id = #{id,jdbcType=BIGINT}

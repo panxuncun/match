@@ -21,6 +21,8 @@ public interface SmsTopicMapper {
 
     SmsTopic selectByPrimaryKey(Long id);
 
+    List<SmsTopic> selectCommentListByTopic(Long id);
+
     int updateByExampleSelective(@Param("record") SmsTopic record, @Param("example") SmsTopicExample example);
 
     int updateByExample(@Param("record") SmsTopic record, @Param("example") SmsTopicExample example);

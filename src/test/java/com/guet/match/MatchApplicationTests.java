@@ -2,6 +2,7 @@ package com.guet.match;
 
 import com.guet.match.controller.TopicController;
 import com.guet.match.service.AuthService;
+import com.guet.match.service.TopicService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,13 +20,13 @@ class MatchApplicationTests {
 
     @Autowired
     private TopicController topicController;
-
+    @Autowired
+    private TopicService topicService;
 
     @Test
     void contextLoads() {
         System.out.println("======");
-        //authService.getAccessToken();
-        System.out.println(topicController.getTopicById(100L).toString());
+        System.out.println(topicService.deleteTopicOrComment(266L));
     }
 
 

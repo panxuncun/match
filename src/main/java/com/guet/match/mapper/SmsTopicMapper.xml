@@ -10,6 +10,26 @@
     <result column="attachment" property="attachment" jdbcType="VARCHAR" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
   </resultMap>
+
+  <!--dto resultMap-->
+  <resultMap id="TopicDtoResultMap" type="com.guet.match.dto.TopicDto" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="open_id" property="openId" jdbcType="VARCHAR" />
+    <!--nick_name来自constant小程序用户表-->
+    <result column="nick_name" property="nickName" jdbcType="VARCHAR" />
+    <!--avatar_url来自constant小程序用户表-->
+    <result column="avatar_url" property="avatarUrl" jdbcType="VARCHAR" />
+    <result column="contest_id" property="contestId" jdbcType="BIGINT" />
+    <result column="parent_id" property="parentId" jdbcType="BIGINT" />
+    <result column="text" property="text" jdbcType="VARCHAR" />
+    <result column="attachment" property="attachment" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+
+
+  </resultMap>
+<!--  dto resultMap end-->
+
+
   <sql id="Example_Where_Clause" >
     <where >
       <foreach collection="oredCriteria" item="criteria" separator="or" >
@@ -92,17 +112,47 @@
     where id = #{id,jdbcType=BIGINT}
   </select>
 
-<!--查询回复by话题id-->
-  <select id="selectCommentListByTopic" resultMap="BaseResultMap" parameterType="java.lang.Long" >
-    select
-    <include refid="Base_Column_List" />
-    from sms_topic
-    where parent_id = #{id,jdbcType=BIGINT}
+<!--查询话题  TopicDto by id-->
+  <select id="selectTopicDto" resultMap="TopicDtoResultMap" parameterType="java.lang.Long" >
+    select *
+    from sms_topic,ums_constant
+    where sms_topic.id = #{id,jdbcType=BIGINT}
+    and
+    sms_topic.open_id = ums_constant.open_id
   </select>
-<!--end-->
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+<!-- 查询 TopicDto by id end-->
+
+
+<!--查询回复列表 by话题id-->
+  <select id="selectCommentList" resultMap="TopicDtoResultMap" parameterType="java.lang.Long" >
+    select *
+    from sms_topic,ums_constant
+    where sms_topic.parent_id = #{id,jdbcType=BIGINT}
+    and
+    sms_topic.open_id = ums_constant.open_id
+    order by
+    id
+    desc
+  </select>
+<!--查询回复列表 by话题id end-->
+
+
+<!--  指定赛事下的互动话题列表-->
+  <select id="selectTopicList" resultMap="TopicDtoResultMap" parameterType="java.lang.Long" >
+    select *
+    from sms_topic,ums_constant
+    where sms_topic.contest_id = #{id,jdbcType=BIGINT}
+    and
+    sms_topic.open_id = ums_constant.open_id
+  </select>
+  <!--指定赛事下的互动话题列表 end-->
+
+
+
+  <delete id="deleteTopicOrComment" parameterType="java.lang.Long" >
     delete from sms_topic
     where id = #{id,jdbcType=BIGINT}
+    or parent_id = #{id,jdbcType=BIGINT}
   </delete>
   <delete id="deleteByExample" parameterType="com.guet.match.model.SmsTopicExample" >
     delete from sms_topic

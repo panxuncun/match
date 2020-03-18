@@ -1,6 +1,6 @@
 package com.guet.match.controller;
 
-import com.guet.match.dto.CommonResult;
+import com.guet.match.common.CommonResult;
 import com.guet.match.model.SmsTopic;
 import com.guet.match.service.TopicService;
 import io.swagger.annotations.ApiOperation;

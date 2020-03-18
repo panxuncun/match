@@ -141,13 +141,13 @@
     insert into cms_contest (organizer_id, name, type, 
       location, logo, banner, 
       open_enrollment_time, close_enrollment_time, 
-      contest_time, create_time, status, 
+      contest_time, status,
       last_check_id, last_check_time, last_check_note, 
       details)
     values (#{organizerId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, 
       #{location,jdbcType=VARCHAR}, #{logo,jdbcType=VARCHAR}, #{banner,jdbcType=VARCHAR}, 
       #{openEnrollmentTime,jdbcType=TIMESTAMP}, #{closeEnrollmentTime,jdbcType=TIMESTAMP}, 
-      #{contestTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}, 
+      #{contestTime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER},
       #{lastCheckId,jdbcType=BIGINT}, #{lastCheckTime,jdbcType=TIMESTAMP}, #{lastCheckNote,jdbcType=VARCHAR}, 
       #{details,jdbcType=LONGVARCHAR})
   </insert>

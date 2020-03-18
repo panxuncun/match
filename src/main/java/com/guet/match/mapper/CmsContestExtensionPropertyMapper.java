@@ -15,6 +15,9 @@ public interface CmsContestExtensionPropertyMapper {
 
     int insert(CmsContestExtensionProperty record);
 
+    //insert List
+    int insertList(List<CmsContestExtensionProperty> list);
+
     int insertSelective(CmsContestExtensionProperty record);
 
     List<CmsContestExtensionProperty> selectByExample(CmsContestExtensionPropertyExample example);

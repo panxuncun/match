@@ -1,8 +1,11 @@
 package com.guet.match.model;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.math.BigDecimal;
 
 public class CmsContestGroup {
+    @ApiModelProperty(hidden = true)
     private Long id;
 
     private Long contestId;

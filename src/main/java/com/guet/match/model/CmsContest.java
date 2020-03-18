@@ -1,8 +1,14 @@
 package com.guet.match.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModelProperty;
+import springfox.documentation.annotations.ApiIgnore;
+
 import java.util.Date;
 
 public class CmsContest {
+
+    @ApiModelProperty(hidden = true)
     private Long id;
 
     private Long organizerId;
@@ -17,20 +23,29 @@ public class CmsContest {
 
     private String banner;
 
+    @ApiModelProperty(example = "2020-03-08 12:12:00")
     private Date openEnrollmentTime;
 
+    @ApiModelProperty(example = "2020-03-09 12:12:00")
     private Date closeEnrollmentTime;
 
+    @ApiModelProperty(example = "2020-03-10 12:12:00")
     private Date contestTime;
 
+    @ApiModelProperty(hidden = true)
     private Date createTime;
 
+    @ApiModelProperty(hidden = true)
     private Integer status;
 
+    @ApiModelProperty(hidden = true)
     private Long lastCheckId;
 
+    @ApiModelProperty(hidden = true)
     private Date lastCheckTime;
 
+
+    @ApiModelProperty(example = "2020-03-08 12:12:00")
     private String lastCheckNote;
 
     private String details;

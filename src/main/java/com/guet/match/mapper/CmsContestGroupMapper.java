@@ -15,6 +15,9 @@ public interface CmsContestGroupMapper {
 
     int insert(CmsContestGroup record);
 
+    //insert List
+    int insertList(List<CmsContestGroup> list);
+
     int insertSelective(CmsContestGroup record);
 
     List<CmsContestGroup> selectByExample(CmsContestGroupExample example);

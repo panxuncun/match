@@ -1,6 +1,6 @@
 package com.guet.match.controller;
 
-import com.guet.match.dto.CommonResult;
+import com.guet.match.common.CommonResult;
 import com.guet.match.service.AuthService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;

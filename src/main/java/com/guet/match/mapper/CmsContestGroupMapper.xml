@@ -99,15 +99,64 @@
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
+
+  <!--insert List all params-->
+  <insert id="insertList" parameterType="com.guet.match.model.CmsContestGroup" >
+    insert into cms_contest_group (contest_id, name, size, price)
+    values
+    <foreach collection="list" separator="," item="item">
+      (#{item.contestId,jdbcType=BIGINT}, #{item.name,jdbcType=VARCHAR}, #{item.size,jdbcType=INTEGER},
+      #{item.price,jdbcType=DECIMAL})
+    </foreach>
+  </insert>
+  <!--insert List all params end-->
+
+
+
   <insert id="insert" parameterType="com.guet.match.model.CmsContestGroup" >
     <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into cms_contest_group (contest_id, name, size, 
-      price)
-    values (#{contestId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{size,jdbcType=INTEGER}, 
-      #{price,jdbcType=DECIMAL})
+    insert into cms_contest_group (contest_id, name, size, price)
+    values (#{contestId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{size,jdbcType=INTEGER}, #{price,jdbcType=DECIMAL})
   </insert>
+
+  <!--insert List Selective-->
+  <insert id="insertListSelective" parameterType="com.guet.match.model.CmsContestGroup" >
+    <foreach collection="list" item="item" index="index" separator=";">
+      insert into cms_contest_group
+      <trim prefix="(" suffix=")" suffixOverrides="," >
+        <if test="item.contestId != null" >
+          contest_id,
+        </if>
+        <if test="item.name != null" >
+          name,
+        </if>
+        <if test="item.size != null" >
+          size,
+        </if>
+        <if test="item.price != null" >
+          price,
+        </if>
+      </trim>
+      <trim prefix="values (" suffix=")" suffixOverrides="," >
+        <if test="item.contestId != null" >
+          #{item.contestId,jdbcType=BIGINT},
+        </if>
+        <if test="item.name != null" >
+          #{item.name,jdbcType=VARCHAR},
+        </if>
+        <if test="item.size != null" >
+          #{item.size,jdbcType=INTEGER},
+        </if>
+        <if test="item.price != null" >
+          #{item.price,jdbcType=DECIMAL},
+        </if>
+      </trim>
+    </foreach>
+  </insert>
+  <!--insert List end-->
+
   <insert id="insertSelective" parameterType="com.guet.match.model.CmsContestGroup" >
     <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
@@ -142,6 +191,8 @@
       </if>
     </trim>
   </insert>
+
+
   <select id="countByExample" parameterType="com.guet.match.model.CmsContestGroupExample" resultType="java.lang.Integer" >
     select count(*) from cms_contest_group
     <if test="_parameter != null" >

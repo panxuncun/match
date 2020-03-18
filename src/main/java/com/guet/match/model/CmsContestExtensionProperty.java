@@ -1,6 +1,9 @@
 package com.guet.match.model;
 
+import io.swagger.annotations.ApiModelProperty;
+
 public class CmsContestExtensionProperty {
+    @ApiModelProperty(hidden = true)
     private Long id;
 
     private Long contestId;

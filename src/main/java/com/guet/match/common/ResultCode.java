@@ -1,4 +1,4 @@
-package com.guet.match.dto;
+package com.guet.match.common;
 
 /**
  * @Auther: sefer

@@ -104,11 +104,21 @@
     <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into cms_contest_extension_property (contest_id, type, key, 
-      value, icon)
+    insert into cms_contest_extension_property (`contest_id`, `type`, `key`,`value`, `icon`)
     values (#{contestId,jdbcType=BIGINT}, #{type,jdbcType=VARCHAR}, #{key,jdbcType=VARCHAR}, 
       #{value,jdbcType=VARCHAR}, #{icon,jdbcType=VARCHAR})
   </insert>
+
+  <!--insert list 关键词key value 加反引号-->
+  <insert id="insertList" parameterType="com.guet.match.model.CmsContestExtensionProperty" >
+    insert into cms_contest_extension_property (`contest_id`, `type`, `key`,`value`, `icon`)
+    values
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.contestId,jdbcType=BIGINT}, #{item.type,jdbcType=VARCHAR}, #{item.key,jdbcType=VARCHAR},#{item.value,jdbcType=VARCHAR}, #{item.icon,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+
+  <!--end inser list-->
   <insert id="insertSelective" parameterType="com.guet.match.model.CmsContestExtensionProperty" >
     <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()

@@ -21,6 +21,9 @@ public interface CmsFavoriteMapper {
 
     CmsFavorite selectByPrimaryKey(Long id);
 
+    //get by contest_id and open_id
+    CmsFavorite getFavorite(CmsFavorite favorite);
+
     int updateByExampleSelective(@Param("record") CmsFavorite record, @Param("example") CmsFavoriteExample example);
 
     int updateByExample(@Param("record") CmsFavorite record, @Param("example") CmsFavoriteExample example);

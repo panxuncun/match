@@ -6,13 +6,13 @@ import com.guet.match.model.UmsConstant;
 /**
  * @Auther: sefer
  * @Date: 2020/3/17
- * @Description:话题 = 话题信息 + 发布者信息，发布者即微信小程序用户
+ * @Description:话题dto = 话题信息 + 发布者信息，发布者即微信小程序用户
  */
 public class TopicDto extends SmsTopic {
 
-    //昵称
+    //昵称动态更新
     private String nickName;
-    //头像
+    //头像动态更新
     private String avatarUrl;
 
     public String getNickName() {

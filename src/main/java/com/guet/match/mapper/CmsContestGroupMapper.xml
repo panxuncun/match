@@ -93,6 +93,14 @@
     delete from cms_contest_group
     where id = #{id,jdbcType=BIGINT}
   </delete>
+
+  <!--delete by contest_id-->
+  <delete id="deleteByContestId" parameterType="java.lang.Long" >
+    delete from cms_contest_group
+    where contest_id = #{id,jdbcType=BIGINT}
+  </delete>
+  <!--end delete by contest_id-->
+
   <delete id="deleteByExample" parameterType="com.guet.match.model.CmsContestGroupExample" >
     delete from cms_contest_group
     <if test="_parameter != null" >
@@ -109,9 +117,17 @@
       #{item.price,jdbcType=DECIMAL})
     </foreach>
   </insert>
-  <!--insert List all params end-->
+  <!--end insert List all params-->
 
 
+  <!--getList by ContestId-->
+  <select id="getGroupListByContestId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select
+    <include refid="Base_Column_List" />
+    from cms_contest_group
+    where contest_id = #{id,jdbcType=BIGINT}
+  </select>
+  <!--end getList by ContestId-->
 
   <insert id="insert" parameterType="com.guet.match.model.CmsContestGroup" >
     <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >

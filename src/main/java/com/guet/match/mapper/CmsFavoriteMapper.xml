@@ -88,6 +88,17 @@
     from cms_favorite
     where id = #{id,jdbcType=BIGINT}
   </select>
+
+  <!--get by contest_id and open_id,must limit 1,or error-->
+  <select id="getFavorite" resultMap="BaseResultMap" parameterType="com.guet.match.model.CmsFavorite" >
+    select
+    <include refid="Base_Column_List" />
+    from cms_favorite
+    where contest_id = #{contestId,jdbcType=BIGINT}
+    and open_id = #{openId,jdbcType=VARCHAR}
+    limit 1
+  </select>
+  <!--end get by contest_id and open_id-->
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
     delete from cms_favorite
     where id = #{id,jdbcType=BIGINT}

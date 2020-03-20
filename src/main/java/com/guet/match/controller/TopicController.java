@@ -3,6 +3,7 @@ package com.guet.match.controller;
 import com.guet.match.common.CommonResult;
 import com.guet.match.model.SmsTopic;
 import com.guet.match.service.TopicService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ import java.util.Map;
  * @Description:互动话题模块
  */
 
+@Api(tags = "互动")
 @RestController
 public class TopicController {
     @Autowired
@@ -33,7 +35,6 @@ public class TopicController {
     @ApiOperation("获取话题详情（包含评论")
     @GetMapping("topic/info/{topicId}")
     public CommonResult getTopic(@PathVariable Long topicId) {
-        System.out.println("===contestId===" + topicId);
         Map map = topicService.getTopicWithComment(topicId);
         if (map.get("topic") == null) {
             return CommonResult.failed("话题不存在，可能已被删除");

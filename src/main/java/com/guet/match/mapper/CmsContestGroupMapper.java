@@ -13,6 +13,9 @@ public interface CmsContestGroupMapper {
 
     int deleteByPrimaryKey(Long id);
 
+    //delete by contest_id
+    int deleteByContestId(Long id);
+
     int insert(CmsContestGroup record);
 
     //insert List
@@ -22,7 +25,11 @@ public interface CmsContestGroupMapper {
 
     List<CmsContestGroup> selectByExample(CmsContestGroupExample example);
 
+
     CmsContestGroup selectByPrimaryKey(Long id);
+
+    //getGroupListByContestId
+    List<CmsContestGroup> getGroupListByContestId(Long id);
 
     int updateByExampleSelective(@Param("record") CmsContestGroup record, @Param("example") CmsContestGroupExample example);
 

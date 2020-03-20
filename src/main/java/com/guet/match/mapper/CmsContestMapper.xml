@@ -18,6 +18,15 @@
     <result column="last_check_time" property="lastCheckTime" jdbcType="TIMESTAMP" />
     <result column="last_check_note" property="lastCheckNote" jdbcType="VARCHAR" />
   </resultMap>
+
+
+  <!-- 自定义contestdto结果集-->
+  <resultMap id="DtoResultMap" type="com.guet.match.dto.ContestDto" extends="BaseResultMap">
+    <collection property="groupList" column="id" ofType="com.guet.match.model.CmsContestGroup" select="com.guet.match.mapper.CmsContestGroupMapper.getGroupListByContestId"></collection>
+    <collection property="extensionPropertyList" column="id" ofType="com.guet.match.model.CmsContestExtensionProperty" select="com.guet.match.mapper.CmsContestExtensionPropertyMapper.getExtensionListByContestId"></collection>
+  </resultMap>
+  <!--end 自定义contestdto结果集-->
+
   <resultMap id="ResultMapWithBLOBs" type="com.guet.match.model.CmsContest" extends="BaseResultMap" >
     <result column="details" property="details" jdbcType="LONGVARCHAR" />
   </resultMap>
@@ -124,6 +133,16 @@
     from cms_contest
     where id = #{id,jdbcType=BIGINT}
   </select>
+
+
+  <!--getContestDtoByid-->
+  <select id="getContestDtoByid" resultMap="DtoResultMap" parameterType="java.lang.Long" >
+    select *
+    from cms_contest
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <!--end getContestDtoByid-->
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
     delete from cms_contest
     where id = #{id,jdbcType=BIGINT}

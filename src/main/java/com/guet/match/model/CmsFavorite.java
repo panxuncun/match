@@ -1,14 +1,18 @@
 package com.guet.match.model;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.Date;
 
 public class CmsFavorite {
+    @ApiModelProperty(hidden = true)
     private Long id;
 
     private Long contestId;
 
     private String openId;
 
+    @ApiModelProperty(hidden = true)
     private Date createTime;
 
     public Long getId() {

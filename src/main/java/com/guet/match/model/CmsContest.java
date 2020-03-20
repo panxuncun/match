@@ -8,7 +8,6 @@ import java.util.Date;
 
 public class CmsContest {
 
-    @ApiModelProperty(hidden = true)
     private Long id;
 
     private Long organizerId;

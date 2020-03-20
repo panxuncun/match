@@ -8,20 +8,10 @@ import java.util.List;
 
 /**
  * @Auther: sefer
- * @Date: 2020/3/18
- * @Description:赛事拓展dto = contest + group
+ * @Date: 2020/3/19
+ * @Description:完整赛事信息dto = 赛事信息 + 分组信息 + 拓展属性值
  */
-public class ContestDto {
-    private CmsContest contest;
-
-    public CmsContest getContest() {
-        return contest;
-    }
-
-    public void setContest(CmsContest contest) {
-        this.contest = contest;
-    }
-
+public class ContestDto extends CmsContest {
     private List<CmsContestGroup> groupList;
     private List<CmsContestExtensionProperty> extensionPropertyList;
 
@@ -43,7 +33,8 @@ public class ContestDto {
 
     @Override
     public String toString() {
-        return "ContestDto{" +
+        return "id:" + getId() +
+                "ContestDto{" +
                 "groupList=" + groupList +
                 ", extensionPropertyList=" + extensionPropertyList +
                 '}';

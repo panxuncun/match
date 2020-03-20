@@ -13,6 +13,10 @@ public interface CmsContestExtensionPropertyMapper {
 
     int deleteByPrimaryKey(Long id);
 
+    //deleteByContestId
+    int deleteByContestId(Long id);
+
+
     int insert(CmsContestExtensionProperty record);
 
     //insert List
@@ -23,6 +27,9 @@ public interface CmsContestExtensionPropertyMapper {
     List<CmsContestExtensionProperty> selectByExample(CmsContestExtensionPropertyExample example);
 
     CmsContestExtensionProperty selectByPrimaryKey(Long id);
+
+    //getList by contestId
+    List<CmsContestExtensionProperty> getExtensionListByContestId(Long id);
 
     int updateByExampleSelective(@Param("record") CmsContestExtensionProperty record, @Param("example") CmsContestExtensionPropertyExample example);
 

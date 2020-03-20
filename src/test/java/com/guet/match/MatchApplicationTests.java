@@ -1,9 +1,13 @@
 package com.guet.match;
 
 import com.guet.match.controller.TopicController;
+import com.guet.match.mapper.CmsContestGroupMapper;
+import com.guet.match.mapper.CmsContestMapper;
 import com.guet.match.service.AuthService;
 import com.guet.match.service.TopicService;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.client.RestTemplate;
@@ -14,6 +18,10 @@ import java.util.Map;
 @SpringBootTest
 class MatchApplicationTests {
 
+    Logger logger = LoggerFactory.getLogger(MatchApplicationTests.class);
+
+    @Autowired
+    private CmsContestMapper contestMapper;
 
     @Autowired
     private AuthService authService;
@@ -23,10 +31,21 @@ class MatchApplicationTests {
     @Autowired
     private TopicService topicService;
 
+    @Autowired
+    private CmsContestGroupMapper groupMapper;
+
     @Test
     void contextLoads() {
-        System.out.println("======");
-        System.out.println(topicService.deleteTopicOrComment(266L));
+        logger.info("=====getContestDtoByid");
+        contestMapper.getContestDtoByid(68L);
+        //System.out.println(topicService.deleteTopicOrComment(266L));
+    }
+
+    @Test
+    void contextLoads1() {
+        logger.info("=====get group list");
+        logger.info("=====size"+groupMapper.getGroupListByContestId(68L).size());
+        //System.out.println(topicService.deleteTopicOrComment(266L));
     }
 
 
@@ -47,6 +66,7 @@ class MatchApplicationTests {
         //Map data = new HashMap();
         //res = restTemplate.postForObject(url,data,String.class);
         //System.out.println("post返回结果："+res);
+
     }
 
 

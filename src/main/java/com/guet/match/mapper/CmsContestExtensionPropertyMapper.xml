@@ -67,9 +67,12 @@
       </foreach>
     </where>
   </sql>
+
+  <!--因为key 和 value 是关键词，所以全部加引号了-->
   <sql id="Base_Column_List" >
-    id, contest_id, type, key, value, icon
+    `id`, `contest_id`, `type`, `key`, `value`, `icon`
   </sql>
+  <!--end 因为key 和 value 是关键词，所以全部加引号了-->
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.guet.match.model.CmsContestExtensionPropertyExample" >
     select
     <if test="distinct" >
@@ -90,10 +93,30 @@
     from cms_contest_extension_property
     where id = #{id,jdbcType=BIGINT}
   </select>
+
+  <!--get List by contest_id-->
+  <select id="getExtensionListByContestId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select
+    <include refid="Base_Column_List" />
+    from cms_contest_extension_property
+    where contest_id = #{id,jdbcType=BIGINT}
+  </select>
+  <!--end get List by contest_id-->
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
     delete from cms_contest_extension_property
     where id = #{id,jdbcType=BIGINT}
   </delete>
+
+  <!--delete by contest_id-->
+  <delete id="deleteByContestId" parameterType="java.lang.Long" >
+    delete from cms_contest_extension_property
+    where contest_id = #{id,jdbcType=BIGINT}
+  </delete>
+  <!--end delete by contest_id-->
+
+
+
+
   <delete id="deleteByExample" parameterType="com.guet.match.model.CmsContestExtensionPropertyExample" >
     delete from cms_contest_extension_property
     <if test="_parameter != null" >

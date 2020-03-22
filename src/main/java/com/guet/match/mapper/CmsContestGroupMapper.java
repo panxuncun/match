@@ -38,4 +38,13 @@ public interface CmsContestGroupMapper {
     int updateByPrimaryKeySelective(CmsContestGroup record);
 
     int updateByPrimaryKey(CmsContestGroup record);
+
+    //剩余容量-1
+    int sizeMinus(Long id);
+
+    //剩余容量+1
+    int sizePlus(Long id);
+
+    //获取剩余容量
+    public int getUsableSize(Long id);
 }

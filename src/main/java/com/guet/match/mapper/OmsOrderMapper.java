@@ -28,4 +28,11 @@ public interface OmsOrderMapper {
     int updateByPrimaryKeySelective(OmsOrder record);
 
     int updateByPrimaryKey(OmsOrder record);
+
+    //清除过期订单
+    int cleanExpiredOrder(int expiredMinute);
+
+    //获取过期订单
+    List<OmsOrder> getExpiredOrderList(int expiredMinute);
+
 }

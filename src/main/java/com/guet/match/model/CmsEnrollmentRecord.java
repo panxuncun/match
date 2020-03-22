@@ -1,12 +1,8 @@
 package com.guet.match.model;
 
-import io.swagger.annotations.ApiModelProperty;
-
 import java.util.Date;
 
 public class CmsEnrollmentRecord {
-
-    @ApiModelProperty(hidden = true)
     private Long id;
 
     private Long contestId;
@@ -17,25 +13,21 @@ public class CmsEnrollmentRecord {
 
     private Integer type;
 
-    @ApiModelProperty(hidden = true)
     private Date createTime;
 
     private String mailAddress;
 
-    @ApiModelProperty(hidden = true)
     private String contestantNumber;
 
-    @ApiModelProperty(hidden = true)
     private String contestantStatus;
 
-    @ApiModelProperty(hidden = true)
     private String contestantRank;
 
-    @ApiModelProperty(hidden = true)
     private String contestantAchievement;
 
-    @ApiModelProperty(hidden = true)
     private String contestantAward;
+
+    private Integer status;
 
     public Long getId() {
         return id;
@@ -131,5 +123,13 @@ public class CmsEnrollmentRecord {
 
     public void setContestantAward(String contestantAward) {
         this.contestantAward = contestantAward;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }

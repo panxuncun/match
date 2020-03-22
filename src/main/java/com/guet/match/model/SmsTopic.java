@@ -1,8 +1,11 @@
 package com.guet.match.model;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.Date;
 
 public class SmsTopic {
+    @ApiModelProperty(hidden = true)
     private Long id;
 
     private String openId;
@@ -15,6 +18,7 @@ public class SmsTopic {
 
     private String attachment;
 
+    @ApiModelProperty(hidden = true)
     private Date createTime;
 
     public Long getId() {

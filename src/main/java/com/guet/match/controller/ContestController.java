@@ -1,7 +1,6 @@
 package com.guet.match.controller;
 
 import com.guet.match.common.CommonResult;
-import com.guet.match.common.EnrollmentDto;
 import com.guet.match.dto.ContestCheckDto;
 import com.guet.match.dto.ContestDto;
 import com.guet.match.model.CmsFavorite;
@@ -16,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * @Auther: sefer
  * @Date: 2020/3/18
- * @Description:赛事模块控制类
+ * @Description: 赛事模块控制类
  */
 
 @Api(tags = "赛事")
@@ -58,20 +57,19 @@ public class ContestController {
         return contestService.deleteContestFlag(id) == 1 ? CommonResult.success(null) : CommonResult.failed("操作失败，赛事不存在");
     }
 
-    //FavoriteSwitch
+
     @ApiOperation("收藏赛事")
     @PostMapping("contest/favorite")
     public CommonResult FavoriteSwitch(@RequestBody CmsFavorite favorite) {
         return contestService.favoriteSwitch(favorite) == 1 ? CommonResult.success(null) : CommonResult.failed();
     }
 
-    @ApiOperation("报名")
-    @PostMapping("contest/enrollment/add")
-    public CommonResult addEnrollment(@RequestBody EnrollmentDto dto) {
-        switch (contestService.insertEnrollment(dto)){
-            case 1:return CommonResult.success(null,"报名成功");
-            case 2:return CommonResult.failed("您已报名，无需重复操作");
-            default:return CommonResult.failed();
-        }
+
+
+
+    @ApiOperation("赛事删除标记")
+    @PostMapping("contest/enrollment/delete/{id}")
+    public CommonResult deleteEnrollment(@PathVariable long id) {
+        return contestService.deleteEnrollment(id) == 1 ? CommonResult.success(null) : CommonResult.failed();
     }
 }

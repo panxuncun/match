@@ -11,7 +11,7 @@ public enum ContestStatus {
     REFUSE(2,"未通过"),
     DELETE_FLAG(3,"删除标记"),
     CANCEL(4,"赛事取消");
-    ;
+
     private int status;
     private String description;
 

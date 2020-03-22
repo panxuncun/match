@@ -7,10 +7,11 @@
     <result column="contest_group_id" property="contestGroupId" jdbcType="BIGINT" />
     <result column="open_id" property="openId" jdbcType="VARCHAR" />
     <result column="status" property="status" jdbcType="INTEGER" />
-    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
-    <result column="payment_time" property="paymentTime" jdbcType="TIMESTAMP" />
+    <result column="mail_address" property="mailAddress" jdbcType="VARCHAR" />
     <result column="note" property="note" jdbcType="VARCHAR" />
     <result column="price" property="price" jdbcType="DECIMAL" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="payment_time" property="paymentTime" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -71,8 +72,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    id, contest_id, contest_group_id, open_id, status, create_time, payment_time, note, 
-    price
+    id, contest_id, contest_group_id, open_id, status, mail_address, note, price, create_time, 
+    payment_time
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.guet.match.model.OmsOrderExample" >
     select
@@ -98,6 +99,29 @@
     delete from oms_order
     where id = #{id,jdbcType=BIGINT}
   </delete>
+
+  <!--清除过期订单-->
+  <delete id="cleanExpiredOrder" parameterType="java.lang.Integer" >
+    delete
+    from
+    oms_order
+    WHERE
+    STATUS = 0
+    AND create_time &lt; date_add(NOW(), INTERVAL - #{expiredMinute,jdbcType=INTEGER} MINUTE)
+  </delete>
+  <!--end 清除过期订单-->
+
+  <!--获取过期订单-->
+  <select id="getExpiredOrderList" parameterType="java.lang.Integer" resultMap="BaseResultMap" >
+    select *
+    from
+    oms_order
+    where
+    STATUS = 0
+    and create_time &lt; date_add(NOW(), INTERVAL - #{expiredMinute,jdbcType=INTEGER} MINUTE)
+  </select>
+  <!--end  获取过期订单-->
+
   <delete id="deleteByExample" parameterType="com.guet.match.model.OmsOrderExample" >
     delete from oms_order
     <if test="_parameter != null" >
@@ -109,11 +133,13 @@
       SELECT LAST_INSERT_ID()
     </selectKey>
     insert into oms_order (contest_id, contest_group_id, open_id, 
-      status, create_time, payment_time, 
-      note, price)
+      status, mail_address, note, 
+      price, create_time, payment_time
+      )
     values (#{contestId,jdbcType=BIGINT}, #{contestGroupId,jdbcType=BIGINT}, #{openId,jdbcType=VARCHAR}, 
-      #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{paymentTime,jdbcType=TIMESTAMP}, 
-      #{note,jdbcType=VARCHAR}, #{price,jdbcType=DECIMAL})
+      #{status,jdbcType=INTEGER}, #{mailAddress,jdbcType=VARCHAR}, #{note,jdbcType=VARCHAR}, 
+      #{price,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP}, #{paymentTime,jdbcType=TIMESTAMP}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.guet.match.model.OmsOrder" >
     <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
@@ -133,17 +159,20 @@
       <if test="status != null" >
         status,
       </if>
-      <if test="createTime != null" >
-        create_time,
-      </if>
-      <if test="paymentTime != null" >
-        payment_time,
+      <if test="mailAddress != null" >
+        mail_address,
       </if>
       <if test="note != null" >
         note,
       </if>
       <if test="price != null" >
         price,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="paymentTime != null" >
+        payment_time,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -159,17 +188,20 @@
       <if test="status != null" >
         #{status,jdbcType=INTEGER},
       </if>
-      <if test="createTime != null" >
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="paymentTime != null" >
-        #{paymentTime,jdbcType=TIMESTAMP},
+      <if test="mailAddress != null" >
+        #{mailAddress,jdbcType=VARCHAR},
       </if>
       <if test="note != null" >
         #{note,jdbcType=VARCHAR},
       </if>
       <if test="price != null" >
         #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="paymentTime != null" >
+        #{paymentTime,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
@@ -197,17 +229,20 @@
       <if test="record.status != null" >
         status = #{record.status,jdbcType=INTEGER},
       </if>
-      <if test="record.createTime != null" >
-        create_time = #{record.createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="record.paymentTime != null" >
-        payment_time = #{record.paymentTime,jdbcType=TIMESTAMP},
+      <if test="record.mailAddress != null" >
+        mail_address = #{record.mailAddress,jdbcType=VARCHAR},
       </if>
       <if test="record.note != null" >
         note = #{record.note,jdbcType=VARCHAR},
       </if>
       <if test="record.price != null" >
         price = #{record.price,jdbcType=DECIMAL},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.paymentTime != null" >
+        payment_time = #{record.paymentTime,jdbcType=TIMESTAMP},
       </if>
     </set>
     <if test="_parameter != null" >
@@ -221,10 +256,11 @@
       contest_group_id = #{record.contestGroupId,jdbcType=BIGINT},
       open_id = #{record.openId,jdbcType=VARCHAR},
       status = #{record.status,jdbcType=INTEGER},
-      create_time = #{record.createTime,jdbcType=TIMESTAMP},
-      payment_time = #{record.paymentTime,jdbcType=TIMESTAMP},
+      mail_address = #{record.mailAddress,jdbcType=VARCHAR},
       note = #{record.note,jdbcType=VARCHAR},
-      price = #{record.price,jdbcType=DECIMAL}
+      price = #{record.price,jdbcType=DECIMAL},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      payment_time = #{record.paymentTime,jdbcType=TIMESTAMP}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -244,17 +280,20 @@
       <if test="status != null" >
         status = #{status,jdbcType=INTEGER},
       </if>
-      <if test="createTime != null" >
-        create_time = #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="paymentTime != null" >
-        payment_time = #{paymentTime,jdbcType=TIMESTAMP},
+      <if test="mailAddress != null" >
+        mail_address = #{mailAddress,jdbcType=VARCHAR},
       </if>
       <if test="note != null" >
         note = #{note,jdbcType=VARCHAR},
       </if>
       <if test="price != null" >
         price = #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="paymentTime != null" >
+        payment_time = #{paymentTime,jdbcType=TIMESTAMP},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
@@ -265,10 +304,11 @@
       contest_group_id = #{contestGroupId,jdbcType=BIGINT},
       open_id = #{openId,jdbcType=VARCHAR},
       status = #{status,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      payment_time = #{paymentTime,jdbcType=TIMESTAMP},
+      mail_address = #{mailAddress,jdbcType=VARCHAR},
       note = #{note,jdbcType=VARCHAR},
-      price = #{price,jdbcType=DECIMAL}
+      price = #{price,jdbcType=DECIMAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      payment_time = #{paymentTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

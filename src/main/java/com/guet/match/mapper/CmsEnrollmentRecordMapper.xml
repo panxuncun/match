@@ -14,6 +14,7 @@
     <result column="contestant_rank" property="contestantRank" jdbcType="VARCHAR" />
     <result column="contestant_achievement" property="contestantAchievement" jdbcType="VARCHAR" />
     <result column="contestant_award" property="contestantAward" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -75,7 +76,7 @@
   </sql>
   <sql id="Base_Column_List" >
     id, contest_id, contest_group_id, open_id, type, create_time, mail_address, contestant_number, 
-    contestant_status, contestant_rank, contestant_achievement, contestant_award
+    contestant_status, contestant_rank, contestant_achievement, contestant_award, status
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.guet.match.model.CmsEnrollmentRecordExample" >
     select
@@ -114,11 +115,13 @@
     insert into cms_enrollment_record (contest_id, contest_group_id, open_id, 
       type, create_time, mail_address, 
       contestant_number, contestant_status, contestant_rank, 
-      contestant_achievement, contestant_award)
+      contestant_achievement, contestant_award, 
+      status)
     values (#{contestId,jdbcType=BIGINT}, #{contestGroupId,jdbcType=BIGINT}, #{openId,jdbcType=VARCHAR}, 
       #{type,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{mailAddress,jdbcType=VARCHAR}, 
       #{contestantNumber,jdbcType=VARCHAR}, #{contestantStatus,jdbcType=VARCHAR}, #{contestantRank,jdbcType=VARCHAR}, 
-      #{contestantAchievement,jdbcType=VARCHAR}, #{contestantAward,jdbcType=VARCHAR})
+      #{contestantAchievement,jdbcType=VARCHAR}, #{contestantAward,jdbcType=VARCHAR}, 
+      #{status,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.guet.match.model.CmsEnrollmentRecord" >
     <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
@@ -159,6 +162,9 @@
       <if test="contestantAward != null" >
         contestant_award,
       </if>
+      <if test="status != null" >
+        status,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="contestId != null" >
@@ -193,6 +199,9 @@
       </if>
       <if test="contestantAward != null" >
         #{contestantAward,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>
@@ -241,6 +250,9 @@
       <if test="record.contestantAward != null" >
         contestant_award = #{record.contestantAward,jdbcType=VARCHAR},
       </if>
+      <if test="record.status != null" >
+        status = #{record.status,jdbcType=INTEGER},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -259,7 +271,8 @@
       contestant_status = #{record.contestantStatus,jdbcType=VARCHAR},
       contestant_rank = #{record.contestantRank,jdbcType=VARCHAR},
       contestant_achievement = #{record.contestantAchievement,jdbcType=VARCHAR},
-      contestant_award = #{record.contestantAward,jdbcType=VARCHAR}
+      contestant_award = #{record.contestantAward,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=INTEGER}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -300,6 +313,9 @@
       <if test="contestantAward != null" >
         contestant_award = #{contestantAward,jdbcType=VARCHAR},
       </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -315,7 +331,8 @@
       contestant_status = #{contestantStatus,jdbcType=VARCHAR},
       contestant_rank = #{contestantRank,jdbcType=VARCHAR},
       contestant_achievement = #{contestantAchievement,jdbcType=VARCHAR},
-      contestant_award = #{contestantAward,jdbcType=VARCHAR}
+      contestant_award = #{contestantAward,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

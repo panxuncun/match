@@ -14,13 +14,15 @@ public class OmsOrder {
 
     private Integer status;
 
-    private Date createTime;
-
-    private Date paymentTime;
+    private String mailAddress;
 
     private String note;
 
     private BigDecimal price;
+
+    private Date createTime;
+
+    private Date paymentTime;
 
     public Long getId() {
         return id;
@@ -62,20 +64,12 @@ public class OmsOrder {
         this.status = status;
     }
 
-    public Date getCreateTime() {
-        return createTime;
+    public String getMailAddress() {
+        return mailAddress;
     }
 
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getPaymentTime() {
-        return paymentTime;
-    }
-
-    public void setPaymentTime(Date paymentTime) {
-        this.paymentTime = paymentTime;
+    public void setMailAddress(String mailAddress) {
+        this.mailAddress = mailAddress;
     }
 
     public String getNote() {
@@ -92,5 +86,21 @@ public class OmsOrder {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getPaymentTime() {
+        return paymentTime;
+    }
+
+    public void setPaymentTime(Date paymentTime) {
+        this.paymentTime = paymentTime;
     }
 }

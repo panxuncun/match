@@ -1,7 +1,8 @@
 package com.guet.match.service;
 
 import com.guet.match.common.ContestStatus;
-import com.guet.match.common.EnrollmentDto;
+import com.guet.match.common.DeleteStatus;
+import com.guet.match.dto.OrderDto;
 import com.guet.match.dto.ContestCheckDto;
 import com.guet.match.dto.ContestDto;
 import com.guet.match.mapper.*;
@@ -135,7 +136,7 @@ public class ContestService {
     }
 
     //enrollment 0-fail; 1->success; 2->repeat
-    public int insertEnrollment(EnrollmentDto dto) {
+    public int insertEnrollment(OrderDto dto) {
         //pending repeat
         CmsEnrollmentRecordExample example = new CmsEnrollmentRecordExample();
         //BeanUtils.copyProperties(dto, example);
@@ -147,9 +148,22 @@ public class ContestService {
         logger.info("报名");
         CmsEnrollmentRecord record = new CmsEnrollmentRecord();
         BeanUtils.copyProperties(dto, record);
-        enrollmentRecordMapper.insert(record);
-        return 0;
+        record.setStatus(DeleteStatus.NORMAL.getStatus());
+        return enrollmentRecordMapper.insert(record);
     }
+
+    //delete enrollment flag
+    public int deleteEnrollment(long id) {
+        CmsEnrollmentRecord record = enrollmentRecordMapper.selectByPrimaryKey(id);
+        if (record == null) {
+            return 0;
+        }
+        record.setStatus(DeleteStatus.DELETE_FLAG.getStatus());
+        return enrollmentRecordMapper.updateByPrimaryKey(record);
+
+    }
+
+
 
 
 }

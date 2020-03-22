@@ -1,11 +1,11 @@
-package com.guet.match.common;
+package com.guet.match.dto;
 
 /**
  * @Auther: sefer
  * @Date: 2020/3/20
  * @Description: 报名dto
  */
-public class EnrollmentDto {
+public class OrderDto {
 
     //赛事
     private Long contestId;

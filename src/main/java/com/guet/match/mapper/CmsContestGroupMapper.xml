@@ -89,6 +89,15 @@
     from cms_contest_group
     where id = #{id,jdbcType=BIGINT}
   </select>
+
+  <!--获取剩余容量-->
+  <select id="getUsableSize" resultType="java.lang.Integer" parameterType="java.lang.Long" >
+    select
+    size
+    from cms_contest_group
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <!--end 获取剩余容量-->
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
     delete from cms_contest_group
     where id = #{id,jdbcType=BIGINT}
@@ -275,4 +284,24 @@
       price = #{price,jdbcType=DECIMAL}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+  <!--容量-1-->
+  <update id="sizeMinus" parameterType="java.lang.Long" >
+    update cms_contest_group
+    set
+      size = size-1
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <!--end 容量-1-->
+
+
+  <!--容量+1-->
+  <update id="sizePlus" parameterType="java.lang.Long" >
+    update cms_contest_group
+    set
+      size = size+1
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <!--end 容量+1-->
+
 </mapper>

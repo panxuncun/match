@@ -14,7 +14,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 /**
  * @Auther: sefer
  * @Date: 2020/3/17
- * @Description:
+ * @Description: swagger接口文档
  */
 @Configuration
 @EnableSwagger2
@@ -30,7 +30,7 @@ public class SwaggerConfig {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 // 设置页面标题
-                .title("Match赛事接口文档")
+                .title("赛事接口文档")
                 .version("1.0.0").build();
     }
 }

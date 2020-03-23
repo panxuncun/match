@@ -1,6 +1,8 @@
 package com.guet.match.controller;
 
 import com.guet.match.common.CommonResult;
+import com.guet.match.common.Events;
+import com.guet.match.common.States;
 import com.guet.match.dto.OrderDto;
 import com.guet.match.service.OrderService;
 import io.swagger.annotations.Api;
@@ -8,6 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.statemachine.StateMachine;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -22,6 +25,9 @@ public class OrderController {
     Logger logger = LoggerFactory.getLogger(OrderController.class);
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private StateMachine<States, Events> stateMachine;
 
 
     @ApiOperation("创建订单,需要必要的报名信息")
@@ -82,4 +88,12 @@ public class OrderController {
     }
 
 
+    @ApiOperation("状态机测试")
+    @GetMapping("order/testMachine")
+    public String testMachine() {
+        stateMachine.start();
+        stateMachine.sendEvent(Events.PAY);
+        stateMachine.sendEvent(Events.RECEIVE);
+        return "ok";
+    }
 }

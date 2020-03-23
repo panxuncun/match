@@ -8,9 +8,7 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @Auther: sefer
@@ -38,8 +36,50 @@ public class OrderController {
             case -3:
                 return CommonResult.failed("来晚了一步，名额已满");
             default:
-                return CommonResult.success(orderId,"已为你锁定名额，请在30分钟内完成支付");
+                return CommonResult.success(orderId, "已为你锁定名额，请在30分钟内完成支付");
         }
 
     }
+
+    @ApiOperation("付款")
+    @PostMapping("order/pay/{orderId}")
+    public CommonResult pay(@PathVariable Long orderId) {
+        switch (orderService.pay(orderId)) {
+            case 0:
+                return CommonResult.failed("支付失败，正在给您办理退款，请注意查收");
+            case 1:
+                return CommonResult.success(null);
+            case 2:
+                return CommonResult.failed("订单已失效，正在给您办理退款，请注意查收");
+            case 4:
+                return CommonResult.failed("您已付款，请勿重复操作");
+            default:
+                return CommonResult.failed(null);
+        }
+    }
+
+    @ApiOperation("取消未付款订单")
+    @PostMapping("order/cancel/{orderId}")
+    public CommonResult cancel(@PathVariable long orderId) {
+        return orderService.cancel(orderId) == 1 ? CommonResult.success(null) : CommonResult.failed("操作失败，请刷新页面");
+    }
+
+    //orderStatus参阅comon/PaymentStatus
+    @ApiOperation("查看订单by openId")
+    @GetMapping("order/listByOpenId")
+    public CommonResult getOrderList(@RequestParam(required = true) String openId,
+                                     @RequestParam(required = false) Integer paymentStatus) {
+        return CommonResult.success(orderService.getOrderListByOpenId(openId, paymentStatus));
+    }
+
+
+    //orderStatus参阅comon/PaymentStatus
+    @ApiOperation("查看订单by contestId")
+    @GetMapping("order/listByContestId")
+    public CommonResult getOrderList(@RequestParam(required = true) Long contestId,
+                                     @RequestParam(required = false) Long groupId) {
+        return CommonResult.success(orderService.getOrderListByContestId(contestId, groupId));
+    }
+
+
 }

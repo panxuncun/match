@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * @Auther: sefer
  * @Date: 2020/3/17
- * @Description:互动话题模块
+ * @Description: 互动话题模块
  */
 
 @Api(tags = "互动")

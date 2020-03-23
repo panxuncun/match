@@ -112,12 +112,12 @@
   <!--end 清除过期订单-->
 
   <!--获取过期订单-->
-  <select id="getExpiredOrderList" parameterType="java.lang.Integer" resultMap="BaseResultMap" >
+  <select id="getExpiredOrderList" parameterType="map" resultMap="BaseResultMap" >
     select *
     from
     oms_order
     where
-    STATUS = 0
+    status = #{status,jdbcType=INTEGER}
     and create_time &lt; date_add(NOW(), INTERVAL - #{expiredMinute,jdbcType=INTEGER} MINUTE)
   </select>
   <!--end  获取过期订单-->
@@ -265,6 +265,15 @@
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
+
+  <!--锁订单-->
+  <update id="lockOrder" parameterType="map" >
+    update oms_order
+    set status = #{status,jdbcType=INTEGER}
+    where id = #{orderId,jdbcType=BIGINT}
+  </update>
+  <!--end 锁订单-->
+
   <update id="updateByPrimaryKeySelective" parameterType="com.guet.match.model.OmsOrder" >
     update oms_order
     <set >

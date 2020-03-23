@@ -3,7 +3,7 @@ package com.guet.match.common;
 /**
  * @Auther: sefer
  * @Date: 2020/3/16
- * @Description:通用返回对象
+ * @Description: 通用返回对象
  */
 public class CommonResult<T> {
     private long code;

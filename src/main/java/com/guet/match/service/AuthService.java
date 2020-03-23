@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * @Auther: sefer
  * @Date: 2020/3/16
- * @Description:
+ * @Description: 授权模块
  */
 @Service
 public class AuthService {

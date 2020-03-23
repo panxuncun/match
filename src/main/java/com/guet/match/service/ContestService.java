@@ -135,7 +135,7 @@ public class ContestService {
         }
     }
 
-    //enrollment 0-fail; 1->success; 2->repeat
+    //enrollment 0->fail; 1->success; 2->repeat
     public int insertEnrollment(OrderDto dto) {
         //pending repeat
         CmsEnrollmentRecordExample example = new CmsEnrollmentRecordExample();

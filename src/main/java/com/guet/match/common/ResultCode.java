@@ -3,7 +3,7 @@ package com.guet.match.common;
 /**
  * @Auther: sefer
  * @Date: 2020/3/16
- * @Description:约定返回码,按照https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Status规范
+ * @Description: 约定返回码,按照https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Status规范
  */
 public enum ResultCode {
     SUCCESS(200, "操作成功"),

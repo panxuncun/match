@@ -33,6 +33,10 @@ public interface OmsOrderMapper {
     int cleanExpiredOrder(int expiredMinute);
 
     //获取过期订单
-    List<OmsOrder> getExpiredOrderList(int expiredMinute);
+    List<OmsOrder> getExpiredOrderList(@Param("expiredMinute") int expiredMinute,@Param("status") int status);
+
+    //锁订单
+    int lockOrder(@Param("orderId") long orderId,@Param("status") int status);
+
 
 }

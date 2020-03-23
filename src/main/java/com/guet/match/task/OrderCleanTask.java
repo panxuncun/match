@@ -1,5 +1,6 @@
 package com.guet.match.task;
 
+import com.guet.match.common.PaymentStatus;
 import com.guet.match.mapper.CmsContestGroupMapper;
 import com.guet.match.mapper.OmsOrderMapper;
 import com.guet.match.model.OmsOrder;
@@ -30,8 +31,8 @@ public class OrderCleanTask {
     @Scheduled(fixedRate = 1000 * 60)
     public void cleanExpiredOrder() {
         try {
-            //得到所有过期订单
-            List<OmsOrder> list = orderMapper.getExpiredOrderList(1);
+            //设置过期时间，并得到所有过期订单
+            List<OmsOrder> list = orderMapper.getExpiredOrderList(5, PaymentStatus.LOCK.getStatus());
             for (OmsOrder order:list){
                 long groupId = order.getContestGroupId();
                 //删除订单

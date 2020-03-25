@@ -31,7 +31,9 @@ public class UmsOrganizer {
 
     private Date lastCheckTime;
 
-    private Date lastCheckNote;
+    private String lastCheckNote;
+
+    private Date createTime;
 
     public Long getId() {
         return id;
@@ -145,11 +147,19 @@ public class UmsOrganizer {
         this.lastCheckTime = lastCheckTime;
     }
 
-    public Date getLastCheckNote() {
+    public String getLastCheckNote() {
         return lastCheckNote;
     }
 
-    public void setLastCheckNote(Date lastCheckNote) {
+    public void setLastCheckNote(String lastCheckNote) {
         this.lastCheckNote = lastCheckNote;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 }

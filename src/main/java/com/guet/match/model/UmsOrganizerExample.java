@@ -1045,53 +1045,123 @@ public class UmsOrganizerExample {
             return (Criteria) this;
         }
 
-        public Criteria andLastCheckNoteEqualTo(Date value) {
+        public Criteria andLastCheckNoteEqualTo(String value) {
             addCriterion("last_check_note =", value, "lastCheckNote");
             return (Criteria) this;
         }
 
-        public Criteria andLastCheckNoteNotEqualTo(Date value) {
+        public Criteria andLastCheckNoteNotEqualTo(String value) {
             addCriterion("last_check_note <>", value, "lastCheckNote");
             return (Criteria) this;
         }
 
-        public Criteria andLastCheckNoteGreaterThan(Date value) {
+        public Criteria andLastCheckNoteGreaterThan(String value) {
             addCriterion("last_check_note >", value, "lastCheckNote");
             return (Criteria) this;
         }
 
-        public Criteria andLastCheckNoteGreaterThanOrEqualTo(Date value) {
+        public Criteria andLastCheckNoteGreaterThanOrEqualTo(String value) {
             addCriterion("last_check_note >=", value, "lastCheckNote");
             return (Criteria) this;
         }
 
-        public Criteria andLastCheckNoteLessThan(Date value) {
+        public Criteria andLastCheckNoteLessThan(String value) {
             addCriterion("last_check_note <", value, "lastCheckNote");
             return (Criteria) this;
         }
 
-        public Criteria andLastCheckNoteLessThanOrEqualTo(Date value) {
+        public Criteria andLastCheckNoteLessThanOrEqualTo(String value) {
             addCriterion("last_check_note <=", value, "lastCheckNote");
             return (Criteria) this;
         }
 
-        public Criteria andLastCheckNoteIn(List<Date> values) {
+        public Criteria andLastCheckNoteLike(String value) {
+            addCriterion("last_check_note like", value, "lastCheckNote");
+            return (Criteria) this;
+        }
+
+        public Criteria andLastCheckNoteNotLike(String value) {
+            addCriterion("last_check_note not like", value, "lastCheckNote");
+            return (Criteria) this;
+        }
+
+        public Criteria andLastCheckNoteIn(List<String> values) {
             addCriterion("last_check_note in", values, "lastCheckNote");
             return (Criteria) this;
         }
 
-        public Criteria andLastCheckNoteNotIn(List<Date> values) {
+        public Criteria andLastCheckNoteNotIn(List<String> values) {
             addCriterion("last_check_note not in", values, "lastCheckNote");
             return (Criteria) this;
         }
 
-        public Criteria andLastCheckNoteBetween(Date value1, Date value2) {
+        public Criteria andLastCheckNoteBetween(String value1, String value2) {
             addCriterion("last_check_note between", value1, value2, "lastCheckNote");
             return (Criteria) this;
         }
 
-        public Criteria andLastCheckNoteNotBetween(Date value1, Date value2) {
+        public Criteria andLastCheckNoteNotBetween(String value1, String value2) {
             addCriterion("last_check_note not between", value1, value2, "lastCheckNote");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateTimeIsNull() {
+            addCriterion("create_time is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateTimeIsNotNull() {
+            addCriterion("create_time is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateTimeEqualTo(Date value) {
+            addCriterion("create_time =", value, "createTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateTimeNotEqualTo(Date value) {
+            addCriterion("create_time <>", value, "createTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateTimeGreaterThan(Date value) {
+            addCriterion("create_time >", value, "createTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateTimeGreaterThanOrEqualTo(Date value) {
+            addCriterion("create_time >=", value, "createTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateTimeLessThan(Date value) {
+            addCriterion("create_time <", value, "createTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateTimeLessThanOrEqualTo(Date value) {
+            addCriterion("create_time <=", value, "createTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateTimeIn(List<Date> values) {
+            addCriterion("create_time in", values, "createTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateTimeNotIn(List<Date> values) {
+            addCriterion("create_time not in", values, "createTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateTimeBetween(Date value1, Date value2) {
+            addCriterion("create_time between", value1, value2, "createTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateTimeNotBetween(Date value1, Date value2) {
+            addCriterion("create_time not between", value1, value2, "createTime");
             return (Criteria) this;
         }
     }

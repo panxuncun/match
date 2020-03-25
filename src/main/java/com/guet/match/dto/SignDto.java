@@ -3,7 +3,7 @@ package com.guet.match.dto;
 /**
  * @Auther: sefer
  * @Date: 2020/3/25
- * @Description: 注册、登陆信息dto
+ * @Description: 注册、登陆请求参数
  */
 public class SignDto {
     private String username;

@@ -9,7 +9,8 @@ import java.util.List;
 /**
  * @Auther: sefer
  * @Date: 2020/3/19
- * @Description:完整赛事信息dto = 赛事信息 + 分组信息 + 拓展属性值
+ * @Type： 返回信息
+ * @Description: 完整赛事信息dto = 赛事信息 + 分组信息 + 拓展属性值
  */
 public class ContestDto extends CmsContest {
     private List<CmsContestGroup> groupList;

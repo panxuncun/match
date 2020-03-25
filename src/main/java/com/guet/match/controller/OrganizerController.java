@@ -1,12 +1,21 @@
 package com.guet.match.controller;
 
 import com.guet.match.common.CommonResult;
+import com.guet.match.dto.BatchAddStaffDto;
+import com.guet.match.dto.OrganizerApplyDto;
+import com.guet.match.dto.OrganizerCheckDto;
 import com.guet.match.dto.SignDto;
 import com.guet.match.service.OrganizeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -17,31 +26,34 @@ import org.springframework.web.bind.annotation.*;
 @Api(tags = "主办方")
 @RestController
 public class OrganizerController {
+    Logger logger = LoggerFactory.getLogger(OrganizerController.class);
     @Autowired
     private OrganizeService organizeService;
-    
+
     @ApiOperation("获取指定主办方信息")
     @GetMapping("organizer/info/{id}")
-    public CommonResult getOrganizerById(@PathVariable long id){
+    public CommonResult getOrganizerById(@PathVariable Long id) {
         return null;
     }
-    
-    @ApiOperation("获取符合条件的主办方")
+
+    //状态:-1->初始态; 0->等待审核、1->审核通过、2->审核未通过； 3->停用； 4->删除标记
+    @ApiOperation("获取指定状态的主办方list")
     @GetMapping("organizer/list")
-    public CommonResult getOrganizerList(@RequestParam(required = false) int type){
-        return null;
+    public CommonResult getOrganizerList(@RequestParam(required = false) Integer status) {
+        return CommonResult.success(organizeService.getOrganizerList(status));
     }
 
     //code 200可用; 500不可用
     @ApiOperation("账号查重")
     @GetMapping("organizer/duplicateCheck")
-    public CommonResult duplicateCheck(@RequestParam String username){
+    public CommonResult duplicateCheck(@RequestParam String username) {
         return organizeService.isDuplicate(username) ? CommonResult.failed("该账号已被注册") : CommonResult.success(null, "账号可用");
     }
+
     @ApiOperation("主办方注册")
     @PostMapping("organizer/sign")
-    public CommonResult sign(@RequestBody SignDto dto){
-        switch (organizeService.sign(dto)){
+    public CommonResult sign(@RequestBody SignDto dto) {
+        switch (organizeService.sign(dto)) {
             case 1:
                 return CommonResult.success(null);
             case 2:
@@ -51,42 +63,44 @@ public class OrganizerController {
         }
 
     }
-    
+
     @ApiOperation("申请成为主办方")
-    @PostMapping("organizer/apply")
-    public CommonResult applyForOrganizer(){
-        return null;
-    }
-    
-    @ApiOperation("审核主办方+停用主办方（含工作人员）（有比赛进行怎么办，肯定不能停用啊）（还有他的工作人员也要一起消灭）")
-    @PostMapping("organizer/check")
-    public CommonResult checkOrganizer(){
-        return null;
+    @PostMapping("organizer/apply/{id}")
+    public CommonResult applyForOrganizer(@PathVariable Long id) {
+        return organizeService.applyForOrganizer(id);
     }
 
-    @ApiOperation("变更主办方资料（变更管理员的，或者材料，变更之后要重新审核）")
+    @ApiOperation("更新主办方资料")
     @PostMapping("organizer/update")
-    public CommonResult updateOrganizer(){
-        return null;
-    }
-    
-    @ApiOperation("批量生成工作人员（传入赛事id）")
-    @PostMapping("organizer/staff/batch_add")
-    public CommonResult batchAddOrganizer(){
-        return null;
+    public CommonResult updateOrganizer(OrganizerApplyDto dto, @RequestParam(value = "file", required = false) MultipartFile file[]) {
+        return organizeService.update(dto, file) == 1 ? CommonResult.success(null) : CommonResult.failed();
     }
 
-    @ApiOperation("导出工作人员（传入赛事id）")
+
+    @ApiOperation("审核主办方、停用主办方。所以工作人员登陆的时候要检查它们的主办方是否可用。")
+    @PostMapping("organizer/changeStatus")
+    public CommonResult checkOrganizer(@RequestBody OrganizerCheckDto dto) {
+        return organizeService.changeStatus(dto);
+    }
+
+
+    @ApiOperation("批量生成主办方工作人员（传入赛事id）")
+    @PostMapping("organizer/staff/batchAdd")
+    public CommonResult batchAddOrganizer(@RequestBody BatchAddStaffDto dto) {
+        return organizeService.batchAdd(dto);
+    }
+
+    @ApiOperation("导出主办方工作人员（传入赛事id）")
     @GetMapping("organizer/staff/export")
-    public CommonResult exportStaff(){
+    public CommonResult exportStaff() {
         return null;
     }
 
     @ApiOperation("停用启用工作人员")
-    @PostMapping("organizer/staff/switch")
-    public CommonResult staffSwitch(){
+    @PostMapping("organizer/staff/switch{id}")
+    public CommonResult staffSwitch(@PathVariable Long id) {
         return null;
     }
-    
+
 
 }

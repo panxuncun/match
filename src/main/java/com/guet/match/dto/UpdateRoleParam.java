@@ -1,21 +1,26 @@
-package com.guet.match.model;
+package com.guet.match.dto;
+
+import io.swagger.annotations.ApiModelProperty;
 
 import java.util.Date;
 
-public class UmsRole {
+/**
+ * @Auther: sefer
+ * @Date: 2020/3/26
+ * @Description: 更细角色信息所需的参数
+ */
+public class UpdateRoleParam {
+    @ApiModelProperty("角色id")
     private Long id;
 
+    @ApiModelProperty("标记")
     private String tag;
 
+    @ApiModelProperty("角色名称")
     private String name;
 
-    private Integer type;
-
+    @ApiModelProperty("描述")
     private String description;
-
-    private Long adminId;
-
-    private Date createTime;
 
     public Long getId() {
         return id;
@@ -41,35 +46,11 @@ public class UmsRole {
         this.name = name;
     }
 
-    public Integer getType() {
-        return type;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
-    }
-
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public Long getAdminId() {
-        return adminId;
-    }
-
-    public void setAdminId(Long adminId) {
-        this.adminId = adminId;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
     }
 }

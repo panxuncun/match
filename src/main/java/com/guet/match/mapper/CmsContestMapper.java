@@ -1,6 +1,6 @@
 package com.guet.match.mapper;
 
-import com.guet.match.dto.ContestDto;
+import com.guet.match.dto.ContestInfoDTO;
 import com.guet.match.model.CmsContest;
 import com.guet.match.model.CmsContestExample;
 import org.apache.ibatis.annotations.Param;
@@ -26,7 +26,7 @@ public interface CmsContestMapper {
 
 
     //get dto
-    ContestDto getContestDtoByid(Long id);
+    ContestInfoDTO getContestDtoByid(Long id);
 
     int updateByExampleSelective(@Param("record") CmsContest record, @Param("example") CmsContestExample example);
 

@@ -1,21 +1,15 @@
 package com.guet.match.service;
 
-import com.aliyun.oss.OSS;
-import com.aliyun.oss.OSSClient;
-import com.aliyun.oss.OSSClientBuilder;
 import com.guet.match.common.CommonResult;
 import com.guet.match.common.OrganizerStatus;
-import com.guet.match.dto.BatchAddStaffDto;
-import com.guet.match.dto.OrganizerApplyDto;
-import com.guet.match.dto.OrganizerCheckDto;
-import com.guet.match.dto.SignDto;
+import com.guet.match.common.UsableStatus;
+import com.guet.match.dto.*;
 import com.guet.match.mapper.CmsContestMapper;
 import com.guet.match.mapper.UmsOrganizerMapper;
 import com.guet.match.mapper.UmsOrganizerStaffMapper;
 import com.guet.match.model.*;
 import com.guet.match.util.OSSUtil;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.models.auth.In;
+import org.apache.poi.hssf.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -23,11 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayInputStream;
 import java.util.*;
 
 /**
@@ -70,7 +61,7 @@ public class OrganizeService {
 
     //注册主办方账号
     @Transactional
-    public int sign(SignDto dto) {
+    public int sign(SignParam dto) {
         UmsOrganizer organizer = new UmsOrganizer();
         if (isDuplicate(dto.getUsername())) {
             logger.info("账号已注册{}", dto.getUsername());
@@ -92,7 +83,7 @@ public class OrganizeService {
 
     //更新主办方资料
     @Transactional
-    public int update(OrganizerApplyDto dto, MultipartFile file[]) {
+    public int update(ApplyOrganizerParam dto, MultipartFile file[]) {
         UmsOrganizer organizer = organizerMapper.selectByPrimaryKey(dto.getId());
         if (organizer == null) {
             return 0;
@@ -137,7 +128,7 @@ public class OrganizeService {
     }
 
     //审核、停用、删除
-    public CommonResult changeStatus(OrganizerCheckDto dto) {
+    public CommonResult changeStatus(CheckOrganizerParam dto) {
         Map map = new HashMap<Integer, String>();
         UmsOrganizer organizer = organizerMapper.selectByPrimaryKey(dto.getId());
         if (organizer == null) {
@@ -187,7 +178,7 @@ public class OrganizeService {
 
     //批量生成账号
     @Transactional
-    public CommonResult batchAdd(BatchAddStaffDto dto) {
+    public CommonResult batchAdd(AddStaffParam dto) {
         int targetCount = dto.getCount();
         if (targetCount > MAX_BATCH_COUNT || targetCount < MIN_BATCH_COUNT) {
             return CommonResult.failed("指定的数量不合法, 请输入介于[" + MIN_BATCH_COUNT + "," + MAX_BATCH_COUNT + "]的数量");
@@ -218,6 +209,65 @@ public class OrganizeService {
         }
         return CommonResult.failed("系统错误，请重试");
 
+    }
+
+    //更新工作人员状态
+    public int updateStaffStatus(UpdateStaffStatusParam dto) {
+        UmsOrganizerStaff staff = staffMapper.selectByPrimaryKey(dto.getId());
+        if (staff == null) {
+            return 0;
+        }
+        staff.setStatus(dto.getStatus());
+        return staffMapper.updateByPrimaryKey(staff);
+    }
+
+    //导出工作人员
+    public HSSFWorkbook exportStaffInfo(Long contestId) throws Exception {
+        //拿到 pojo 数据
+        CmsContest contest = contestMapper.selectByPrimaryKey(contestId);
+        if (contest == null) {
+            logger.error("不存在的赛事");
+            return null;
+        }
+        String contestName = contest.getName();
+        UmsOrganizerStaffExample example = new UmsOrganizerStaffExample();
+        example.createCriteria().andContestIdEqualTo(contestId);
+        List<UmsOrganizerStaff> list = staffMapper.selectByExample(example);
+
+
+        //新建 excel 文件
+        HSSFWorkbook excel = new HSSFWorkbook();
+        //新建表格
+        HSSFSheet sheet = excel.createSheet("账号信息");
+        //设置列宽
+        sheet.setColumnWidth(0, 8000);
+        sheet.setColumnWidth(1, 5000);
+        sheet.setColumnWidth(2, 3000);
+        sheet.setColumnWidth(3, 10000);
+        sheet.setColumnWidth(4, 10000);
+        //下载文件名
+        String fileName = "staff_info.xls";
+        //标题（首行）
+        String[] title = {"赛事组", "角色","状态", "账号", "密码"};
+        HSSFRow headRow = sheet.createRow(0);
+        for (int i = 0; i < title.length; i++) {
+            HSSFCell cell = headRow.createCell(i);
+            HSSFRichTextString text = new HSSFRichTextString(title[i]);
+            cell.setCellValue(text);
+        }
+
+
+        //填充到表格
+        for (int i = 0; i < list.size(); i++) {
+            UmsOrganizerStaff staff = list.get(i);
+            HSSFRow dataRow = sheet.createRow(i + 1);
+            dataRow.createCell(0).setCellValue(contestName);
+            dataRow.createCell(1).setCellValue(staff.getRole());
+            dataRow.createCell(2).setCellValue(UsableStatus.getDescriptionByStatus(staff.getStatus()));
+            dataRow.createCell(3).setCellValue(staff.getUsername());
+            dataRow.createCell(4).setCellValue(staff.getPassword());
+        }
+        return excel;
     }
 
 }

@@ -1,40 +1,60 @@
-package com.guet.match.model;
+package com.guet.match.dto;
 
-import java.util.Date;
+import io.swagger.annotations.ApiModelProperty;
 
-public class UmsResource {
-    private Long id;
 
+/**
+ * @Auther: sefer
+ * @Date: 2020/3/26
+ * @Description: 添加资源所需参数
+ */
+public class AddResourceParam {
+
+
+    @ApiModelProperty("资源名字")
     private String name;
 
+    @ApiModelProperty("父资源id")
     private Long parentId;
 
-    private Integer type;
+    @ApiModelProperty("资源类型")
+    private int type;
 
+    @ApiModelProperty("url")
     private String url;
 
+    @ApiModelProperty("权限标识")
     private String permission;
 
+    @ApiModelProperty("对应前端组件")
     private String component;
 
+    @ApiModelProperty("详细描述")
     private String description;
 
+    @ApiModelProperty("图标")
     private String icon;
 
+    @ApiModelProperty("排序")
     private Integer sort;
 
-    private Integer status;
-
+    @ApiModelProperty("创建人id")
     private Long adminId;
 
-    private Date createTime;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    @Override
+    public String toString() {
+        return "AddResourceParam{" +
+                "name='" + name + '\'' +
+                ", parentId=" + parentId +
+                ", type=" + type +
+                ", url='" + url + '\'' +
+                ", permission='" + permission + '\'' +
+                ", component='" + component + '\'' +
+                ", description='" + description + '\'' +
+                ", icon='" + icon + '\'' +
+                ", sort=" + sort +
+                ", adminId=" + adminId +
+                '}';
     }
 
     public String getName() {
@@ -53,11 +73,11 @@ public class UmsResource {
         this.parentId = parentId;
     }
 
-    public Integer getType() {
+    public int getType() {
         return type;
     }
 
-    public void setType(Integer type) {
+    public void setType(int type) {
         this.type = type;
     }
 
@@ -109,27 +129,11 @@ public class UmsResource {
         this.sort = sort;
     }
 
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
     public Long getAdminId() {
         return adminId;
     }
 
     public void setAdminId(Long adminId) {
         this.adminId = adminId;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
     }
 }

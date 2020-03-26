@@ -21,7 +21,7 @@
 
 
   <!-- 自定义contestdto结果集-->
-  <resultMap id="DtoResultMap" type="com.guet.match.dto.ContestDto" extends="BaseResultMap">
+  <resultMap id="DtoResultMap" type="com.guet.match.dto.ContestInfoDTO" extends="BaseResultMap">
     <collection property="groupList" column="id" ofType="com.guet.match.model.CmsContestGroup" select="com.guet.match.mapper.CmsContestGroupMapper.getGroupListByContestId"></collection>
     <collection property="extensionPropertyList" column="id" ofType="com.guet.match.model.CmsContestExtensionProperty" select="com.guet.match.mapper.CmsContestExtensionPropertyMapper.getExtensionListByContestId"></collection>
   </resultMap>

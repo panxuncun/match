@@ -1,33 +1,47 @@
-package com.guet.match.model;
+package com.guet.match.dto;
+
+import io.swagger.annotations.ApiModelProperty;
 
 import java.util.Date;
 
-public class UmsResource {
+/**
+ * @Auther: sefer
+ * @Date: 2020/3/26
+ * @Description: 更细资源信息所需的参数
+ */
+public class UpdateResourceParam {
+    @ApiModelProperty("资源id")
     private Long id;
 
+    @ApiModelProperty("资源名称")
     private String name;
 
+    @ApiModelProperty("父资源id")
     private Long parentId;
 
+    @ApiModelProperty("资源类型")
     private Integer type;
 
+    @ApiModelProperty("资源url")
     private String url;
 
+    @ApiModelProperty("资源权限标识")
     private String permission;
 
+    @ApiModelProperty("资源对应前端组件")
     private String component;
 
+    @ApiModelProperty("资源描述")
     private String description;
 
+    @ApiModelProperty("资源图标")
     private String icon;
 
+    @ApiModelProperty("资源排序")
     private Integer sort;
 
+    @ApiModelProperty("资源状态")
     private Integer status;
-
-    private Long adminId;
-
-    private Date createTime;
 
     public Long getId() {
         return id;
@@ -115,21 +129,5 @@ public class UmsResource {
 
     public void setStatus(Integer status) {
         this.status = status;
-    }
-
-    public Long getAdminId() {
-        return adminId;
-    }
-
-    public void setAdminId(Long adminId) {
-        this.adminId = adminId;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
     }
 }

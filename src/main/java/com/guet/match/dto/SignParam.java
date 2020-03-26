@@ -5,7 +5,7 @@ package com.guet.match.dto;
  * @Date: 2020/3/25
  * @Description: 注册、登陆请求参数
  */
-public class SignDto {
+public class SignParam {
     private String username;
     private String password;
 

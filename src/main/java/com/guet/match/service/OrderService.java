@@ -1,7 +1,7 @@
 package com.guet.match.service;
 
 import com.guet.match.common.PaymentStatus;
-import com.guet.match.dto.OrderDto;
+import com.guet.match.dto.OrderParam;
 import com.guet.match.mapper.CmsContestGroupMapper;
 import com.guet.match.mapper.CmsEnrollmentRecordMapper;
 import com.guet.match.mapper.OmsOrderMapper;
@@ -37,7 +37,7 @@ public class OrderService {
     private CmsContestGroupMapper groupMapper;
 
     //判断是否重复报名(同一比赛 & 同一小组)
-    public boolean hasEnrollmentRecord(OrderDto dto) {
+    public boolean hasEnrollmentRecord(OrderParam dto) {
         CmsEnrollmentRecordExample example = new CmsEnrollmentRecordExample();
         example.createCriteria().andOpenIdEqualTo(dto.getOpenId()).andContestIdEqualTo(dto.getContestId()).andContestGroupIdEqualTo(dto.getContestGroupId());
         if (enrollmentRecordMapper.selectByExample(example).size() == 0) {
@@ -58,7 +58,7 @@ public class OrderService {
     }
 
     //添加订单,先有订单，后有记录.  -1->创建失败;  -2->已报名，拒绝订单创建;  -3->可用名额不足;  正整数(订单号)->创建成功;
-    public Long createOrder(OrderDto dto) {
+    public Long createOrder(OrderParam dto) {
         //判断是否已报名
         if (hasEnrollmentRecord(dto)) {
             logger.info("已报名，拒绝订单创建");

@@ -5,7 +5,7 @@
     <id column="id" property="id" jdbcType="BIGINT" />
     <result column="tag" property="tag" jdbcType="VARCHAR" />
     <result column="name" property="name" jdbcType="VARCHAR" />
-    <result column="group" property="group" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
     <result column="description" property="description" jdbcType="VARCHAR" />
     <result column="admin_id" property="adminId" jdbcType="BIGINT" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
@@ -69,7 +69,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    id, tag, name, group, description, admin_id, create_time
+    id, tag, name, type, description, admin_id, create_time
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.guet.match.model.UmsRoleExample" >
     select
@@ -105,10 +105,10 @@
     <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into ums_role (tag, name, group, 
+    insert into ums_role (tag, name, type, 
       description, admin_id, create_time
       )
-    values (#{tag,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{group,jdbcType=VARCHAR}, 
+    values (#{tag,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, 
       #{description,jdbcType=VARCHAR}, #{adminId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}
       )
   </insert>
@@ -124,8 +124,8 @@
       <if test="name != null" >
         name,
       </if>
-      <if test="group != null" >
-        group,
+      <if test="type != null" >
+        type,
       </if>
       <if test="description != null" >
         description,
@@ -144,8 +144,8 @@
       <if test="name != null" >
         #{name,jdbcType=VARCHAR},
       </if>
-      <if test="group != null" >
-        #{group,jdbcType=VARCHAR},
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
       </if>
       <if test="description != null" >
         #{description,jdbcType=VARCHAR},
@@ -176,8 +176,8 @@
       <if test="record.name != null" >
         name = #{record.name,jdbcType=VARCHAR},
       </if>
-      <if test="record.group != null" >
-        group = #{record.group,jdbcType=VARCHAR},
+      <if test="record.type != null" >
+        type = #{record.type,jdbcType=INTEGER},
       </if>
       <if test="record.description != null" >
         description = #{record.description,jdbcType=VARCHAR},
@@ -198,7 +198,7 @@
     set id = #{record.id,jdbcType=BIGINT},
       tag = #{record.tag,jdbcType=VARCHAR},
       name = #{record.name,jdbcType=VARCHAR},
-      group = #{record.group,jdbcType=VARCHAR},
+      type = #{record.type,jdbcType=INTEGER},
       description = #{record.description,jdbcType=VARCHAR},
       admin_id = #{record.adminId,jdbcType=BIGINT},
       create_time = #{record.createTime,jdbcType=TIMESTAMP}
@@ -215,8 +215,8 @@
       <if test="name != null" >
         name = #{name,jdbcType=VARCHAR},
       </if>
-      <if test="group != null" >
-        group = #{group,jdbcType=VARCHAR},
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
       </if>
       <if test="description != null" >
         description = #{description,jdbcType=VARCHAR},
@@ -234,7 +234,7 @@
     update ums_role
     set tag = #{tag,jdbcType=VARCHAR},
       name = #{name,jdbcType=VARCHAR},
-      group = #{group,jdbcType=VARCHAR},
+      type = #{type,jdbcType=INTEGER},
       description = #{description,jdbcType=VARCHAR},
       admin_id = #{adminId,jdbcType=BIGINT},
       create_time = #{createTime,jdbcType=TIMESTAMP}

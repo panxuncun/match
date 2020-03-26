@@ -3,18 +3,18 @@ package com.guet.match.dto;
 /**
  * @Auther: sefer
  * @Date: 2020/3/19
- * @Description:
+ * @Description: 审核赛事所需的参数
  */
-public class ContestCheckDto {
+public class CheckContestParam {
     private long contestId;
 
-    //1->pass   0->forbidden
+    //审核结果 1->pass   0->forbidden
     private int status;
 
-    //checker
+    //审核人
     private long lastCheckId;
 
-    //note
+    //审核备注
     private String LastCheckNote;
 
     public long getContestId() {

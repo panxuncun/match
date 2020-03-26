@@ -15,6 +15,8 @@ public class UmsOrganizerStaff {
 
     private String note;
 
+    private Integer status;
+
     private Date createTime;
 
     public Long getId() {
@@ -63,6 +65,14 @@ public class UmsOrganizerStaff {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 
     public Date getCreateTime() {

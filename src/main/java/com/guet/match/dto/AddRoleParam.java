@@ -1,28 +1,27 @@
-package com.guet.match.model;
+package com.guet.match.dto;
 
-import java.util.Date;
-
-public class UmsRole {
-    private Long id;
-
+/**
+ * @Auther: sefer
+ * @Date: 2020/3/26
+ * @Description: 添加角色所需参数
+ */
+public class AddRoleParam {
     private String tag;
 
     private String name;
-
-    private Integer type;
 
     private String description;
 
     private Long adminId;
 
-    private Date createTime;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    @Override
+    public String toString() {
+        return "RoleParam{" +
+                "tag='" + tag + '\'' +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", adminId=" + adminId +
+                '}';
     }
 
     public String getTag() {
@@ -41,13 +40,6 @@ public class UmsRole {
         this.name = name;
     }
 
-    public Integer getType() {
-        return type;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
-    }
 
     public String getDescription() {
         return description;
@@ -63,13 +55,5 @@ public class UmsRole {
 
     public void setAdminId(Long adminId) {
         this.adminId = adminId;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
     }
 }

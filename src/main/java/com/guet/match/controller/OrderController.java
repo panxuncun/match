@@ -3,7 +3,7 @@ package com.guet.match.controller;
 import com.guet.match.common.CommonResult;
 import com.guet.match.common.Events;
 import com.guet.match.common.States;
-import com.guet.match.dto.OrderDto;
+import com.guet.match.dto.OrderParam;
 import com.guet.match.service.OrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -32,7 +32,7 @@ public class OrderController {
 
     @ApiOperation("创建订单,需要必要的报名信息")
     @PostMapping("order/add")
-    public CommonResult addOrder(@RequestBody OrderDto dto) {
+    public CommonResult addOrder(@RequestBody OrderParam dto) {
         Long orderId = orderService.createOrder(dto);
         switch (orderId.intValue()) {
             case -2:

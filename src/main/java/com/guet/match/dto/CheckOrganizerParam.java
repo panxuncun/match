@@ -10,7 +10,7 @@ import java.util.Date;
  * @Date: 2020/3/25
  * @Description: 审核主办方所需参数
  */
-public class OrganizerCheckDto {
+public class CheckOrganizerParam {
 
     @ApiModelProperty("主办方id")
     private Long id;

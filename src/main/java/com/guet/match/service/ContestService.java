@@ -2,9 +2,9 @@ package com.guet.match.service;
 
 import com.guet.match.common.ContestStatus;
 import com.guet.match.common.DeleteStatus;
-import com.guet.match.dto.OrderDto;
-import com.guet.match.dto.ContestCheckDto;
-import com.guet.match.dto.ContestDto;
+import com.guet.match.dto.OrderParam;
+import com.guet.match.dto.CheckContestParam;
+import com.guet.match.dto.ContestInfoDTO;
 import com.guet.match.mapper.*;
 import com.guet.match.model.*;
 import org.slf4j.Logger;
@@ -42,7 +42,7 @@ public class ContestService {
     private CmsEnrollmentRecordMapper enrollmentRecordMapper;
 
     //查看赛事by id
-    public ContestDto getContestInfo(Long id) {
+    public ContestInfoDTO getContestInfo(Long id) {
         logger.info("查看赛事详细信息");
         return contestMapper.getContestDtoByid(id);
     }
@@ -50,7 +50,7 @@ public class ContestService {
 
     //insert contest
     @Transactional(rollbackFor = Exception.class)
-    public boolean insertContest(ContestDto dto) {
+    public boolean insertContest(ContestInfoDTO dto) {
         try {
             CmsContest contest = new CmsContest();
             BeanUtils.copyProperties(dto, contest);
@@ -73,7 +73,7 @@ public class ContestService {
     }
 
     //check contest
-    public int checkContest(ContestCheckDto dto) {
+    public int checkContest(CheckContestParam dto) {
         CmsContest contest = contestMapper.selectByPrimaryKey(dto.getContestId());
         if (contest == null) {
             logger.error("赛事不存在，方法checkContest");
@@ -88,7 +88,7 @@ public class ContestService {
 
     //update 更新（状态由系统变为等待审核）
     @Transactional(rollbackFor = Exception.class)
-    public boolean updateContest(ContestDto dto) {
+    public boolean updateContest(ContestInfoDTO dto) {
         try {
             long id = dto.getId();
             CmsContest contest = new CmsContest();
@@ -136,7 +136,7 @@ public class ContestService {
     }
 
     //enrollment 0->fail; 1->success; 2->repeat
-    public int insertEnrollment(OrderDto dto) {
+    public int insertEnrollment(OrderParam dto) {
         //pending repeat
         CmsEnrollmentRecordExample example = new CmsEnrollmentRecordExample();
         //BeanUtils.copyProperties(dto, example);

@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * @Auther: sefer
  * @Date: 2020/3/22
- * @Description:
+ * @Description: 清除超时未支付订单
  */
 @Component
 public class OrderCleanTask {
@@ -32,7 +32,7 @@ public class OrderCleanTask {
     public void cleanExpiredOrder() {
         try {
             //设置过期时间，并得到所有过期订单
-            List<OmsOrder> list = orderMapper.getExpiredOrderList(5, PaymentStatus.LOCK.getStatus());
+            List<OmsOrder> list = orderMapper.getExpiredOrderList(5, PaymentStatus.UNPAID.getStatus());
             for (OmsOrder order:list){
                 long groupId = order.getContestGroupId();
                 //删除订单

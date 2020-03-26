@@ -1,16 +1,16 @@
 /*
 Navicat MySQL Data Transfer
 
-Source Server         : challage.cn
-Source Server Version : 50722
-Source Host           : 119.23.28.245:3306
+Source Server         : localhost
+Source Server Version : 50709
+Source Host           : localhost:3006
 Source Database       : match
 
 Target Server Type    : MYSQL
-Target Server Version : 50722
+Target Server Version : 50709
 File Encoding         : 65001
 
-Date: 2020-03-15 03:25:36
+Date: 2020-03-26 16:32:34
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -32,12 +32,12 @@ CREATE TABLE `cms_contest` (
   `close_enrollment_time` datetime DEFAULT NULL COMMENT '截止报名时间',
   `contest_time` datetime DEFAULT NULL COMMENT '比赛开始时间',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '本条记录创建时间',
-  `status` int(255) DEFAULT NULL COMMENT '状态（审核通过、等待审核、未通过、被主办方删除、取消等）',
+  `status` int(255) DEFAULT '0' COMMENT '状态（0->等待审核; 1->审核通过; 2->未通过; 3->标记删除、4->赛事取消）',
   `last_check_id` bigint(20) DEFAULT NULL COMMENT '最近一次审核人id',
   `last_check_time` datetime DEFAULT NULL COMMENT '最近一次审核时间',
   `last_check_note` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '最近一次审核批注',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='赛事信息表';
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=77 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='赛事信息表';
 
 -- ----------------------------
 -- Table structure for cms_contest_extension_property
@@ -50,8 +50,8 @@ CREATE TABLE `cms_contest_extension_property` (
   `key` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '属性名称',
   `value` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '属性值',
   `icon` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '属性图标，已预先定义',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='赛事拓展属性（这些信息在规程中也应详细指出）';
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='赛事拓展属性（这些信息在规程中也应详细指出）';
 
 -- ----------------------------
 -- Table structure for cms_contest_group
@@ -61,10 +61,10 @@ CREATE TABLE `cms_contest_group` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `contest_id` bigint(20) DEFAULT NULL COMMENT '所属赛事id',
   `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '组别名称',
-  `size` int(11) DEFAULT NULL COMMENT '小组容量（初始最大，随着报名人数而减少）',
+  `size` int(11) DEFAULT '0' COMMENT '小组容量（初始最大，随着报名人数而减少）',
   `price` decimal(10,0) DEFAULT '0' COMMENT '价格',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='赛事分组';
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=153 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='赛事分组';
 
 -- ----------------------------
 -- Table structure for cms_enrollment_record
@@ -83,8 +83,9 @@ CREATE TABLE `cms_enrollment_record` (
   `contestant_rank` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '参赛者排名',
   `contestant_achievement` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '参赛者成绩(时间、长度等量化指标)',
   `contestant_award` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '参赛者获得奖项，由主办方导入',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='报名记录（参赛记录）表,用户自行支付后生成，或者由主办方导入';
+  `status` int(2) DEFAULT '0' COMMENT '删除标记：0->正常; 1->删除标记',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='报名记录（参赛记录）表,用户自行支付后生成，或者由主办方导入';
 
 -- ----------------------------
 -- Table structure for cms_favorite
@@ -95,8 +96,8 @@ CREATE TABLE `cms_favorite` (
   `contest_id` bigint(20) DEFAULT NULL COMMENT '赛事id',
   `open_id` varchar(60) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '微信用户标识',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '收藏创建时间',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户收藏表';
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='用户收藏表';
 
 -- ----------------------------
 -- Table structure for oms_order
@@ -107,13 +108,14 @@ CREATE TABLE `oms_order` (
   `contest_id` bigint(20) DEFAULT NULL,
   `contest_group_id` bigint(20) DEFAULT NULL,
   `open_id` varchar(60) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '支付人标识',
-  `status` int(11) DEFAULT NULL COMMENT '支付状态: 0->未支付;1->已支付;2->已退费',
-  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '订单创建时间',
-  `payment_time` datetime DEFAULT NULL COMMENT '支付时间',
+  `status` int(11) DEFAULT NULL COMMENT '支付状态: 0->未支付;1->已支付;2->申请退款; 3->已退款; 4->临时加锁',
+  `mail_address` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '邮寄地址',
   `note` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '订单备注',
   `price` decimal(10,0) DEFAULT '0' COMMENT '金额',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='订单表';
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '订单创建时间',
+  `payment_time` datetime DEFAULT NULL COMMENT '订单支付时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=78 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='订单表';
 
 -- ----------------------------
 -- Table structure for sms_topic
@@ -124,11 +126,11 @@ CREATE TABLE `sms_topic` (
   `open_id` varchar(60) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '发布者id',
   `contest_id` bigint(20) DEFAULT NULL COMMENT '所属赛事id',
   `parent_id` bigint(20) DEFAULT '0' COMMENT '所属主题：如果是回复则为主题id，如果是主题则为0',
-  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '发布时间',
   `text` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '文本内容',
   `attachment` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '图片等附件',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='社交话题';
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '发布时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='社交话题';
 
 -- ----------------------------
 -- Table structure for ums_admin
@@ -139,8 +141,8 @@ CREATE TABLE `ums_admin` (
   `username` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `password` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Table structure for ums_constant
@@ -155,8 +157,8 @@ CREATE TABLE `ums_constant` (
   `ID_card_number` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '身份证号码',
   `mail_address` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '邮寄地址',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '账户创建时间，即第一次登录时间',
-  PRIMARY KEY (`open_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='微信小程序用户';
+  PRIMARY KEY (`open_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='微信小程序用户';
 
 -- ----------------------------
 -- Table structure for ums_organizer
@@ -174,12 +176,13 @@ CREATE TABLE `ums_organizer` (
   `organizer_type` int(11) DEFAULT NULL COMMENT '单位属性: 1->政府与事业单位; 2->企业; 3->其他组织; 4->个人  ',
   `organizer_code` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '组织机构代码:9位组织机构代码，或18位统一社会信用代码，或15位注册号, 或18位身份证号码',
   `identity_document` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '资质证明材料,包含机构和管理员',
-  `status` int(11) DEFAULT '0' COMMENT '状态:0->未通过、1->通过、2->停用',
+  `status` int(11) DEFAULT '-1' COMMENT '状态:-1->初始态; 0->等待审核、1->审核通过、2->审核未通过； 3->停用； 4->删除标记',
   `last_check_id` bigint(20) DEFAULT NULL COMMENT '最近一次审核人id',
   `last_check_time` datetime DEFAULT NULL COMMENT '最近一次审核时间',
-  `last_check_note` datetime DEFAULT NULL COMMENT '最近一次审核批注',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='主办方';
+  `last_check_note` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '最近一次审核批注',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='主办方';
 
 -- ----------------------------
 -- Table structure for ums_organizer_staff
@@ -190,8 +193,11 @@ CREATE TABLE `ums_organizer_staff` (
   `contest_id` bigint(20) DEFAULT NULL COMMENT '关联赛事id',
   `username` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `password` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='主办方工作人员（志愿者），由系统生成并导出';
+  `role` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '角色',
+  `note` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '备注',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=76 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='主办方工作人员（志愿者），由系统生成并导出';
 
 -- ----------------------------
 -- Table structure for ums_resource
@@ -211,8 +217,8 @@ CREATE TABLE `ums_resource` (
   `status` int(2) DEFAULT '1' COMMENT '资源状态：0->停用；1->启用;',
   `admin_id` bigint(20) DEFAULT NULL COMMENT '创建人id',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='权限资源表（菜单、按钮、接口）';
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='权限资源表（菜单、按钮、接口）';
 
 -- ----------------------------
 -- Table structure for ums_role
@@ -226,5 +232,16 @@ CREATE TABLE `ums_role` (
   `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `admin_id` bigint(20) DEFAULT NULL COMMENT '创建人id',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='角色表';
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='角色表';
+
+-- ----------------------------
+-- Table structure for ums_role_resource
+-- ----------------------------
+DROP TABLE IF EXISTS `ums_role_resource`;
+CREATE TABLE `ums_role_resource` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `role_id` bigint(20) NOT NULL,
+  `resource_id` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='角色资源关系表';

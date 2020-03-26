@@ -1,21 +1,19 @@
 package com.guet.match.controller;
 
 import com.guet.match.common.CommonResult;
-import com.guet.match.dto.BatchAddStaffDto;
-import com.guet.match.dto.OrganizerApplyDto;
-import com.guet.match.dto.OrganizerCheckDto;
-import com.guet.match.dto.SignDto;
+import com.guet.match.dto.*;
 import com.guet.match.service.OrganizeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.poi.hssf.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
-import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
+
 
 
 /**
@@ -52,7 +50,7 @@ public class OrganizerController {
 
     @ApiOperation("主办方注册")
     @PostMapping("organizer/sign")
-    public CommonResult sign(@RequestBody SignDto dto) {
+    public CommonResult sign(@RequestBody SignParam dto) {
         switch (organizeService.sign(dto)) {
             case 1:
                 return CommonResult.success(null);
@@ -72,35 +70,42 @@ public class OrganizerController {
 
     @ApiOperation("更新主办方资料")
     @PostMapping("organizer/update")
-    public CommonResult updateOrganizer(OrganizerApplyDto dto, @RequestParam(value = "file", required = false) MultipartFile file[]) {
+    public CommonResult updateOrganizer(ApplyOrganizerParam dto, @RequestParam(value = "file", required = false) MultipartFile file[]) {
         return organizeService.update(dto, file) == 1 ? CommonResult.success(null) : CommonResult.failed();
     }
 
 
     @ApiOperation("审核主办方、停用主办方。所以工作人员登陆的时候要检查它们的主办方是否可用。")
-    @PostMapping("organizer/changeStatus")
-    public CommonResult checkOrganizer(@RequestBody OrganizerCheckDto dto) {
+    @PostMapping("organizer/status/update")
+    public CommonResult checkOrganizer(@RequestBody CheckOrganizerParam dto) {
         return organizeService.changeStatus(dto);
     }
 
 
-    @ApiOperation("批量生成主办方工作人员（传入赛事id）")
+    @ApiOperation("批量生成主办方工作人员 by 赛事id")
     @PostMapping("organizer/staff/batchAdd")
-    public CommonResult batchAddOrganizer(@RequestBody BatchAddStaffDto dto) {
+    public CommonResult batchAddOrganizer(@RequestBody AddStaffParam dto) {
         return organizeService.batchAdd(dto);
     }
 
-    @ApiOperation("导出主办方工作人员（传入赛事id）")
-    @GetMapping("organizer/staff/export")
-    public CommonResult exportStaff() {
-        return null;
+    @ApiOperation("导出主办方工作人员 by 赛事 id）")
+    @GetMapping("organizer/staff/export/{contestId}")
+    public void exportStaffInfo(HttpServletResponse response,@PathVariable Long contestId){
+        try {
+            HSSFWorkbook excel = organizeService.exportStaffInfo(contestId);
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-disposition", "attachment;filename=staff_info.xls");
+            response.flushBuffer();
+            excel.write(response.getOutputStream());
+        } catch (Exception e) {
+            logger.error("导出excel文件出错, 传入参数contestId->{}",contestId);
+        }
     }
 
-    @ApiOperation("停用启用工作人员")
-    @PostMapping("organizer/staff/switch{id}")
-    public CommonResult staffSwitch(@PathVariable Long id) {
-        return null;
+    @ApiOperation("updateStaffStatus")
+    @PostMapping("organizer/staff/status/update")
+    public CommonResult updateStaffStatus(@RequestBody UpdateStaffStatusParam dto) {
+        return organizeService.updateStaffStatus(dto) == 1 ? CommonResult.success(null) : CommonResult.failed("请刷新页面重试，可能该人员已删除");
     }
-
 
 }

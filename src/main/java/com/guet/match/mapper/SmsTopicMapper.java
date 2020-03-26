@@ -1,6 +1,6 @@
 package com.guet.match.mapper;
 
-import com.guet.match.dto.TopicDto;
+import com.guet.match.dto.TopicDTO;
 import com.guet.match.model.SmsTopic;
 import com.guet.match.model.SmsTopicExample;
 import org.apache.ibatis.annotations.Param;
@@ -39,5 +39,5 @@ public interface SmsTopicMapper {
     int updateByPrimaryKey(SmsTopic record);
 
     //dto
-    TopicDto selectTopicDto(Long id);
+    TopicDTO selectTopicDto(Long id);
 }

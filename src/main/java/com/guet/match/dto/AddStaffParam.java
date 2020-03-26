@@ -9,7 +9,7 @@ import java.util.Date;
  * @Date: 2020/3/26
  * @Description: 批量生成主办方工作人员账号所需参数
  */
-public class BatchAddStaffDto {
+public class AddStaffParam {
 
     @ApiModelProperty("所属赛事id")
     private Long contestId;

@@ -1,8 +1,8 @@
 package com.guet.match.controller;
 
 import com.guet.match.common.CommonResult;
-import com.guet.match.dto.ContestCheckDto;
-import com.guet.match.dto.ContestDto;
+import com.guet.match.dto.CheckContestParam;
+import com.guet.match.dto.ContestInfoDTO;
 import com.guet.match.model.CmsFavorite;
 import com.guet.match.service.ContestService;
 import io.swagger.annotations.Api;
@@ -29,13 +29,13 @@ public class ContestController {
     //todo 前端处理一下默认分组
     @ApiOperation("添加赛事")
     @PostMapping("contest/add")
-    public CommonResult addContest(@RequestBody ContestDto dto) {
+    public CommonResult addContest(@RequestBody ContestInfoDTO dto) {
         return contestService.insertContest(dto) ? CommonResult.success(null) : CommonResult.failed();
     }
 
     @ApiOperation("审核赛事")
     @PostMapping("contest/check")
-    public CommonResult checkContest(@RequestBody ContestCheckDto dto) {
+    public CommonResult checkContest(@RequestBody CheckContestParam dto) {
         return contestService.checkContest(dto) == 1 ? CommonResult.success(null) : CommonResult.failed();
     }
 
@@ -47,7 +47,7 @@ public class ContestController {
 
     @ApiOperation("更新赛事")
     @PostMapping("contest/update")
-    public CommonResult updateContest(@RequestBody ContestDto dto) {
+    public CommonResult updateContest(@RequestBody ContestInfoDTO dto) {
         return contestService.updateContest(dto) ? CommonResult.success(null) : CommonResult.failed();
     }
 

@@ -5,7 +5,7 @@
     <id column="id" property="id" jdbcType="BIGINT" />
     <result column="name" property="name" jdbcType="VARCHAR" />
     <result column="parent_id" property="parentId" jdbcType="BIGINT" />
-    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
     <result column="url" property="url" jdbcType="VARCHAR" />
     <result column="permission" property="permission" jdbcType="VARCHAR" />
     <result column="component" property="component" jdbcType="VARCHAR" />
@@ -117,7 +117,7 @@
       description, icon, sort, 
       status, admin_id, create_time
       )
-    values (#{name,jdbcType=VARCHAR}, #{parentId,jdbcType=BIGINT}, #{type,jdbcType=VARCHAR}, 
+    values (#{name,jdbcType=VARCHAR}, #{parentId,jdbcType=BIGINT}, #{type,jdbcType=INTEGER}, 
       #{url,jdbcType=VARCHAR}, #{permission,jdbcType=VARCHAR}, #{component,jdbcType=VARCHAR}, 
       #{description,jdbcType=VARCHAR}, #{icon,jdbcType=VARCHAR}, #{sort,jdbcType=INTEGER}, 
       #{status,jdbcType=INTEGER}, #{adminId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}
@@ -174,7 +174,7 @@
         #{parentId,jdbcType=BIGINT},
       </if>
       <if test="type != null" >
-        #{type,jdbcType=VARCHAR},
+        #{type,jdbcType=INTEGER},
       </if>
       <if test="url != null" >
         #{url,jdbcType=VARCHAR},
@@ -224,7 +224,7 @@
         parent_id = #{record.parentId,jdbcType=BIGINT},
       </if>
       <if test="record.type != null" >
-        type = #{record.type,jdbcType=VARCHAR},
+        type = #{record.type,jdbcType=INTEGER},
       </if>
       <if test="record.url != null" >
         url = #{record.url,jdbcType=VARCHAR},
@@ -263,7 +263,7 @@
     set id = #{record.id,jdbcType=BIGINT},
       name = #{record.name,jdbcType=VARCHAR},
       parent_id = #{record.parentId,jdbcType=BIGINT},
-      type = #{record.type,jdbcType=VARCHAR},
+      type = #{record.type,jdbcType=INTEGER},
       url = #{record.url,jdbcType=VARCHAR},
       permission = #{record.permission,jdbcType=VARCHAR},
       component = #{record.component,jdbcType=VARCHAR},
@@ -287,7 +287,7 @@
         parent_id = #{parentId,jdbcType=BIGINT},
       </if>
       <if test="type != null" >
-        type = #{type,jdbcType=VARCHAR},
+        type = #{type,jdbcType=INTEGER},
       </if>
       <if test="url != null" >
         url = #{url,jdbcType=VARCHAR},
@@ -323,7 +323,7 @@
     update ums_resource
     set name = #{name,jdbcType=VARCHAR},
       parent_id = #{parentId,jdbcType=BIGINT},
-      type = #{type,jdbcType=VARCHAR},
+      type = #{type,jdbcType=INTEGER},
       url = #{url,jdbcType=VARCHAR},
       permission = #{permission,jdbcType=VARCHAR},
       component = #{component,jdbcType=VARCHAR},

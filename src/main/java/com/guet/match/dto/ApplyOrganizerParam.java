@@ -5,7 +5,7 @@ package com.guet.match.dto;
  * @Date: 2020/3/25
  * @Description: 主办方申请认证需要的参数
  */
-public class OrganizerApplyDto {
+public class ApplyOrganizerParam {
     private Long id;
 
     private String adminName;

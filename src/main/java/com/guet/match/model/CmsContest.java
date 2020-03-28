@@ -2,18 +2,28 @@ package com.guet.match.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class CmsContest {
+@Document(indexName = "contest2", type = "contest", shards = 1, replicas = 0)
+public class CmsContest implements Serializable {
+    private static final long serialVersionUID = -1L;
 
+    @Id
     private Long id;
 
     private Long organizerId;
 
+    @Field(analyzer = "ik_max_word", type = FieldType.Text)
     private String name;
 
+    @Field(analyzer = "ik_max_word", type = FieldType.Text)
     private String type;
 
     private String location;
@@ -47,6 +57,7 @@ public class CmsContest {
     @ApiModelProperty(example = "2020-03-08 12:12:00")
     private String lastCheckNote;
 
+    @Field(analyzer = "ik_max_word", type = FieldType.Text)
     private String details;
 
     public Long getId() {

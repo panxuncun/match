@@ -39,7 +39,7 @@ public class OrderCleanTask {
                 orderMapper.deleteByPrimaryKey(order.getId());
                 //回库(可用名额+1)
                 groupMapper.sizePlus(groupId);
-                logger.info("回库组别"+groupId);
+                logger.info("回库组别{}",groupId);
             }
         } catch (Exception e) {
             logger.error("过期订单清除任务严重错误");

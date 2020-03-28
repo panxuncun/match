@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @Auther: sefer
@@ -161,6 +162,13 @@ public class ContestService {
         record.setStatus(DeleteStatus.DELETE_FLAG.getStatus());
         return enrollmentRecordMapper.updateByPrimaryKey(record);
 
+    }
+
+    //查询全部比赛
+    public List<CmsContest> allOfContest() {
+        CmsContestExample example = new CmsContestExample();
+        example.createCriteria();
+        return contestMapper.selectByExample(example);
     }
 
 

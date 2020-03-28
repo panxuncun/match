@@ -104,7 +104,7 @@ public class OrganizerController {
 
     @ApiOperation("updateStaffStatus")
     @PostMapping("organizer/staff/status/update")
-    public CommonResult updateStaffStatus(@RequestBody UpdateStaffStatusParam dto) {
+    public CommonResult updateStaffStatus(@RequestBody UpdateStatusParam dto) {
         return organizeService.updateStaffStatus(dto) == 1 ? CommonResult.success(null) : CommonResult.failed("请刷新页面重试，可能该人员已删除");
     }
 

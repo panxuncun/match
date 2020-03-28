@@ -1,6 +1,8 @@
 package com.guet.match.service;
 
 import com.guet.match.dto.AddAdminParam;
+import com.guet.match.dto.UpdatePasswordParam;
+import com.guet.match.dto.UpdateStatusParam;
 import com.guet.match.mapper.UmsAdminMapper;
 import com.guet.match.mapper.UmsRoleAdminMapper;
 import com.guet.match.model.UmsAdmin;
@@ -79,16 +81,36 @@ public class AdminService {
         List<UmsAdmin> adminList = relationList.stream().map(item -> adminMapper.selectByPrimaryKey(item.getAdminId())).collect(Collectors.toList());
         return adminList;
     }
-    //
-    ////更新管理员
-    //public int updateAdmin(UpdateAdminParam param) {
-    //    UmsAdmin admin = adminMapper.selectByPrimaryKey(param.getId());
-    //    if (admin == null) {
-    //        return 0;
-    //    }
-    //    BeanUtils.copyProperties(param, admin);
-    //    return adminMapper.updateByPrimaryKey(admin);
-    //}
+
+    //更新管理员状态
+    public int updateAdminStatus(UpdateStatusParam param) {
+        UmsAdmin admin = adminMapper.selectByPrimaryKey(param.getId());
+        if (admin == null) {
+            return 0;
+        }
+        BeanUtils.copyProperties(param, admin);
+        return adminMapper.updateByPrimaryKey(admin);
+    }
+
+    //重置管理员密码，使密码 = 用户名
+    public int resetPassword(Long id){
+        UmsAdmin admin = adminMapper.selectByPrimaryKey(id);
+        if (admin == null) {
+            return 0;
+        }
+        admin.setPassword(admin.getUsername());
+        return adminMapper.updateByPrimaryKey(admin);
+    }
+
+    //修改密码
+    public int updatePassword(UpdatePasswordParam param){
+        UmsAdmin admin = adminMapper.selectByPrimaryKey(param.getId());
+        if (admin == null) {
+            return 0;
+        }
+        admin.setPassword(param.getPassword());
+        return adminMapper.updateByPrimaryKey(admin);
+    }
 
     //删除管理员 by id
     public int deleteAdmin(Long id){

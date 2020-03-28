@@ -212,7 +212,7 @@ public class OrganizeService {
     }
 
     //更新工作人员状态
-    public int updateStaffStatus(UpdateStaffStatusParam dto) {
+    public int updateStaffStatus(UpdateStatusParam dto) {
         UmsOrganizerStaff staff = staffMapper.selectByPrimaryKey(dto.getId());
         if (staff == null) {
             return 0;

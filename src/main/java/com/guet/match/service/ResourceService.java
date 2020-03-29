@@ -3,10 +3,9 @@ package com.guet.match.service;
 import com.guet.match.common.ResourceType;
 import com.guet.match.dto.AddResourceParam;
 import com.guet.match.dto.UpdateResourceParam;
+import com.guet.match.mapper.*;
 import com.guet.match.mapper.UmsResourceMapper;
-import com.guet.match.mapper.UmsResourceMapper;
-import com.guet.match.model.UmsResource;
-import com.guet.match.model.UmsResourceExample;
+import com.guet.match.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -15,7 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * @Auther: sefer
@@ -27,6 +29,15 @@ public class ResourceService {
     Logger logger = LoggerFactory.getLogger(ResourceService.class);
     @Autowired
     private UmsResourceMapper resourceMapper;
+
+    @Autowired
+    private UmsRoleMapper roleMapper;
+
+    @Autowired
+    private UmsRoleResourceMapper roleResourceMapper;
+
+    @Autowired
+    private UmsRoleAdminMapper roleAdminMapper;
 
     //添加资源
     @Transactional
@@ -49,6 +60,35 @@ public class ResourceService {
             return null;
         }
         return resourceMapper.selectByPrimaryKey(id);
+    }
+
+    //获取资源by admin id,改造成sql语句更简单
+    public List<UmsResource> getResourceListByAdminId(Long adminId) {
+        if (adminId == null) {
+            logger.error("不合法的参数, AdminId->{}",adminId);
+            return null;
+        }
+        logger.info("原始参数adminId->{}",adminId);
+        //得到该管理员的角色ids
+        UmsRoleAdminExample roleAdminExample = new UmsRoleAdminExample();
+        roleAdminExample.createCriteria().andAdminIdEqualTo(adminId);
+        List<Long> roleIds = roleAdminMapper.selectByExample(roleAdminExample).stream().map(role_Admin -> role_Admin.getRoleId()).collect(Collectors.toList());
+        logger.info("得到角色ids, 大小->{},roleIds->{}",roleIds.size(),roleIds.toString());
+        if (roleIds.size() == 0){
+            return null;
+        }
+        //由角色得到资源ids
+        UmsRoleResourceExample roleResourceExample = new UmsRoleResourceExample();
+        roleResourceExample.createCriteria().andRoleIdIn(roleIds);
+        List<Long> resourceIds = roleResourceMapper.selectByExample(roleResourceExample).stream().map(role_Resource -> role_Resource.getResourceId()).collect(Collectors.toList());
+        logger.info("得到资源ids, 大小->{},resourceIds->{}",resourceIds.size(),resourceIds.toString());
+        if (resourceIds.size()==0){
+            return null;
+        }
+        //由资源ids得到资源
+        UmsResourceExample resourceExample = new UmsResourceExample();
+        resourceExample.createCriteria().andIdIn(resourceIds);
+        return resourceMapper.selectByExample(resourceExample);
     }
 
 

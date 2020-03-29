@@ -1,5 +1,6 @@
 package com.guet.match.service;
 
+import com.guet.match.common.UsableStatus;
 import com.guet.match.dto.AddAdminParam;
 import com.guet.match.dto.UpdatePasswordParam;
 import com.guet.match.dto.UpdateStatusParam;
@@ -9,14 +10,24 @@ import com.guet.match.model.UmsAdmin;
 import com.guet.match.model.UmsAdminExample;
 import com.guet.match.model.UmsRoleAdmin;
 import com.guet.match.model.UmsRoleAdminExample;
+import com.guet.match.util.JwtTokenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +44,20 @@ public class AdminService {
 
     @Autowired
     private UmsRoleAdminMapper roleAdminMapper;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Value("${jwt.tokenHead}")
+    private String tokenHead;
+
+
 
     //添加管理员(内管系统管理员)
     @Transactional
@@ -64,6 +89,18 @@ public class AdminService {
             return null;
         }
         return adminMapper.selectByPrimaryKey(id);
+    }
+
+    public UmsAdmin getAdminByUsername(String username){
+        logger.info("原始参数username->{}", username);
+        UmsAdminExample example = new UmsAdminExample();
+        example.createCriteria().andUsernameEqualTo(username);
+        List<UmsAdmin> list = adminMapper.selectByExample(example);
+        if (list == null || list.size()==0){
+            logger.error("用户不存在, list->{},size->{}",list,list.size());
+            return null;
+        }
+        return list.get(0);
     }
 
 
@@ -116,6 +153,42 @@ public class AdminService {
     public int deleteAdmin(Long id){
         return adminMapper.deleteByPrimaryKey(id);
     }
+
+
+
+    //login
+    public String login(String username, String password) {
+        String token = null;
+        try {
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            if (!passwordEncoder.matches(password, userDetails.getPassword())) {
+                throw new BadCredentialsException("密码不正确");
+            }
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            token = jwtTokenUtil.generateToken(userDetails);
+        } catch (AuthenticationException e) {
+            logger.warn("登录异常:{}", e.getMessage());
+        }
+        return token;
+    }
+
+    //register
+    public UmsAdmin register(UmsAdmin umsAdminParam) {
+        UmsAdmin umsAdmin = new UmsAdmin();
+        BeanUtils.copyProperties(umsAdminParam, umsAdmin);
+        umsAdmin.setCreateTime(new Date());
+        umsAdmin.setStatus(UsableStatus.ON.getStatus());
+        //查询是否有相同用户名的用户
+
+
+        //将密码进行加密操作
+        String encodePassword = passwordEncoder.encode(umsAdmin.getPassword());
+        umsAdmin.setPassword(encodePassword);
+        adminMapper.insert(umsAdmin);
+        return umsAdmin;
+    }
+
 
 
 }

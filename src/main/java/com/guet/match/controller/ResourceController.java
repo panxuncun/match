@@ -33,6 +33,12 @@ public class ResourceController {
         return CommonResult.success(resourceService.getResource(id));
     }
 
+    @ApiOperation("获取资源by admin id")
+    @GetMapping("resource/listByadmin/{adminId}")
+    public CommonResult getResourceListByAdminId(@PathVariable Long adminId){
+        return CommonResult.success(resourceService.getResourceListByAdminId(adminId));
+    }
+
     @ApiOperation("获取资源列表 by 类型")
     @GetMapping("resource/list/{type}")
     public CommonResult getResourceListByType(@PathVariable Integer type){

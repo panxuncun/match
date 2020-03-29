@@ -3,6 +3,7 @@ package com.guet.match.service;
 import com.guet.match.mapper.SmsTopicMapper;
 import com.guet.match.model.SmsTopic;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -12,7 +13,7 @@ import java.util.Map;
 /**
  * @Auther: sefer
  * @Date: 2020/3/17
- * @Description:TopicService
+ * @Description: TopicService
  */
 @Service
 public class TopicService {
@@ -28,13 +29,14 @@ public class TopicService {
 
 
     //得到一条话题(包含回复)
+    @PreAuthorize("hasAuthority('pms:brand:read')")
     public Map getTopicWithComment(Long topicId){
         Map map = new HashMap();
-        System.out.println(111);
         map.put("topic",topicMapper.selectTopicDto(topicId));
         map.put("commentList", topicMapper.selectCommentList(topicId));
         return map;
     }
+
 
     //删除一条话题或回复
     public int deleteTopicOrComment(Long topicId){

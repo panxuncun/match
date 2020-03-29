@@ -1,7 +1,8 @@
 ## 重要的todo
 - 数据库的非空设置
-- model和mapper的非空校验？bingresult什么的
+- model和mapper的非空校验？bingresult什么的,比如int的参数我传中文进去，直接出错了，返回的200的机会都没有
 - 异常和事务的回滚，这个非常重要
+- 检查所有表的create_time是否都有了
 
 
 ## 3.24

@@ -1,107 +1,166 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.guet.match.mapper.OmsOrderMapper" >
-  <resultMap id="BaseResultMap" type="com.guet.match.model.OmsOrder" >
-    <id column="id" property="id" jdbcType="BIGINT" />
-    <result column="contest_id" property="contestId" jdbcType="BIGINT" />
-    <result column="contest_group_id" property="contestGroupId" jdbcType="BIGINT" />
-    <result column="open_id" property="openId" jdbcType="VARCHAR" />
-    <result column="status" property="status" jdbcType="INTEGER" />
-    <result column="mail_address" property="mailAddress" jdbcType="VARCHAR" />
-    <result column="note" property="note" jdbcType="VARCHAR" />
-    <result column="price" property="price" jdbcType="DECIMAL" />
-    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
-    <result column="payment_time" property="paymentTime" jdbcType="TIMESTAMP" />
-  </resultMap>
-  <sql id="Example_Where_Clause" >
-    <where >
-      <foreach collection="oredCriteria" item="criteria" separator="or" >
-        <if test="criteria.valid" >
-          <trim prefix="(" suffix=")" prefixOverrides="and" >
-            <foreach collection="criteria.criteria" item="criterion" >
-              <choose >
-                <when test="criterion.noValue" >
-                  and ${criterion.condition}
-                </when>
-                <when test="criterion.singleValue" >
-                  and ${criterion.condition} #{criterion.value}
-                </when>
-                <when test="criterion.betweenValue" >
-                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
-                </when>
-                <when test="criterion.listValue" >
-                  and ${criterion.condition}
-                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
-                    #{listItem}
-                  </foreach>
-                </when>
-              </choose>
+<mapper namespace="com.guet.match.mapper.OmsOrderMapper">
+    <resultMap id="BaseResultMap" type="com.guet.match.model.OmsOrder">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="contest_id" property="contestId" jdbcType="BIGINT"/>
+        <result column="contest_group_id" property="contestGroupId" jdbcType="BIGINT"/>
+        <result column="open_id" property="openId" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="mail_address" property="mailAddress" jdbcType="VARCHAR"/>
+        <result column="note" property="note" jdbcType="VARCHAR"/>
+        <result column="price" property="price" jdbcType="DECIMAL"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="payment_time" property="paymentTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--DTO map-->
+    <resultMap id="OrderDTOMap" type="com.guet.match.dto.OrderDTO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="contest_id" property="contestId" jdbcType="BIGINT"/>
+        <result column="contest_group_id" property="contestGroupId" jdbcType="BIGINT"/>
+        <result column="open_id" property="openId" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="mail_address" property="mailAddress" jdbcType="VARCHAR"/>
+        <result column="note" property="note" jdbcType="VARCHAR"/>
+        <result column="price" property="price" jdbcType="DECIMAL"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="payment_time" property="paymentTime" jdbcType="TIMESTAMP"/>
+        <!--下面加属性-->
+        <result column="contest_name" property="contestName" jdbcType="VARCHAR"/>
+        <result column="group_name" property="groupName" jdbcType="VARCHAR"/>
+        <result column="real_name" property="realName" jdbcType="VARCHAR"/>
+        <result column="ID_card" property="idCard" jdbcType="VARCHAR"/>
+    </resultMap>
+    <!--end DTO map-->
+
+    <sql id="Example_Where_Clause">
+        <where>
+            <foreach collection="oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" suffix=")" prefixOverrides="and">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach collection="criterion.value" item="listItem" open="(" close=")"
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
             </foreach>
-          </trim>
-        </if>
-      </foreach>
-    </where>
-  </sql>
-  <sql id="Update_By_Example_Where_Clause" >
-    <where >
-      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
-        <if test="criteria.valid" >
-          <trim prefix="(" suffix=")" prefixOverrides="and" >
-            <foreach collection="criteria.criteria" item="criterion" >
-              <choose >
-                <when test="criterion.noValue" >
-                  and ${criterion.condition}
-                </when>
-                <when test="criterion.singleValue" >
-                  and ${criterion.condition} #{criterion.value}
-                </when>
-                <when test="criterion.betweenValue" >
-                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
-                </when>
-                <when test="criterion.listValue" >
-                  and ${criterion.condition}
-                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
-                    #{listItem}
-                  </foreach>
-                </when>
-              </choose>
+        </where>
+    </sql>
+    <sql id="Update_By_Example_Where_Clause">
+        <where>
+            <foreach collection="example.oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" suffix=")" prefixOverrides="and">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach collection="criterion.value" item="listItem" open="(" close=")"
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
             </foreach>
-          </trim>
-        </if>
-      </foreach>
-    </where>
-  </sql>
-  <sql id="Base_Column_List" >
+        </where>
+    </sql>
+    <sql id="Base_Column_List">
     id, contest_id, contest_group_id, open_id, status, mail_address, note, price, create_time, 
     payment_time
   </sql>
-  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.guet.match.model.OmsOrderExample" >
-    select
-    <if test="distinct" >
-      distinct
-    </if>
-    <include refid="Base_Column_List" />
-    from oms_order
-    <if test="_parameter != null" >
-      <include refid="Example_Where_Clause" />
-    </if>
-    <if test="orderByClause != null" >
-      order by ${orderByClause}
-    </if>
+    <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.guet.match.model.OmsOrderExample">
+        select
+        <if test="distinct">
+            distinct
+        </if>
+        <include refid="Base_Column_List"/>
+        from oms_order
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+    </select>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from oms_order
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <!--查询小程序的OrderDTO by openID & status-->
+    <select id="getOrderListByOpenIdAndStatus" resultMap="OrderDTOMap" parameterType="map">
+          SELECT
+          oms_order.*, cms_contest.`name` AS contest_name,
+          cms_contest_group.`name` AS group_name,
+          cms_enrollment_record.contestant_real_name AS real_name,
+          cms_enrollment_record.contestant_ID_card AS ID_card
+      FROM
+          oms_order
+      LEFT JOIN cms_contest ON oms_order.contest_id = cms_contest.id
+      LEFT JOIN cms_contest_group ON oms_order.contest_group_id = cms_contest_group.id
+      LEFT JOIN cms_enrollment_record ON oms_order.id = cms_enrollment_record.order_id
+      WHERE
+          oms_order.open_id = #{openId,jdbcType=VARCHAR}
+      AND oms_order.`status` = #{status,jdbcType=INTEGER}
   </select>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
-    select 
-    <include refid="Base_Column_List" />
-    from oms_order
-    where id = #{id,jdbcType=BIGINT}
+    <!--end 查询小程序的OrderDTO-->
+
+  <!--查询小程序的OrderDTO only by openID-->
+  <select id="getAllOrderListByOpenId" resultMap="OrderDTOMap" parameterType="map">
+          SELECT
+          oms_order.*, cms_contest.`name` AS contest_name,
+          cms_contest_group.`name` AS group_name,
+          cms_enrollment_record.contestant_real_name AS real_name,
+          cms_enrollment_record.contestant_ID_card AS ID_card
+      FROM
+          oms_order
+      LEFT JOIN cms_contest ON oms_order.contest_id = cms_contest.id
+      LEFT JOIN cms_contest_group ON oms_order.contest_group_id = cms_contest_group.id
+      LEFT JOIN cms_enrollment_record ON oms_order.id = cms_enrollment_record.order_id
+      WHERE
+          oms_order.open_id = #{openId,jdbcType=VARCHAR}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+  <!--end 查询小程序的OrderDTO-->
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from oms_order
     where id = #{id,jdbcType=BIGINT}
   </delete>
 
-  <!--清除过期订单-->
-  <delete id="cleanExpiredOrder" parameterType="java.lang.Integer" >
+    <!--清除过期订单-->
+    <delete id="cleanExpiredOrder" parameterType="java.lang.Integer">
     delete
     from
     oms_order
@@ -109,10 +168,10 @@
     STATUS = 0
     AND create_time &lt; date_add(NOW(), INTERVAL - #{expiredMinute,jdbcType=INTEGER} MINUTE)
   </delete>
-  <!--end 清除过期订单-->
+    <!--end 清除过期订单-->
 
-  <!--获取过期订单-->
-  <select id="getExpiredOrderList" parameterType="map" resultMap="BaseResultMap" >
+    <!--获取过期订单-->
+    <select id="getExpiredOrderList" parameterType="map" resultMap="BaseResultMap">
     select *
     from
     oms_order
@@ -120,194 +179,194 @@
     status = #{status,jdbcType=INTEGER}
     and create_time &lt; date_add(NOW(), INTERVAL - #{expiredMinute,jdbcType=INTEGER} MINUTE)
   </select>
-  <!--end  获取过期订单-->
+    <!--end  获取过期订单-->
 
-  <delete id="deleteByExample" parameterType="com.guet.match.model.OmsOrderExample" >
-    delete from oms_order
-    <if test="_parameter != null" >
-      <include refid="Example_Where_Clause" />
-    </if>
-  </delete>
-  <insert id="insert" parameterType="com.guet.match.model.OmsOrder" >
-    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
-      SELECT LAST_INSERT_ID()
-    </selectKey>
-    insert into oms_order (contest_id, contest_group_id, open_id, 
-      status, mail_address, note, 
-      price, create_time, payment_time
-      )
-    values (#{contestId,jdbcType=BIGINT}, #{contestGroupId,jdbcType=BIGINT}, #{openId,jdbcType=VARCHAR}, 
-      #{status,jdbcType=INTEGER}, #{mailAddress,jdbcType=VARCHAR}, #{note,jdbcType=VARCHAR}, 
-      #{price,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP}, #{paymentTime,jdbcType=TIMESTAMP}
-      )
-  </insert>
-  <insert id="insertSelective" parameterType="com.guet.match.model.OmsOrder" >
-    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
-      SELECT LAST_INSERT_ID()
-    </selectKey>
-    insert into oms_order
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="contestId != null" >
-        contest_id,
-      </if>
-      <if test="contestGroupId != null" >
-        contest_group_id,
-      </if>
-      <if test="openId != null" >
-        open_id,
-      </if>
-      <if test="status != null" >
-        status,
-      </if>
-      <if test="mailAddress != null" >
-        mail_address,
-      </if>
-      <if test="note != null" >
-        note,
-      </if>
-      <if test="price != null" >
-        price,
-      </if>
-      <if test="createTime != null" >
-        create_time,
-      </if>
-      <if test="paymentTime != null" >
-        payment_time,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="contestId != null" >
-        #{contestId,jdbcType=BIGINT},
-      </if>
-      <if test="contestGroupId != null" >
-        #{contestGroupId,jdbcType=BIGINT},
-      </if>
-      <if test="openId != null" >
-        #{openId,jdbcType=VARCHAR},
-      </if>
-      <if test="status != null" >
-        #{status,jdbcType=INTEGER},
-      </if>
-      <if test="mailAddress != null" >
-        #{mailAddress,jdbcType=VARCHAR},
-      </if>
-      <if test="note != null" >
-        #{note,jdbcType=VARCHAR},
-      </if>
-      <if test="price != null" >
-        #{price,jdbcType=DECIMAL},
-      </if>
-      <if test="createTime != null" >
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="paymentTime != null" >
-        #{paymentTime,jdbcType=TIMESTAMP},
-      </if>
-    </trim>
-  </insert>
-  <select id="countByExample" parameterType="com.guet.match.model.OmsOrderExample" resultType="java.lang.Integer" >
-    select count(*) from oms_order
-    <if test="_parameter != null" >
-      <include refid="Example_Where_Clause" />
-    </if>
-  </select>
-  <update id="updateByExampleSelective" parameterType="map" >
-    update oms_order
-    <set >
-      <if test="record.id != null" >
-        id = #{record.id,jdbcType=BIGINT},
-      </if>
-      <if test="record.contestId != null" >
+    <delete id="deleteByExample" parameterType="com.guet.match.model.OmsOrderExample">
+        delete from oms_order
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </delete>
+    <insert id="insert" parameterType="com.guet.match.model.OmsOrder">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into oms_order (contest_id, contest_group_id, open_id,
+        status, mail_address, note,
+        price, create_time, payment_time
+        )
+        values (#{contestId,jdbcType=BIGINT}, #{contestGroupId,jdbcType=BIGINT}, #{openId,jdbcType=VARCHAR},
+        #{status,jdbcType=INTEGER}, #{mailAddress,jdbcType=VARCHAR}, #{note,jdbcType=VARCHAR},
+        #{price,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP}, #{paymentTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+    <insert id="insertSelective" parameterType="com.guet.match.model.OmsOrder">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into oms_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="contestId != null">
+                contest_id,
+            </if>
+            <if test="contestGroupId != null">
+                contest_group_id,
+            </if>
+            <if test="openId != null">
+                open_id,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="mailAddress != null">
+                mail_address,
+            </if>
+            <if test="note != null">
+                note,
+            </if>
+            <if test="price != null">
+                price,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="paymentTime != null">
+                payment_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="contestId != null">
+                #{contestId,jdbcType=BIGINT},
+            </if>
+            <if test="contestGroupId != null">
+                #{contestGroupId,jdbcType=BIGINT},
+            </if>
+            <if test="openId != null">
+                #{openId,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=INTEGER},
+            </if>
+            <if test="mailAddress != null">
+                #{mailAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="note != null">
+                #{note,jdbcType=VARCHAR},
+            </if>
+            <if test="price != null">
+                #{price,jdbcType=DECIMAL},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="paymentTime != null">
+                #{paymentTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <select id="countByExample" parameterType="com.guet.match.model.OmsOrderExample" resultType="java.lang.Integer">
+        select count(*) from oms_order
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </select>
+    <update id="updateByExampleSelective" parameterType="map">
+        update oms_order
+        <set>
+            <if test="record.id != null">
+                id = #{record.id,jdbcType=BIGINT},
+            </if>
+            <if test="record.contestId != null">
+                contest_id = #{record.contestId,jdbcType=BIGINT},
+            </if>
+            <if test="record.contestGroupId != null">
+                contest_group_id = #{record.contestGroupId,jdbcType=BIGINT},
+            </if>
+            <if test="record.openId != null">
+                open_id = #{record.openId,jdbcType=VARCHAR},
+            </if>
+            <if test="record.status != null">
+                status = #{record.status,jdbcType=INTEGER},
+            </if>
+            <if test="record.mailAddress != null">
+                mail_address = #{record.mailAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="record.note != null">
+                note = #{record.note,jdbcType=VARCHAR},
+            </if>
+            <if test="record.price != null">
+                price = #{record.price,jdbcType=DECIMAL},
+            </if>
+            <if test="record.createTime != null">
+                create_time = #{record.createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="record.paymentTime != null">
+                payment_time = #{record.paymentTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByExample" parameterType="map">
+        update oms_order
+        set id = #{record.id,jdbcType=BIGINT},
         contest_id = #{record.contestId,jdbcType=BIGINT},
-      </if>
-      <if test="record.contestGroupId != null" >
         contest_group_id = #{record.contestGroupId,jdbcType=BIGINT},
-      </if>
-      <if test="record.openId != null" >
         open_id = #{record.openId,jdbcType=VARCHAR},
-      </if>
-      <if test="record.status != null" >
         status = #{record.status,jdbcType=INTEGER},
-      </if>
-      <if test="record.mailAddress != null" >
         mail_address = #{record.mailAddress,jdbcType=VARCHAR},
-      </if>
-      <if test="record.note != null" >
         note = #{record.note,jdbcType=VARCHAR},
-      </if>
-      <if test="record.price != null" >
         price = #{record.price,jdbcType=DECIMAL},
-      </if>
-      <if test="record.createTime != null" >
         create_time = #{record.createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="record.paymentTime != null" >
-        payment_time = #{record.paymentTime,jdbcType=TIMESTAMP},
-      </if>
-    </set>
-    <if test="_parameter != null" >
-      <include refid="Update_By_Example_Where_Clause" />
-    </if>
-  </update>
-  <update id="updateByExample" parameterType="map" >
-    update oms_order
-    set id = #{record.id,jdbcType=BIGINT},
-      contest_id = #{record.contestId,jdbcType=BIGINT},
-      contest_group_id = #{record.contestGroupId,jdbcType=BIGINT},
-      open_id = #{record.openId,jdbcType=VARCHAR},
-      status = #{record.status,jdbcType=INTEGER},
-      mail_address = #{record.mailAddress,jdbcType=VARCHAR},
-      note = #{record.note,jdbcType=VARCHAR},
-      price = #{record.price,jdbcType=DECIMAL},
-      create_time = #{record.createTime,jdbcType=TIMESTAMP},
-      payment_time = #{record.paymentTime,jdbcType=TIMESTAMP}
-    <if test="_parameter != null" >
-      <include refid="Update_By_Example_Where_Clause" />
-    </if>
-  </update>
+        payment_time = #{record.paymentTime,jdbcType=TIMESTAMP}
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
 
-  <!--锁订单-->
-  <update id="lockOrder" parameterType="map" >
+    <!--锁订单-->
+    <update id="lockOrder" parameterType="map">
     update oms_order
     set status = #{status,jdbcType=INTEGER}
     where id = #{orderId,jdbcType=BIGINT}
   </update>
-  <!--end 锁订单-->
+    <!--end 锁订单-->
 
-  <update id="updateByPrimaryKeySelective" parameterType="com.guet.match.model.OmsOrder" >
-    update oms_order
-    <set >
-      <if test="contestId != null" >
-        contest_id = #{contestId,jdbcType=BIGINT},
-      </if>
-      <if test="contestGroupId != null" >
-        contest_group_id = #{contestGroupId,jdbcType=BIGINT},
-      </if>
-      <if test="openId != null" >
-        open_id = #{openId,jdbcType=VARCHAR},
-      </if>
-      <if test="status != null" >
-        status = #{status,jdbcType=INTEGER},
-      </if>
-      <if test="mailAddress != null" >
-        mail_address = #{mailAddress,jdbcType=VARCHAR},
-      </if>
-      <if test="note != null" >
-        note = #{note,jdbcType=VARCHAR},
-      </if>
-      <if test="price != null" >
-        price = #{price,jdbcType=DECIMAL},
-      </if>
-      <if test="createTime != null" >
-        create_time = #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="paymentTime != null" >
-        payment_time = #{paymentTime,jdbcType=TIMESTAMP},
-      </if>
-    </set>
-    where id = #{id,jdbcType=BIGINT}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.guet.match.model.OmsOrder" >
+    <update id="updateByPrimaryKeySelective" parameterType="com.guet.match.model.OmsOrder">
+        update oms_order
+        <set>
+            <if test="contestId != null">
+                contest_id = #{contestId,jdbcType=BIGINT},
+            </if>
+            <if test="contestGroupId != null">
+                contest_group_id = #{contestGroupId,jdbcType=BIGINT},
+            </if>
+            <if test="openId != null">
+                open_id = #{openId,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="mailAddress != null">
+                mail_address = #{mailAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="note != null">
+                note = #{note,jdbcType=VARCHAR},
+            </if>
+            <if test="price != null">
+                price = #{price,jdbcType=DECIMAL},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="paymentTime != null">
+                payment_time = #{paymentTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.guet.match.model.OmsOrder">
     update oms_order
     set contest_id = #{contestId,jdbcType=BIGINT},
       contest_group_id = #{contestGroupId,jdbcType=BIGINT},

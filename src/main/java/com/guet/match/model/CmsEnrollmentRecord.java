@@ -29,6 +29,12 @@ public class CmsEnrollmentRecord {
 
     private Integer status;
 
+    private String contestantRealName;
+
+    private String contestantIdCard;
+
+    private Long orderId;
+
     public Long getId() {
         return id;
     }
@@ -131,5 +137,29 @@ public class CmsEnrollmentRecord {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public String getContestantRealName() {
+        return contestantRealName;
+    }
+
+    public void setContestantRealName(String contestantRealName) {
+        this.contestantRealName = contestantRealName;
+    }
+
+    public String getContestantIdCard() {
+        return contestantIdCard;
+    }
+
+    public void setContestantIdCard(String contestantIdCard) {
+        this.contestantIdCard = contestantIdCard;
+    }
+
+    public Long getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
     }
 }

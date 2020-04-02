@@ -1,5 +1,6 @@
 package com.guet.match.mapper;
 
+import com.guet.match.dto.OrderDTO;
 import com.guet.match.model.OmsOrder;
 import com.guet.match.model.OmsOrderExample;
 import org.apache.ibatis.annotations.Param;
@@ -37,6 +38,11 @@ public interface OmsOrderMapper {
 
     //锁订单
     int lockOrder(@Param("orderId") long orderId,@Param("status") int status);
+
+    //小程序获取订单
+    List<OrderDTO> getOrderListByOpenIdAndStatus(@Param("openId") String openId,@Param("status") int status);
+
+    List<OrderDTO> getAllOrderListByOpenId(@Param("openId") String  openId);
 
 
 }

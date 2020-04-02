@@ -15,6 +15,9 @@
     <result column="contestant_achievement" property="contestantAchievement" jdbcType="VARCHAR" />
     <result column="contestant_award" property="contestantAward" jdbcType="VARCHAR" />
     <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="contestant_real_name" property="contestantRealName" jdbcType="VARCHAR" />
+    <result column="contestant_ID_card" property="contestantIdCard" jdbcType="VARCHAR" />
+    <result column="order_id" property="orderId" jdbcType="BIGINT" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -76,7 +79,8 @@
   </sql>
   <sql id="Base_Column_List" >
     id, contest_id, contest_group_id, open_id, type, create_time, mail_address, contestant_number, 
-    contestant_status, contestant_rank, contestant_achievement, contestant_award, status
+    contestant_status, contestant_rank, contestant_achievement, contestant_award, status, 
+    contestant_real_name, contestant_ID_card, order_id
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.guet.match.model.CmsEnrollmentRecordExample" >
     select
@@ -116,12 +120,14 @@
       type, create_time, mail_address, 
       contestant_number, contestant_status, contestant_rank, 
       contestant_achievement, contestant_award, 
-      status)
+      status, contestant_real_name, contestant_ID_card, 
+      order_id)
     values (#{contestId,jdbcType=BIGINT}, #{contestGroupId,jdbcType=BIGINT}, #{openId,jdbcType=VARCHAR}, 
       #{type,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{mailAddress,jdbcType=VARCHAR}, 
       #{contestantNumber,jdbcType=VARCHAR}, #{contestantStatus,jdbcType=VARCHAR}, #{contestantRank,jdbcType=VARCHAR}, 
       #{contestantAchievement,jdbcType=VARCHAR}, #{contestantAward,jdbcType=VARCHAR}, 
-      #{status,jdbcType=INTEGER})
+      #{status,jdbcType=INTEGER}, #{contestantRealName,jdbcType=VARCHAR}, #{contestantIdCard,jdbcType=VARCHAR}, 
+      #{orderId,jdbcType=BIGINT})
   </insert>
   <insert id="insertSelective" parameterType="com.guet.match.model.CmsEnrollmentRecord" >
     <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
@@ -165,6 +171,15 @@
       <if test="status != null" >
         status,
       </if>
+      <if test="contestantRealName != null" >
+        contestant_real_name,
+      </if>
+      <if test="contestantIdCard != null" >
+        contestant_ID_card,
+      </if>
+      <if test="orderId != null" >
+        order_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="contestId != null" >
@@ -202,6 +217,15 @@
       </if>
       <if test="status != null" >
         #{status,jdbcType=INTEGER},
+      </if>
+      <if test="contestantRealName != null" >
+        #{contestantRealName,jdbcType=VARCHAR},
+      </if>
+      <if test="contestantIdCard != null" >
+        #{contestantIdCard,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null" >
+        #{orderId,jdbcType=BIGINT},
       </if>
     </trim>
   </insert>
@@ -253,6 +277,15 @@
       <if test="record.status != null" >
         status = #{record.status,jdbcType=INTEGER},
       </if>
+      <if test="record.contestantRealName != null" >
+        contestant_real_name = #{record.contestantRealName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.contestantIdCard != null" >
+        contestant_ID_card = #{record.contestantIdCard,jdbcType=VARCHAR},
+      </if>
+      <if test="record.orderId != null" >
+        order_id = #{record.orderId,jdbcType=BIGINT},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -272,7 +305,10 @@
       contestant_rank = #{record.contestantRank,jdbcType=VARCHAR},
       contestant_achievement = #{record.contestantAchievement,jdbcType=VARCHAR},
       contestant_award = #{record.contestantAward,jdbcType=VARCHAR},
-      status = #{record.status,jdbcType=INTEGER}
+      status = #{record.status,jdbcType=INTEGER},
+      contestant_real_name = #{record.contestantRealName,jdbcType=VARCHAR},
+      contestant_ID_card = #{record.contestantIdCard,jdbcType=VARCHAR},
+      order_id = #{record.orderId,jdbcType=BIGINT}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -316,6 +352,15 @@
       <if test="status != null" >
         status = #{status,jdbcType=INTEGER},
       </if>
+      <if test="contestantRealName != null" >
+        contestant_real_name = #{contestantRealName,jdbcType=VARCHAR},
+      </if>
+      <if test="contestantIdCard != null" >
+        contestant_ID_card = #{contestantIdCard,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null" >
+        order_id = #{orderId,jdbcType=BIGINT},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -332,7 +377,10 @@
       contestant_rank = #{contestantRank,jdbcType=VARCHAR},
       contestant_achievement = #{contestantAchievement,jdbcType=VARCHAR},
       contestant_award = #{contestantAward,jdbcType=VARCHAR},
-      status = #{status,jdbcType=INTEGER}
+      status = #{status,jdbcType=INTEGER},
+      contestant_real_name = #{contestantRealName,jdbcType=VARCHAR},
+      contestant_ID_card = #{contestantIdCard,jdbcType=VARCHAR},
+      order_id = #{orderId,jdbcType=BIGINT}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

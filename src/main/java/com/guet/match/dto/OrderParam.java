@@ -6,8 +6,9 @@ package com.guet.match.dto;
  * @Description: 报名所需的参数，报名将触发创建订单
  */
 public class OrderParam {
+    //todo 还有很多参数呢
 
-    //赛事 id
+    //todo 赛事 id(实际上这个是多余的)
     private Long contestId;
 
     //组别 id

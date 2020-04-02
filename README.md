@@ -55,3 +55,7 @@ pre. 学习了maven知识、npm知识、webpack知识
    - config 文件夹，新增 AuthenticationEntryPointImpl
    - config 文件夹，新增 AccessDeniedHandlerImpl
 3. 明天开始写小程序
+
+## 4.3凌晨
+1. 修改了一个model及其mapper（报名记录）
+2. 写了微信获取订单信息的DTO

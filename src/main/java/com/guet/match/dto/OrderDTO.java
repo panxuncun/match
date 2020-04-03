@@ -10,6 +10,10 @@ import com.guet.match.model.OmsOrder;
 public class OrderDTO extends OmsOrder {
     //赛事名称
     private String contestName;
+
+    //logo(前端需要加oss地址)
+    private String logo;
+
     //组别名称
     private String groupName;
     //参赛者真实姓名
@@ -25,6 +29,14 @@ public class OrderDTO extends OmsOrder {
                 ", realName='" + realName + '\'' +
                 ", idCard='" + idCard + '\'' +
                 '}';
+    }
+
+    public String getLogo() {
+        return logo;
+    }
+
+    public void setLogo(String logo) {
+        this.logo = logo;
     }
 
     public String getContestName() {

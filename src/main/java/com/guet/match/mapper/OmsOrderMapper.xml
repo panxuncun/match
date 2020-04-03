@@ -28,6 +28,7 @@
         <result column="payment_time" property="paymentTime" jdbcType="TIMESTAMP"/>
         <!--下面加属性-->
         <result column="contest_name" property="contestName" jdbcType="VARCHAR"/>
+        <result column="logo" property="logo" jdbcType="VARCHAR"/>
         <result column="group_name" property="groupName" jdbcType="VARCHAR"/>
         <result column="real_name" property="realName" jdbcType="VARCHAR"/>
         <result column="ID_card" property="idCard" jdbcType="VARCHAR"/>
@@ -123,6 +124,7 @@
     <select id="getOrderListByOpenIdAndStatus" resultMap="OrderDTOMap" parameterType="map">
           SELECT
           oms_order.*, cms_contest.`name` AS contest_name,
+          cms_contest.logo AS logo,
           cms_contest_group.`name` AS group_name,
           cms_enrollment_record.contestant_real_name AS real_name,
           cms_enrollment_record.contestant_ID_card AS ID_card
@@ -134,6 +136,7 @@
       WHERE
           oms_order.open_id = #{openId,jdbcType=VARCHAR}
       AND oms_order.`status` = #{status,jdbcType=INTEGER}
+      ORDER BY id DESC
   </select>
     <!--end 查询小程序的OrderDTO-->
 
@@ -141,6 +144,7 @@
   <select id="getAllOrderListByOpenId" resultMap="OrderDTOMap" parameterType="map">
           SELECT
           oms_order.*, cms_contest.`name` AS contest_name,
+          cms_contest.logo AS logo,
           cms_contest_group.`name` AS group_name,
           cms_enrollment_record.contestant_real_name AS real_name,
           cms_enrollment_record.contestant_ID_card AS ID_card
@@ -151,6 +155,7 @@
       LEFT JOIN cms_enrollment_record ON oms_order.id = cms_enrollment_record.order_id
       WHERE
           oms_order.open_id = #{openId,jdbcType=VARCHAR}
+      ORDER BY id DESC
   </select>
   <!--end 查询小程序的OrderDTO-->
 

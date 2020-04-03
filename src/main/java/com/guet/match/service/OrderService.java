@@ -1,5 +1,6 @@
 package com.guet.match.service;
 
+import com.github.pagehelper.PageHelper;
 import com.guet.match.common.PaymentStatus;
 import com.guet.match.dto.OrderDTO;
 import com.guet.match.dto.OrderParam;
@@ -113,7 +114,7 @@ public class OrderService {
         return 1;
     }
 
-    //取消未付款订单（直接删除）
+    //取消未付款订单（直接删除）(针对未支付订单)
     public int cancel(long id) {
         OmsOrder order = orderMapper.selectByPrimaryKey(id);
         if (order == null) {
@@ -127,12 +128,26 @@ public class OrderService {
         return orderMapper.deleteByPrimaryKey(id);
     }
 
+    //删除订单（针对已完成订单，设置删除标志位）
+    public int deleteOrderById(long orderId) {
+        OmsOrder order = orderMapper.selectByPrimaryKey(orderId);
+        if (order == null) {
+            logger.error("删除订单错误，不存的订单id->{}", orderId);
+            return 0;
+        }
+        order.setStatus(PaymentStatus.DELETE_FLAG.getStatus());
+        return orderMapper.updateByPrimaryKey(order);
+    }
+
     //查看订单 By OpenId
-    public List<OrderDTO> getOrderListByOpenId(String openId, Integer paymentStatus) {
+    public List<OrderDTO> getOrderListByOpenId(String openId, Integer paymentStatus,Integer pageNum,Integer pageSize) {
         if (openId == null){
             logger.error("小程序端查看订单, 非法的参数: openId->null");
             return null;
         }
+
+        //分页
+        PageHelper.startPage(pageNum,pageSize);
 
         if (paymentStatus == null) {
             logger.info("查询全部订单，原始参数 openId->{}", openId);

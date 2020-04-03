@@ -1,8 +1,10 @@
 package com.guet.match.controller;
 
+import com.guet.match.common.CommonPage;
 import com.guet.match.common.CommonResult;
 import com.guet.match.common.Events;
 import com.guet.match.common.States;
+import com.guet.match.dto.OrderDTO;
 import com.guet.match.dto.OrderParam;
 import com.guet.match.service.OrderService;
 import io.swagger.annotations.Api;
@@ -12,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @Auther: sefer
@@ -70,12 +74,21 @@ public class OrderController {
         return orderService.cancel(orderId) == 1 ? CommonResult.success(null) : CommonResult.failed("操作失败，请刷新页面");
     }
 
+    @ApiOperation("删除订单（设置删除标记）")
+    @PostMapping("order/delete/{orderId}")
+    public CommonResult delete(@PathVariable long orderId) {
+        return orderService.deleteOrderById(orderId) == 1 ? CommonResult.success(null) : CommonResult.failed("操作失败，请刷新页面");
+    }
+
     //orderStatus参阅comon/PaymentStatus
     @ApiOperation("查看订单by openId")
     @GetMapping("order/listByOpenId")
     public CommonResult getOrderList(@RequestParam(required = true) String openId,
-                                     @RequestParam(required = false) Integer paymentStatus) {
-        return CommonResult.success(orderService.getOrderListByOpenId(openId, paymentStatus));
+                                     @RequestParam(required = false) Integer paymentStatus,
+                                     @RequestParam(required = false, value = "pageNum", defaultValue = "1") Integer pageNum,
+                                     @RequestParam(required = false, value = "pageSize", defaultValue = "5") Integer pageSize) {
+        List<OrderDTO> list = orderService.getOrderListByOpenId(openId, paymentStatus, pageNum, pageSize);
+        return CommonResult.success(CommonPage.restPage(list));
     }
 
 

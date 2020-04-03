@@ -59,3 +59,13 @@ pre. 学习了maven知识、npm知识、webpack知识
 ## 4.3凌晨
 1. 修改了一个model及其mapper（报名记录）
 2. 写了微信获取订单信息的DTO
+
+## 4.3深夜
+添加依赖和准备类
+- pagehelper
+- commonpage公共类
+
+接下来分页两步走
+1. Service 中：`PageHelper.startPage(pageNum,pageSize);`
+2. Controller 中：`return CommonResult.success(CommonPage.restPage(list));`
+

@@ -3,14 +3,15 @@ package com.guet.match.common;
 /**
  * @Auther: sefer
  * @Date: 2020/3/23
- * @Description: 支付状态: 0->未支付;1->已支付;2->申请退款; 3->已退款; 4->临时加锁
+ * @Description: 支付状态: 0->未支付;1->已支付;2->申请退款; 3->已退款; 4->临时加锁; 5->删除标记(针对已支付的订单)
  */
 public enum PaymentStatus {
     UNPAID(0,"未支付"),
     PAID(1,"已支付"),
     APPLY_REFUND(2,"申请退款"),
     REFUND(3, "已退款"),
-    LOCK(4,"暂时锁定以防清除");
+    LOCK(4,"暂时锁定以防清除"),
+    DELETE_FLAG(5,"删除标记");
 
     private int status;
     private String description;

@@ -28,7 +28,7 @@ public class OrderCleanTask {
     Logger logger = LoggerFactory.getLogger(OrderCleanTask.class);
 
     //清除过期订单，每分钟扫描一次
-    @Scheduled(fixedRate = 1000 * 60)
+    @Scheduled(fixedRate = 1000 * 60 * 30)
     public void cleanExpiredOrder() {
         try {
             //设置过期时间，并得到所有过期订单

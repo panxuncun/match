@@ -37,18 +37,7 @@ public class OrderController {
     @ApiOperation("创建订单,需要必要的报名信息")
     @PostMapping("order/add")
     public CommonResult addOrder(@RequestBody OrderParam dto) {
-        Long orderId = orderService.createOrder(dto);
-        switch (orderId.intValue()) {
-            case -2:
-                return CommonResult.failed("您已报名，同一小组只能报名一次哦~");
-            case -1:
-                return CommonResult.failed("订单创建失败，请刷新页面并重新报名");
-            case -3:
-                return CommonResult.failed("来晚了一步，名额已满");
-            default:
-                return CommonResult.success(orderId, "已为你锁定名额，请在30分钟内完成支付");
-        }
-
+        return orderService.createOrder(dto);
     }
 
     @ApiOperation("付款")

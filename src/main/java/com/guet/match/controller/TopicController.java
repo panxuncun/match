@@ -1,6 +1,8 @@
 package com.guet.match.controller;
 
+import com.guet.match.common.CommonPage;
 import com.guet.match.common.CommonResult;
+import com.guet.match.dto.TopicDTO;
 import com.guet.match.model.SmsTopic;
 import com.guet.match.service.TopicService;
 import io.swagger.annotations.Api;
@@ -26,9 +28,20 @@ public class TopicController {
 
     @ApiOperation("获取指定赛事下的话题列表")
     @GetMapping("topic/list/{contestId}")
-    public CommonResult getTopicList(@PathVariable Long contestId) {
-        List<SmsTopic> list = topicService.getTopicList(contestId);
-        return list == null ? CommonResult.failed() : CommonResult.success(list);
+    public CommonResult getTopicList(@PathVariable Long contestId,
+                                     @RequestParam(required = false, value = "pageNum", defaultValue = "1") Integer pageNum,
+                                     @RequestParam(required = false, value = "pageSize", defaultValue = "5") Integer pageSize) {
+        List<TopicDTO> list = topicService.getTopicList(contestId, pageNum, pageSize);
+        return CommonResult.success(CommonPage.restPage(list));
+    }
+
+    @ApiOperation("得到话题下的回复")
+    @GetMapping("topic/comment/list/{topicId}")
+    public CommonResult getCommentList(@PathVariable Long topicId,
+                                       @RequestParam(required = false, value = "pageNum", defaultValue = "1") Integer pageNum,
+                                       @RequestParam(required = false, value = "pageSize", defaultValue = "5") Integer pageSize) {
+        List<TopicDTO> list = topicService.getCommentList(topicId, pageNum, pageSize);
+        return CommonResult.success(CommonPage.restPage(list));
     }
 
 

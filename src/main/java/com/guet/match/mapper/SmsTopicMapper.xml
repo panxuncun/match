@@ -137,13 +137,17 @@
 <!--查询回复列表 by话题id end-->
 
 
-<!--  指定赛事下的互动话题列表-->
+<!--  指定赛事下的互动话题(根话题)列表-->
   <select id="selectTopicList" resultMap="TopicDtoResultMap" parameterType="java.lang.Long" >
     select *
     from sms_topic,ums_constant
     where sms_topic.contest_id = #{id,jdbcType=BIGINT}
     and
     sms_topic.open_id = ums_constant.open_id
+    and
+    sms_topic.parent_id = 0
+    order by id
+    desc
   </select>
   <!--指定赛事下的互动话题列表 end-->
 

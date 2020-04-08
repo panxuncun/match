@@ -46,5 +46,5 @@ public interface CmsContestGroupMapper {
     int sizePlus(Long id);
 
     //获取剩余容量
-    public int getUsableSize(Long id);
+    public Integer getUsableSize(Long id);
 }

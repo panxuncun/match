@@ -1,10 +1,10 @@
 package com.guet.match.service;
 
+import com.github.pagehelper.PageHelper;
 import com.guet.match.common.ContestStatus;
 import com.guet.match.common.DeleteStatus;
-import com.guet.match.dto.OrderParam;
-import com.guet.match.dto.CheckContestParam;
-import com.guet.match.dto.ContestInfoDTO;
+import com.guet.match.common.SortCode;
+import com.guet.match.dto.*;
 import com.guet.match.mapper.*;
 import com.guet.match.model.*;
 import org.slf4j.Logger;
@@ -15,8 +15,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Auther: sefer
@@ -46,6 +48,32 @@ public class ContestService {
     public ContestInfoDTO getContestInfo(Long id) {
         logger.info("查看赛事详细信息");
         return contestMapper.getContestDtoByid(id);
+    }
+
+    //查看我的赛事（以报名记录为准）
+    public List<EnrollmentDTO> getEnrollmentByOpenId(String openId, Integer pageNum, Integer pageSize) {
+        if (openId == null) {
+            return new ArrayList();
+        }
+        PageHelper.startPage(pageNum, pageSize);
+        return enrollmentRecordMapper.getEnrollmentListByOpenId(openId);
+    }
+
+    //删除报名记录delete flag
+    public int deleteEnrollment(Long id) {
+        CmsEnrollmentRecord record = enrollmentRecordMapper.selectByPrimaryKey(id);
+        if (record == null) {
+            return 0;
+        }
+        //拿到比赛时间
+        CmsContest contest = contestMapper.selectByPrimaryKey(record.getContestId());
+        //默认ContestTime是不可能为空的
+        if ((new Date()).getTime() < contest.getContestTime().getTime()) {
+            logger.error("比赛->{}未开始，不允许用户删除报名记录。原始参数：id->{}", contest.getName(), id);
+            return 0;
+        }
+        record.setStatus(DeleteStatus.DELETE_FLAG.getStatus());
+        return enrollmentRecordMapper.updateByPrimaryKey(record);
     }
 
 
@@ -126,12 +154,13 @@ public class ContestService {
 
     //favorite insert or delete
     public int favoriteSwitch(CmsFavorite favorite) {
+        logger.info("Service favoriteSwitch，原始参数: openId->{}, contestId->{}", favorite.getOpenId(), favorite.getContestId());
         CmsFavorite selectData = favoriteMapper.getFavorite(favorite);
         if (selectData == null) {
-            logger.info("已收藏");
+            logger.info("已添加收藏，原始参数: openId->{}, contestId->{}", favorite.getOpenId(), favorite.getContestId());
             return favoriteMapper.insert(favorite);
         } else {
-            logger.info("已取消");
+            logger.info("已取消收藏，原始参数: openId->{}, contestId->{}", favorite.getOpenId(), favorite.getContestId());
             return favoriteMapper.deleteByPrimaryKey(selectData.getId());
         }
     }
@@ -153,16 +182,6 @@ public class ContestService {
         return enrollmentRecordMapper.insert(record);
     }
 
-    //delete enrollment flag
-    public int deleteEnrollment(long id) {
-        CmsEnrollmentRecord record = enrollmentRecordMapper.selectByPrimaryKey(id);
-        if (record == null) {
-            return 0;
-        }
-        record.setStatus(DeleteStatus.DELETE_FLAG.getStatus());
-        return enrollmentRecordMapper.updateByPrimaryKey(record);
-
-    }
 
     //查询全部比赛
     public List<CmsContest> allOfContest() {
@@ -171,7 +190,62 @@ public class ContestService {
         return contestMapper.selectByExample(example);
     }
 
+    //查询收藏list
+    public List<CmsContest> getFavorite(String openId, int pageNum, int pageSize) {
+        if (openId == null) {
+            logger.error("获取收藏错误：openId->null");
+            return new ArrayList<>();
+        }
+        //拿到收藏的赛事ids（赛事id--openId）
+        CmsFavoriteExample favoriteExample = new CmsFavoriteExample();
+        favoriteExample.createCriteria().andOpenIdEqualTo(openId);
+        List<CmsFavorite> favoriteList = favoriteMapper.selectByExample(favoriteExample);
+        if (favoriteList.size() == 0) {
+            logger.info("该用户没有收藏任务赛事, 原始参数openId->{}", openId);
+            return new ArrayList<>();
+        }
+        List<Long> ids = favoriteList.stream().map(item -> item.getContestId()).collect(Collectors.toList());
+        //根据ids查询赛事
+        PageHelper.startPage(pageNum, pageSize);
+        CmsContestExample contestExample = new CmsContestExample();
+        contestExample.createCriteria().andIdIn(ids);
+        return contestMapper.selectByExample(contestExample);
 
+    }
+
+    //查询是否收藏
+    public int isFavorite(String openId, Long contestId) {
+        CmsFavoriteExample example = new CmsFavoriteExample();
+        example.createCriteria().andOpenIdEqualTo(openId).andContestIdEqualTo(contestId);
+        return favoriteMapper.selectByExample(example).size();
+    }
+
+    //筛选赛事(排序码依据枚举SortType)
+    public List<CmsContest> filterContest(String typeName,Integer sortCode,Integer pageNum,Integer pageSize) {
+
+        PageHelper.startPage(pageNum, pageSize);
+        CmsContestExample example = new CmsContestExample();
+        //类型为空，返回所有数据
+        if (typeName == null) {
+            example.createCriteria();
+            return contestMapper.selectByExample(example);
+        }
+
+        logger.info("原始参数：sortCode{}",sortCode);
+
+        //设置排序
+        example.setOrderByClause(SortCode.getSqlBySortType(sortCode));
+        //添加条件
+        CmsContestExample.Criteria criteria = example.createCriteria().andTypeEqualTo(typeName);
+        if (sortCode == SortCode.CLOSE_ENROLLMENT_TIME.getCode()){
+            //截止报名时间大于此刻
+            criteria.andCloseEnrollmentTimeGreaterThan(new Date());
+        }else if(sortCode == SortCode.CONTEST_TIME.getCode()){
+            //比赛开始时间大于此刻
+            criteria.andContestTimeGreaterThan(new Date());
+        }
+        return contestMapper.selectByExample(example);
+    }
 
 
 }

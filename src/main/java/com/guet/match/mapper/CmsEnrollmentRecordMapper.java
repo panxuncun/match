@@ -1,5 +1,6 @@
 package com.guet.match.mapper;
 
+import com.guet.match.dto.EnrollmentDTO;
 import com.guet.match.model.CmsEnrollmentRecord;
 import com.guet.match.model.CmsEnrollmentRecordExample;
 import org.apache.ibatis.annotations.Param;
@@ -28,4 +29,7 @@ public interface CmsEnrollmentRecordMapper {
     int updateByPrimaryKeySelective(CmsEnrollmentRecord record);
 
     int updateByPrimaryKey(CmsEnrollmentRecord record);
+
+    //小程序获取我的赛事
+    List<EnrollmentDTO> getEnrollmentListByOpenId(@Param("openId") String  openId);
 }

@@ -25,10 +25,13 @@ public interface SmsTopicMapper {
     SmsTopic selectByPrimaryKey(Long id);
 
     //查询话题下的评论
-    List<SmsTopic> selectCommentList(Long id);
+    //List<SmsTopic> selectCommentList(Long id); 4.7 为什么smstopic也能显示头像数据，不会溢出吗？现在把它改成dto看看
+    //哦，因为dto的继承了smstopic，这是它的父型
+    List<TopicDTO> selectCommentList(Long id);
 
     //指定赛事下的互动话题列表
-    List<SmsTopic> selectTopicList(Long id);
+    //List<SmsTopic> selectTopicList(Long id);
+    List<TopicDTO> selectTopicList(Long id);
 
     int updateByExampleSelective(@Param("record") SmsTopic record, @Param("example") SmsTopicExample example);
 

@@ -6,7 +6,6 @@ package com.guet.match.dto;
  * @Description: 报名所需的参数，报名将触发创建订单
  */
 public class OrderParam {
-    //todo 还有很多参数呢
 
     //todo 赛事 id(实际上这个是多余的)
     private Long contestId;
@@ -19,6 +18,54 @@ public class OrderParam {
 
     //邮寄地址
     private String mailAddress;
+
+    //后面新加4.6
+    //参赛者姓名
+    private String contestantRealName;
+
+    //证件号码
+    private String contestantIdCard;
+
+    //手机号
+    private String phoneNumber;
+
+
+    @Override
+    public String toString() {
+        return "OrderParam{" +
+                "contestId=" + contestId +
+                ", contestGroupId=" + contestGroupId +
+                ", openId='" + openId + '\'' +
+                ", mailAddress='" + mailAddress + '\'' +
+                ", contestantRealName='" + contestantRealName + '\'' +
+                ", contestantIdCard='" + contestantIdCard + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                '}';
+    }
+
+    public String getContestantRealName() {
+        return contestantRealName;
+    }
+
+    public void setContestantRealName(String contestantRealName) {
+        this.contestantRealName = contestantRealName;
+    }
+
+    public String getContestantIdCard() {
+        return contestantIdCard;
+    }
+
+    public void setContestantIdCard(String contestantIdCard) {
+        this.contestantIdCard = contestantIdCard;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 
     public Long getContestId() {
         return contestId;

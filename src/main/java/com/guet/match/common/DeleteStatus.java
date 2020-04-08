@@ -15,7 +15,6 @@ public enum DeleteStatus {
     private DeleteStatus(int status, String description) {
         this.status = status;
         this.description = description;
-
     }
 
     public int getStatus() {

@@ -1,16 +1,15 @@
 package com.guet.match.service;
 
 import com.github.pagehelper.PageHelper;
+import com.guet.match.common.CommonResult;
+import com.guet.match.common.EnrollmentStatus;
 import com.guet.match.common.PaymentStatus;
 import com.guet.match.dto.OrderDTO;
 import com.guet.match.dto.OrderParam;
 import com.guet.match.mapper.CmsContestGroupMapper;
 import com.guet.match.mapper.CmsEnrollmentRecordMapper;
 import com.guet.match.mapper.OmsOrderMapper;
-import com.guet.match.model.CmsContestGroup;
-import com.guet.match.model.CmsEnrollmentRecordExample;
-import com.guet.match.model.OmsOrder;
-import com.guet.match.model.OmsOrderExample;
+import com.guet.match.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -38,15 +37,15 @@ public class OrderService {
     @Autowired
     private CmsContestGroupMapper groupMapper;
 
-    //判断是否重复报名(同一比赛 & 同一小组)
+    //判断是否重复报名(同一小组 & 同一证件号)
     public boolean hasEnrollmentRecord(OrderParam dto) {
         CmsEnrollmentRecordExample example = new CmsEnrollmentRecordExample();
-        example.createCriteria().andOpenIdEqualTo(dto.getOpenId()).andContestIdEqualTo(dto.getContestId()).andContestGroupIdEqualTo(dto.getContestGroupId());
+        example.createCriteria().andContestGroupIdEqualTo(dto.getContestGroupId()).andContestantIdCardEqualTo(dto.getContestantIdCard());
         if (enrollmentRecordMapper.selectByExample(example).size() == 0) {
-            logger.info("未报名");
+            logger.info("未报名,原始参数:{}",dto.toString());
             return false;
         }
-        logger.info("已有报名记录");
+        logger.info("已有报名记录,原始参数:{}",dto.toString());
         return true;
     }
 
@@ -61,16 +60,22 @@ public class OrderService {
 
     //添加订单,先有订单，后有记录.  -1->创建失败;  -2->已报名，拒绝订单创建;  -3->可用名额不足;  正整数(订单号)->创建成功;
     //todo 临时创建报名记录，因为携带了很多参数，报名记录有一个字段叫 order_id,可以追溯来源的
-    public Long createOrder(OrderParam dto) {
+    //todo 加入不存在的赛事，不存的组别，会错误，但是我还每排查出来
+    public CommonResult createOrder(OrderParam dto) {
         //判断是否已报名
         if (hasEnrollmentRecord(dto)) {
             logger.info("已报名，拒绝订单创建");
-            return -2L;
+            return CommonResult.failed("您已报名~");
         }
         //判断是否剩余名额
-        if (groupMapper.getUsableSize(dto.getContestGroupId()) < 1) {
-            logger.info("可用名额不足");
-            return -3L;
+        Integer usableSize = groupMapper.getUsableSize(dto.getContestGroupId());
+        if (usableSize == null){
+            logger.info("组别不存在，原始参数contestGroupId{}",dto.getContestGroupId());
+            return CommonResult.failed("组别不存在");
+        }
+        if (usableSize < 1) {
+            logger.info("可用名额不足,usableSize->{}",usableSize);
+            return CommonResult.failed("来晚了一步，名额已满");
         }
         OmsOrder order = new OmsOrder();
         BeanUtils.copyProperties(dto, order);
@@ -78,14 +83,22 @@ public class OrderService {
         BigDecimal price = getPrice(dto.getContestGroupId());
         if (price.intValue() == -1) {
             logger.error("订单创建失败。严重错误的参数：组别不存在。");
-            return 0L;
+            return CommonResult.failed("组别不存在,请刷新页面重试");
         }
         order.setPrice(price);
         order.setStatus(PaymentStatus.UNPAID.getStatus());
-        //组别容量减1，同时生成订单（未支付状态）
+
+        //组别名额减1，生成订单（未支付状态）
         groupMapper.sizeMinus(dto.getContestGroupId());
         orderMapper.insertSelective(order);
-        return order.getId();
+        //保存报名数据（订单不会保存这些，交给报名记录来）todoo
+        CmsEnrollmentRecord record = new CmsEnrollmentRecord();
+        BeanUtils.copyProperties(dto,record);
+        record.setOrderId(order.getId());
+        record.setStatus(EnrollmentStatus.TEMP.getStatus());
+        enrollmentRecordMapper.insertSelective(record);
+        //返回订单号
+        return CommonResult.success(order.getId());
     }
 
     //订单支付 return: 0->支付失败; 1->支付成功; 2->订单失效; 4->已付款
@@ -107,8 +120,19 @@ public class OrderService {
         order.setPaymentTime(new Date());
         if (orderMapper.updateByPrimaryKey(order) == 0) {
             //todo 退款
-            logger.error("严重的错误，无法更新订单状态，方法pay，订单号->{}", id);
+            logger.error("无法更新订单状态，方法pay，订单号->{}", id);
             return 0;
+        }
+        //更新报名记录状态
+        CmsEnrollmentRecordExample example = new CmsEnrollmentRecordExample();
+        example.createCriteria().andOrderIdEqualTo(id);
+        CmsEnrollmentRecord record = enrollmentRecordMapper.selectByExample(example).get(0);
+        if (record == null){
+            logger.error("找不到原始报名数据，方法pay，订单号->{}", id);
+        }
+        record.setStatus(EnrollmentStatus.NORMAL.getStatus());
+        if (enrollmentRecordMapper.updateByPrimaryKey(record) == 0){
+            logger.error("无法更新报名数据，方法pay，订单号->{}, 报名记录id->{}", id,record.getId());
         }
         logger.info("支付成功, 订单号->{}", id);
         return 1;

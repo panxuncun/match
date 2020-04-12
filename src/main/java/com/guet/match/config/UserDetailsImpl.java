@@ -35,7 +35,7 @@ public class UserDetailsImpl implements UserDetails {
     //}
 
 
-    //todo 这问好啥意思
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return resourceList.stream()

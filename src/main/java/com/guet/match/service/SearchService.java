@@ -1,5 +1,6 @@
 package com.guet.match.service;
 
+import com.github.pagehelper.PageHelper;
 import com.guet.match.mapper.ElasticsearchMapper;
 import com.guet.match.mapper.CmsContestMapper;
 import com.guet.match.model.CmsContest;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -33,7 +35,7 @@ public class SearchService {
         CmsContestExample example = new CmsContestExample();
         example.createCriteria();
         List<CmsContest> list = contestMapper.selectByExampleWithBLOBs(example);
-        logger.info("存入{}条记录到elasticsearch",list.size());
+        logger.info("存入{}条记录到elasticsearch", list.size());
 
 
         //保存到 es
@@ -63,25 +65,32 @@ public class SearchService {
     }
 
 
-    public List<CmsContest> search(String param) {
-        importAll();
-        String keyword = param.replaceAll(" ","");
+    public List<CmsContest> search(String param, Integer pageNum, Integer pageSize) {
+
+        String keyword = param.replaceAll(" ", "");
 
         //优先使用elasticsearch
-
-        List<CmsContest> list = elasticsearchMapper.findByDetailsLikeOrNameLike(keyword, keyword);
-        logger.info("   ES搜索->{},得到{}条记录", keyword,list.size());
+        List<CmsContest> list = new LinkedList<>();
+        PageHelper.startPage(pageNum, pageSize);
+        try {
+            importAll();
+            list = elasticsearchMapper.findByDetailsLikeOrNameLike(keyword, keyword);
+            logger.info("   ES搜索->{},得到{}条记录", keyword, list.size());
+        } catch (Exception e) {
+            logger.error("无法连接es");
+        }
 
         //如果查不到东西，mysql兜底
-        if (list.size() == 0) {
+        if (list == null || list.size() == 0) {
             CmsContestExample example = new CmsContestExample();
             example.createCriteria().andNameLike("%" + keyword + "%");
             list = contestMapper.selectByExample(example);
-            logger.info("MySQL搜索->{},得到{}条记录", keyword,list.size());
+            logger.info("MySQL搜索->{},得到{}条记录", keyword, list.size());
         }
 
-        //todo 还要set details为空
+        //set details为空
         list.stream().forEach(item -> item.setLastCheckNote(null));
+        list.stream().forEach(item -> item.setDetails(null));
 
         return list;
     }

@@ -1,5 +1,6 @@
 package com.guet.match.controller;
 
+import com.guet.match.common.CommonPage;
 import com.guet.match.common.CommonResult;
 import com.guet.match.model.CmsContest;
 import com.guet.match.service.SearchService;
@@ -61,9 +62,11 @@ public class SearchController {
     @ApiOperation(value = "搜索")
     @GetMapping(value = "search/contest")
     @ResponseBody
-    public CommonResult search(@RequestParam String keyword) {
-        List<CmsContest> list = searchService.search(keyword);
-        return CommonResult.success(list);
+    public CommonResult search(@RequestParam String keyword,
+                               @RequestParam(required = false, defaultValue = "1") Integer pageNum,
+                               @RequestParam(required = false,  defaultValue = "5") Integer pageSize) {
+        List<CmsContest> list = searchService.search(keyword, pageNum, pageSize);
+        return CommonResult.success(CommonPage.restPage(list));
     }
 
 }

@@ -179,7 +179,7 @@ public class AdminService {
         BeanUtils.copyProperties(umsAdminParam, umsAdmin);
         umsAdmin.setCreateTime(new Date());
         umsAdmin.setStatus(UsableStatus.ON.getStatus());
-        //查询是否有相同用户名的用户
+        //todo 查询是否有相同用户名的用户
 
 
         //将密码进行加密操作

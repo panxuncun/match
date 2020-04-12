@@ -69,3 +69,7 @@ pre. 学习了maven知识、npm知识、webpack知识
 1. Service 中：`PageHelper.startPage(pageNum,pageSize);`
 2. Controller 中：`return CommonResult.success(CommonPage.restPage(list));`
 
+## 4.13
+注意，资源标识，对应前端的roles（用于生成动态路由）
+data.put("roles",resourceService.getResourceNameForRouter(admin.getId()));
+

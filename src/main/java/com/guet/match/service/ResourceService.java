@@ -91,6 +91,12 @@ public class ResourceService {
         return resourceMapper.selectByExample(resourceExample);
     }
 
+    //获取资源权限名称，用于前端动态路由
+    public List getResourceNameForRouter(Long id){
+        List<String> res = getResourceListByAdminId(id).stream().map(item -> item.getPermission()).collect(Collectors.toList());
+        return res;
+    }
+
 
     //获取资源list by 类型
     public List<UmsResource> getResourceListByType(Integer type) {

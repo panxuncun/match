@@ -1,8 +1,10 @@
 package com.guet.match.config;
 
 import com.guet.match.model.UmsAdmin;
+import com.guet.match.model.UmsOrganizer;
 import com.guet.match.model.UmsResource;
 import com.guet.match.service.AdminService;
+import com.guet.match.service.OrganizeService;
 import com.guet.match.service.ResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -35,6 +37,9 @@ import java.util.List;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private AdminService adminService;
+
+    @Autowired
+    private OrganizeService organizeService;
 
     @Autowired
     private ResourceService resourceService;
@@ -102,6 +107,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             if (admin != null) {
                 List<UmsResource> resourceList = resourceService.getResourceListByAdminId(admin.getId());
                 return new UserDetailsImpl(admin,resourceList);
+            }
+            throw new UsernameNotFoundException("用户名或密码错误");
+        };
+    }
+
+    //4.13 主办方登录
+    @Bean
+    public UserDetailsService userDetailsServiceForOrganizer() {
+        //获取登录用户信息
+        return username -> {
+            UmsOrganizer organizer = organizeService.getOrganizerByUsername(username);
+            if (organizer != null) {
+                return new UserDetailsForOrganizerImpl(organizer);
             }
             throw new UsernameNotFoundException("用户名或密码错误");
         };

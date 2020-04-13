@@ -8,6 +8,8 @@ import com.guet.match.dto.EnrollmentDTO;
 import com.guet.match.dto.FilterContestParam;
 import com.guet.match.model.CmsContest;
 import com.guet.match.model.CmsFavorite;
+import com.guet.match.model.UmsAdmin;
+import com.guet.match.model.UmsOrganizer;
 import com.guet.match.service.ContestService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -18,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
@@ -48,13 +51,26 @@ public class ContestController {
         return contestService.checkContest(dto) == 1 ? CommonResult.success(null) : CommonResult.failed();
     }
 
-    @ApiOperation("查看赛事by id")
+    @ApiOperation("公共：查看赛事by id")
     @GetMapping("contest/info/{id}")
     public CommonResult getContestInfo(@PathVariable long id) {
         return CommonResult.success(contestService.getContestInfo(id));
     }
 
-    @ApiOperation("查看赛事记录by openId")
+    @ApiOperation("主办方：查看我举办的赛事")
+    @GetMapping("contest/listByOrganizer")
+    public CommonResult getContestByOrganizer(Principal principal,
+                                              @RequestParam(required = false, value = "page", defaultValue = "1") Integer pageNum,
+                                              @RequestParam(required = false, value = "limit", defaultValue = "5") Integer pageSize) {
+        if (principal == null) {
+            logger.info("主办方：查看我举办的赛事->未授权");
+            return CommonResult.unauthorized(null);
+        }
+        List<CmsContest> list = contestService.getContestByOrganizer(principal, pageNum, pageSize);
+        return CommonResult.success(CommonPage.restPage(list));
+    }
+
+    @ApiOperation("小程序：查看赛事记录by openId")
     @GetMapping("contest/enrollment/list")
     public CommonResult getEnrollmentByOpenId(@RequestParam(required = true) String openId,
                                               @RequestParam(required = false, value = "pageNum", defaultValue = "1") Integer pageNum,
@@ -69,7 +85,7 @@ public class ContestController {
                                       @RequestParam(required = true, defaultValue = "0") Integer sortCode,
                                       @RequestParam(required = false, defaultValue = "1") Integer pageNum,
                                       @RequestParam(required = false, defaultValue = "5") Integer pageSize) {
-        List<CmsContest> list = contestService.filterContest(typeName,sortCode, pageNum, pageSize);
+        List<CmsContest> list = contestService.filterContest(typeName, sortCode, pageNum, pageSize);
         return CommonResult.success(CommonPage.restPage(list));
     }
 

@@ -6,10 +6,7 @@ import com.guet.match.dto.UpdatePasswordParam;
 import com.guet.match.dto.UpdateStatusParam;
 import com.guet.match.mapper.UmsAdminMapper;
 import com.guet.match.mapper.UmsRoleAdminMapper;
-import com.guet.match.model.UmsAdmin;
-import com.guet.match.model.UmsAdminExample;
-import com.guet.match.model.UmsRoleAdmin;
-import com.guet.match.model.UmsRoleAdminExample;
+import com.guet.match.model.*;
 import com.guet.match.util.JwtTokenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -156,7 +153,7 @@ public class AdminService {
 
 
 
-    //login
+    //系统管理员登录
     public String login(String username, String password) {
         String token = null;
         try {
@@ -173,20 +170,29 @@ public class AdminService {
         return token;
     }
 
+    //账号查重
+    public boolean isDuplicate(String username) {
+        UmsAdminExample example = new UmsAdminExample();
+        example.createCriteria().andUsernameEqualTo(username);
+        if (adminMapper.selectByExample(example).size() > 0) {
+            return true;
+        }
+        return false;
+    }
+
     //register
-    public UmsAdmin register(UmsAdmin umsAdminParam) {
-        UmsAdmin umsAdmin = new UmsAdmin();
-        BeanUtils.copyProperties(umsAdminParam, umsAdmin);
-        umsAdmin.setCreateTime(new Date());
-        umsAdmin.setStatus(UsableStatus.ON.getStatus());
-        //todo 查询是否有相同用户名的用户
-
-
+    public UmsAdmin register(UmsAdmin param) {
+        if (isDuplicate(param.getUsername())){
+            return null;
+        }
+        UmsAdmin admin = new UmsAdmin();
+        BeanUtils.copyProperties(param, admin);
+        admin.setStatus(UsableStatus.ON.getStatus());
         //将密码进行加密操作
-        String encodePassword = passwordEncoder.encode(umsAdmin.getPassword());
-        umsAdmin.setPassword(encodePassword);
-        adminMapper.insert(umsAdmin);
-        return umsAdmin;
+        String encodePassword = passwordEncoder.encode(admin.getPassword());
+        admin.setPassword(encodePassword);
+        adminMapper.insertSelective(admin);
+        return admin;
     }
 
 

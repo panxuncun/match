@@ -1,6 +1,7 @@
 package com.guet.match.service;
 
 import com.github.pagehelper.PageHelper;
+import com.guet.match.common.CommonResult;
 import com.guet.match.common.ContestStatus;
 import com.guet.match.common.DeleteStatus;
 import com.guet.match.common.SortCode;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -44,13 +46,35 @@ public class ContestService {
     @Autowired
     private CmsEnrollmentRecordMapper enrollmentRecordMapper;
 
+    @Autowired
+    private OrganizeService organizeService;
+
+
+    /**
+     * 工具：获取主办方id By username
+     * @param
+     * @return 主办方id
+     */
+    public Long getOrganizerId(Principal principal){
+        UmsOrganizer organizer = organizeService.getOrganizerByUsername(principal.getName());
+        return organizer.getId();
+    }
+
     //查看赛事by id
     public ContestInfoDTO getContestInfo(Long id) {
         logger.info("查看赛事详细信息");
         return contestMapper.getContestDtoByid(id);
     }
 
-    //查看我的赛事（以报名记录为准）
+    //主办方：查看我举办的赛事
+    public List<CmsContest> getContestByOrganizer(Principal principal, Integer pageNum, Integer pageSize){
+        CmsContestExample example = new CmsContestExample();
+        example.createCriteria().andOrganizerIdEqualTo(getOrganizerId(principal));
+        PageHelper.startPage(pageNum, pageSize);
+        return contestMapper.selectByExample(example);
+    }
+
+    //小程序：查看我的赛事（以报名记录为准）
     public List<EnrollmentDTO> getEnrollmentByOpenId(String openId, Integer pageNum, Integer pageSize) {
         if (openId == null) {
             return new ArrayList();
@@ -123,7 +147,8 @@ public class ContestService {
             CmsContest contest = new CmsContest();
             BeanUtils.copyProperties(dto, contest);
             contest.setStatus(ContestStatus.WAIT.getStatus());
-            contestMapper.updateByPrimaryKey(contest);
+            //注意，这里会出现更新无效的情况，因为存在空值可能性
+            contestMapper.updateByPrimaryKeySelective(contest);
             //clean all group and list
             groupMapper.deleteByContestId(id);
             extensionPropertyMapper.deleteByContestId(id);
@@ -133,11 +158,11 @@ public class ContestService {
             //insert
             groupMapper.insertList(dto.getGroupList());
             extensionPropertyMapper.insertList(dto.getExtensionPropertyList());
-            logger.info("更新赛事");
+            logger.info("更新赛事成功，原始参数, id:{}",contest.getId());
             return true;
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            logger.error("更新赛事失败，参数为" + dto.toString());
+            logger.error("更新赛事失败，原始参数{}",dto.toString());
             return false;
         }
     }

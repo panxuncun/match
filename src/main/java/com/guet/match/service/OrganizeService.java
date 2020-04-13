@@ -8,12 +8,21 @@ import com.guet.match.mapper.CmsContestMapper;
 import com.guet.match.mapper.UmsOrganizerMapper;
 import com.guet.match.mapper.UmsOrganizerStaffMapper;
 import com.guet.match.model.*;
+import com.guet.match.util.JwtTokenUtil;
 import com.guet.match.util.OSSUtil;
 import org.apache.poi.hssf.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -49,6 +58,18 @@ public class OrganizeService {
     @Autowired
     private UmsOrganizerStaffMapper staffMapper;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
+    @Value("${jwt.tokenHead}")
+    private String tokenHead;
+
     //账号查重
     public boolean isDuplicate(String username) {
         UmsOrganizerExample example = new UmsOrganizerExample();
@@ -57,6 +78,17 @@ public class OrganizeService {
             return true;
         }
         return false;
+    }
+
+    public UmsOrganizer getOrganizerByUsername(String username){
+        UmsOrganizerExample example = new UmsOrganizerExample();
+        example.createCriteria().andUsernameEqualTo(username);
+        List<UmsOrganizer> list = organizerMapper.selectByExample(example);
+        if (list == null || list.size()==0){
+            logger.error("用户不存在, list->{},size->{}",list,list.size());
+            return null;
+        }
+        return list.get(0);
     }
 
     //注册主办方账号
@@ -69,16 +101,35 @@ public class OrganizeService {
         }
         try {
             logger.info("用户注册{}", dto.toString());
-            BeanUtils.copyProperties(dto, organizer);
+            //用户名
+            organizer.setUsername(dto.getUsername());
+            //将密码进行加密操作
+            organizer.setPassword(passwordEncoder.encode(dto.getPassword()));
             //注册后置为初始态
             organizer.setStatus(INIT);
-            organizer.setCreateTime(new Date());
-            return organizerMapper.insert(organizer);
+            return organizerMapper.insertSelective(organizer);
         } catch (Exception e) {
-            logger.error("无法插入主办方注册信息{}", dto.toString());
+            logger.error("主办方注册失败：无法插入记录{}", dto.toString());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return 0;
         }
+    }
+
+    //主办方登录
+    public String login(String username, String password) {
+        String token = null;
+        try {
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            if (!passwordEncoder.matches(password, userDetails.getPassword())) {
+                throw new BadCredentialsException("密码不正确");
+            }
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            token = jwtTokenUtil.generateToken(userDetails);
+        } catch (AuthenticationException e) {
+            logger.warn("登录异常:{}", e.getMessage());
+        }
+        return token;
     }
 
     //更新主办方资料

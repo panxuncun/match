@@ -4,6 +4,7 @@
 - 异常和事务的回滚，这个非常重要
 - 检查所有表的create_time是否都有了
 - todo 登陆时，如果用户没有角色，也就没有资源，这时候会出错的。比如新注册的用户要登陆。处理这个空指针问题。
+- 主办方访问的时候，还是用到了内管的JWTFilter，辛亏内管和主办方都有一个叫110的用户，要不然就报错了，具体见4.13的日志。
 
 
 ## 3.24
@@ -70,6 +71,13 @@ pre. 学习了maven知识、npm知识、webpack知识
 2. Controller 中：`return CommonResult.success(CommonPage.restPage(list));`
 
 ## 4.13
-注意，资源标识，对应前端的roles（用于生成动态路由）
-data.put("roles",resourceService.getResourceNameForRouter(admin.getId()));
+- 注意，资源标识，对应前端的roles（用于生成动态路由）
+- `data.put("roles",resourceService.getResourceNameForRouter(admin.getId()));`
+下面是授权相关
+- 今天新增了1个文件`config/UserDetailsForOrganizerImpl`,这个是给主办方的用户细节。
+- 修改了1个文件`config/SecurityConfig`,加了一个@Bean方法，给主办方的，因为主办方不需要查资源。（并且我改动了主办方登录接口，手动返回一个`organizer`角色）
+- 但是！！！主办方访问接口会调用jwtfilter类，这是内管的，需要分开，现在不懂，只能记下todo。
+
+出现一个更新无效的情况
+- `contestMapper.updateByPrimaryKey(contest)`，后来我换成`contestMapper.updateByPrimaryKeySelective(contest)`才可以
 

@@ -5,8 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.guet.match.common.CommonResult;
 import com.guet.match.dto.SignParam;
 import com.guet.match.model.UmsAdmin;
+import com.guet.match.model.UmsOrganizer;
 import com.guet.match.service.AdminService;
 import com.guet.match.service.AuthService;
+import com.guet.match.service.OrganizeService;
 import com.guet.match.service.ResourceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -40,6 +42,9 @@ public class AuthController {
     @Autowired
     private AdminService adminService;
 
+    @Autowired
+    private OrganizeService organizeService;
+
     @Value("${jwt.tokenHeader}")
     private String tokenHeader;
     @Value("${jwt.tokenHead}")
@@ -56,60 +61,25 @@ public class AuthController {
         return CommonResult.success(map);
     }
 
-    @ApiOperation("测试登陆 4.11")
-    @RequestMapping("user/login")
-    public Map getOpenId1(){
-        logger.info("=====user/login");
-        String res = "{\"code\":20000,\"status\":\"success\",\"data\":{\"token\":\"test-token\"}}";
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map<String ,String > map = null;
-        try {
-            map = objectMapper.readValue(res, Map.class);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return map;
-    }
-
-    @ApiOperation("测试登陆token 4.11")
-    @RequestMapping("user/info")
-    public Map getToken1(@RequestParam String token){
-        logger.info("=====user/info");
-        String res = "{\"code\":200,\"status\":\"success\",\"data\":{\"roles\":[\"admin111\",\"pan\"]}}";
-        //String res = "{\"code\":20000,\"message\":\"操作成功\",\"data\":{\"roles\":[\"TEST\",\"Admin\"],\"icon\":\"http://macro-oss.oss-cn-shenzhen.aliyuncs.com/mall/images/20180607/timg.jpg\",\"menus\":[{\"id\":1,\"parentId\":0,\"createTime\":\"2020-02-02T06:50:36.000+0000\",\"title\":\"商品\",\"level\":0,\"sort\":0,\"name\":\"pms\",\"icon\":\"product\",\"hidden\":0},{\"id\":2,\"parentId\":1,\"createTime\":\"2020-02-02T06:51:50.000+0000\",\"title\":\"商品列表\",\"level\":1,\"sort\":0,\"name\":\"product\",\"icon\":\"product-list\",\"hidden\":0}],\"username\":\"admin\"}}";
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map<String ,String > map = null;
-        try {
-            map = objectMapper.readValue(res, Map.class);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return map;
-    }
-
-    @ApiOperation("测试登陆token 4.11")
-    @RequestMapping("user/logout")
-    public Map logout(){
-        logger.info("=====user/logout");
-        String res = "{\"code\":200,\"status\":\"success\",\"data\":\"sucess\"}";
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map<String ,String > map = null;
-        try {
-            map = objectMapper.readValue(res, Map.class);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return map;
-    }
-
     @GetMapping("admin/list/{roleId}")
     public CommonResult getAdminListByRoleId(@PathVariable Long roleId){
         return CommonResult.success(adminService.getAdminListByRoleId(roleId));
     }
 
-    @ApiOperation(value = "登录以后返回token")
-    @RequestMapping("auth/login")
+    //不开放这个接口
+    @ApiOperation(value = "系统管理员:注册")
+    @RequestMapping(value = "admin/auth/register", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult register(@RequestBody UmsAdmin umsAdminParam) {
+        UmsAdmin umsAdmin = adminService.register(umsAdminParam);
+        if (umsAdmin == null) {
+            CommonResult.failed("用户名已存在");
+        }
+        return CommonResult.success(umsAdmin);
+    }
+
+    @ApiOperation(value = "系统管理员:登录")
+    @PostMapping("auth/admin/login")
     public CommonResult login(@RequestBody SignParam umsAdminLoginParam) {
         logger.info("登录");
         String token = adminService.login(umsAdminLoginParam.getUsername(), umsAdminLoginParam.getPassword());
@@ -123,8 +93,8 @@ public class AuthController {
         return CommonResult.success(tokenMap);
     }
 
-    @ApiOperation("获取登录信息4.12")
-    @RequestMapping("auth/info")
+    @ApiOperation("系统管理员:获取权限+用户信息")
+    @GetMapping("auth/admin/info")
     public CommonResult getUserInfo(Principal principal) {
         logger.info("=====info");
         if(principal==null){
@@ -133,24 +103,63 @@ public class AuthController {
         }
         String username = principal.getName();
         UmsAdmin admin = adminService.getAdminByUsername(username);
-        Map<String, Object> data = new HashMap<>();
-        data.put("username", admin.getUsername());
+        Map<String, Object> map = new HashMap<>();
+        map.put("username", admin.getUsername());
+        map.put("userId", admin.getId());
         //注意，资源标识，对应前端的roles（用于生成动态路由）
-        data.put("roles",resourceService.getResourceNameForRouter(admin.getId()));
-        //data.put("icon", admin.getIcon());
-
-        return CommonResult.success(data);
+        map.put("roles",resourceService.getResourceNameForRouter(admin.getId()));
+        //map.put("icon", admin.getIcon());
+        return CommonResult.success(map);
     }
 
-    @ApiOperation(value = "用户注册")
-    @RequestMapping(value = "auth/register", method = RequestMethod.POST)
-    @ResponseBody
-    public CommonResult register(@RequestBody UmsAdmin umsAdminParam) {
-        UmsAdmin umsAdmin = adminService.register(umsAdminParam);
-        if (umsAdmin == null) {
-            CommonResult.failed();
+    @ApiOperation(value = "主办方:登录")
+    @PostMapping("auth/organizer/login")
+    public CommonResult organizeLogin(@RequestBody SignParam param) {
+        logger.info("主办方:登录");
+        String token = organizeService.login(param.getUsername(), param.getPassword());
+        if (token == null) {
+            return CommonResult.validateFailed("用户名或密码错误");
         }
-        return CommonResult.success(umsAdmin);
+        Map<String, String> tokenMap = new HashMap<>();
+        //拆开，postman测试的时候更方便
+        tokenMap.put("token", token);
+        tokenMap.put("tokenHead", tokenHead);
+        return CommonResult.success(tokenMap);
     }
+
+
+    @ApiOperation("主办方：获取权限+用户信息")
+    @GetMapping("auth/organizer/info")
+    public CommonResult getOrganizeInfo(Principal principal) {
+        logger.info("=====organizeinfo");
+        if(principal==null){
+            logger.info("=====未授权");
+            return CommonResult.unauthorized(null);
+        }
+        String username = principal.getName();
+        UmsOrganizer organizer = organizeService.getOrganizerByUsername(username);
+        Map<String, Object> map = new HashMap<>();
+        map.put("username", organizer.getUsername());
+        map.put("userId", organizer.getId());
+        //注意，资源标识，对应前端的roles（用于生成动态路由）
+        map.put("roles",new String[]{"organizer"});
+        return CommonResult.success(map);
+    }
+
+
+    @ApiOperation("公用：登出")
+    @PostMapping("auth/logout")
+    public CommonResult logout(Principal principal) {
+        logger.info("=====logout");
+        if(principal==null){
+            return CommonResult.success(null);
+        }
+        return CommonResult.success(null);
+    }
+
+
+
+
+
 
 }

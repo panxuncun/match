@@ -91,6 +91,7 @@ public class OrganizerController {
     @ApiOperation("导出主办方工作人员 by 赛事 id）")
     @GetMapping("organizer/staff/export/{contestId}")
     public void exportStaffInfo(HttpServletResponse response,@PathVariable Long contestId){
+        logger.info("下载请求：导出主办方工作人员");
         try {
             HSSFWorkbook excel = organizeService.exportStaffInfo(contestId);
             response.setContentType("application/octet-stream");

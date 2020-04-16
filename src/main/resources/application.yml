@@ -1,5 +1,5 @@
 jwt:
   tokenHeader: Authorization #JWT存储的请求头
   secret: match_security_1949 #JWT加解密使用的密钥
-  expiration: 1000 #1000秒 JWT的超期限时间(60*60*24)604800
+  expiration: 10000 #10000秒 JWT的超期限时间(60*60*24)604800
   tokenHead: Bearer  #JWT负载中拿到开头

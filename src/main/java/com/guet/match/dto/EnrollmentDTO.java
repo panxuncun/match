@@ -7,7 +7,8 @@ import java.util.Date;
 /**
  * @Auther: sefer
  * @Date: 2020/4/4
- * @Description: 我的赛事（报名信息）
+ * @Description: 我的赛事（小程序查看报名信息）
+ * @Description: 报名记录（导入成绩、审核报名记录都用这个）（主办方）（主办方只需要EnrollmentRecord + 组别名）
  */
 public class EnrollmentDTO extends CmsEnrollmentRecord {
     //赛事名称

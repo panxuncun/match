@@ -5,21 +5,20 @@ import com.guet.match.common.CommonResult;
 import com.guet.match.dto.CheckContestParam;
 import com.guet.match.dto.ContestInfoDTO;
 import com.guet.match.dto.EnrollmentDTO;
-import com.guet.match.dto.FilterContestParam;
 import com.guet.match.model.CmsContest;
 import com.guet.match.model.CmsFavorite;
-import com.guet.match.model.UmsAdmin;
-import com.guet.match.model.UmsOrganizer;
 import com.guet.match.service.ContestService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +69,43 @@ public class ContestController {
         return CommonResult.success(CommonPage.restPage(list));
     }
 
+    @ApiOperation("主办方：查看指定赛事下的报名记录")
+    @GetMapping("contest/enrollment/listByContestId")
+    public CommonResult getEnrollmentByContestId(Principal principal,
+                                                 @RequestParam(required = true) Long contestId,
+                                                 @RequestParam(required = false, value = "page", defaultValue = "1") Integer pageNum,
+                                                 @RequestParam(required = false, value = "limit", defaultValue = "5") Integer pageSize) {
+        if (principal == null) {
+            logger.info("主办方：查看指定赛事下的报名记录->未授权");
+            return CommonResult.unauthorized(null);
+        }
+        return contestService.getEnrollmentByContestId(principal, contestId, pageNum, pageSize);
+    }
+
+    @ApiOperation("主办方：导出成绩模板")
+    @GetMapping("contest/enrollment/export/{contestId}")
+    public void exportEnrollmentByContestId(HttpServletResponse response, @PathVariable Long contestId){
+        logger.info("下载请求：导出成绩模板");
+        try {
+            HSSFWorkbook excel = contestService.exportEnrollmentByContestId(contestId);
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-disposition", "attachment;filename=enrollment.xls");
+            response.flushBuffer();
+            excel.write(response.getOutputStream());
+        } catch (Exception e) {
+            logger.error("导出excel文件出错, 传入参数contestId->{}",contestId);
+        }
+    }
+
+    @ApiOperation("主办方：导入成绩表格")
+    @PostMapping("contest/enrollment/import/{contestId}")
+    public CommonResult importEnrollmentByContestId(@RequestParam(value = "file") MultipartFile file, @PathVariable Long contestId){
+        logger.info("导入成绩表格,contestId->{}",contestId);
+        return contestService.importEnrollmentByContestId(file, contestId);
+    }
+
+
+
     @ApiOperation("小程序：查看赛事记录by openId")
     @GetMapping("contest/enrollment/list")
     public CommonResult getEnrollmentByOpenId(@RequestParam(required = true) String openId,
@@ -98,8 +134,8 @@ public class ContestController {
 
     @ApiOperation("更新赛事")
     @PostMapping("contest/update")
-    public CommonResult updateContest(@RequestBody ContestInfoDTO dto) {
-        return contestService.updateContest(dto) ? CommonResult.success(null) : CommonResult.failed();
+    public CommonResult updateContest(@RequestBody ContestInfoDTO dto, Principal principal) {
+        return contestService.updateContest(dto, principal);
     }
 
     @ApiOperation("删除赛事标记")

@@ -32,4 +32,7 @@ public interface CmsEnrollmentRecordMapper {
 
     //小程序获取我的赛事
     List<EnrollmentDTO> getEnrollmentListByOpenId(@Param("openId") String  openId);
+
+    //主办方，获取报名记录 todo
+    List<EnrollmentDTO> getEnrollmentListByContestId(@Param("contestId") Long  contestId);
 }

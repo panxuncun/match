@@ -81,3 +81,6 @@ pre. 学习了maven知识、npm知识、webpack知识
 出现一个更新无效的情况
 - `contestMapper.updateByPrimaryKey(contest)`，后来我换成`contestMapper.updateByPrimaryKeySelective(contest)`才可以
 
+## 4.14
+- 我将cms_contest的details字段修改：从text到midtext，但是mapper没动，只是改了数据库而已哦。因为富文本还有html标签，占用量很大。
+

@@ -151,6 +151,25 @@
   <!--end 查询小程序的OrderDTO-->
 
 
+  <!--主办方：获取报名记录 状态2是临时数据（订单衍生）,这里的排序是一个问题-->
+  <select id="getEnrollmentListByContestId" resultMap="EnrollmentDTOMap" parameterType="map">
+      SELECT
+          cms_enrollment_record.*, cms_contest.`name` AS contest_name,
+          cms_contest.contest_time AS contest_time,
+          cms_contest.logo AS logo,
+          cms_contest_group.`name` AS group_name
+      FROM
+          cms_enrollment_record
+      LEFT JOIN cms_contest ON cms_enrollment_record.contest_id = cms_contest.id
+      LEFT JOIN cms_contest_group ON cms_enrollment_record.contest_group_id = cms_contest_group.id
+      WHERE
+          cms_enrollment_record.contest_id = #{contestId,jdbcType=BIGINT}
+      AND cms_enrollment_record. STATUS != 2
+      ORDER BY
+          id DESC
+  </select>
+  <!--end 主办方：获取报名记录-->
+
 
 
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >

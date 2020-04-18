@@ -2,6 +2,7 @@ package com.guet.match.controller;
 
 import com.guet.match.common.CommonResult;
 import com.guet.match.dto.AddResourceParam;
+import com.guet.match.dto.AllocParam;
 import com.guet.match.dto.UpdateResourceParam;
 import com.guet.match.model.UmsResource;
 import com.guet.match.service.ResourceService;
@@ -31,11 +32,30 @@ public class ResourceController {
     @GetMapping("resource/info/{id}")
     public CommonResult getResource(@PathVariable Long id){
         return CommonResult.success(resourceService.getResource(id));
+
+    }
+
+    @ApiOperation("获取资源种类(表头)")
+    @GetMapping("resource/cate/list")
+    public CommonResult getResourceCateList(){
+        return CommonResult.success(resourceService.getResourceCateList());
+    }
+
+    @ApiOperation("获取所有资源")
+    @GetMapping("resource/list")
+    public CommonResult getAllResourceList(){
+        return CommonResult.success(resourceService.getAllResourceList());
+    }
+
+    @ApiOperation("获取资源by 角色")
+    @GetMapping("resource/listByRole/{roleId}")
+    public CommonResult getResourceListByRole(@PathVariable Long roleId){
+        return CommonResult.success(resourceService.getResourceByRole(roleId));
     }
 
     @ApiOperation("获取资源by admin id")
     @GetMapping("resource/listByadmin/{adminId}")
-    public CommonResult getResourceListByAdminId(@PathVariable Long adminId){
+    public CommonResult getResourceListByAdmin(@PathVariable Long adminId){
         return CommonResult.success(resourceService.getResourceListByAdminId(adminId));
     }
 
@@ -44,6 +64,8 @@ public class ResourceController {
     public CommonResult getResourceListByType(@PathVariable Integer type){
         return CommonResult.success(resourceService.getResourceListByType(type));
     }
+
+
 
     @ApiOperation("更新资源")
     @PostMapping("resource/update")

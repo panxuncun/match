@@ -13,6 +13,10 @@ public class UmsAdmin {
 
     private Integer status;
 
+    private String nickName;
+
+    private String note;
+
     public Long getId() {
         return id;
     }
@@ -51,5 +55,21 @@ public class UmsAdmin {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 }

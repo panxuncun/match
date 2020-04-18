@@ -1,8 +1,11 @@
 package com.guet.match.service;
 
+import com.github.pagehelper.PageHelper;
+import com.guet.match.common.CommonResult;
 import com.guet.match.common.RoleType;
 import com.guet.match.dto.AddRoleParam;
 import com.guet.match.dto.UpdateRoleParam;
+import com.guet.match.dto.UpdateStatusParam;
 import com.guet.match.mapper.UmsRoleMapper;
 import com.guet.match.model.UmsRole;
 import com.guet.match.model.UmsRoleExample;
@@ -51,6 +54,28 @@ public class RoleService {
         return roleMapper.selectByPrimaryKey(id);
     }
 
+    //获取全部角色
+    //todo pricipal
+    public List<UmsRole> listAllRole(String keyword,Integer pageNum, Integer pageSize){
+        UmsRoleExample example = new UmsRoleExample();
+        example.setOrderByClause("id desc");
+
+        //角色名称搜索
+        if (keyword != null && keyword.trim().length() > 0){
+            example.createCriteria().andNameLike("%" + keyword + "%");
+        }
+        PageHelper.startPage(pageNum, pageSize);
+        return roleMapper.selectByExample(example);
+    }
+
+    //获取全部角色by admin
+    public List<UmsRole> listByAdmin(Long adminId){
+        UmsRoleExample example = new UmsRoleExample();
+        example.createCriteria().andAdminIdEqualTo(adminId);
+        return roleMapper.selectByExample(example);
+    }
+
+
 
     //获取角色list by 类型
     public List<UmsRole> getRoleListByType(Integer type) {
@@ -64,13 +89,28 @@ public class RoleService {
 
     //更新角色
     public int updateRole(UpdateRoleParam param) {
+        logger.info("=====pre update");
         UmsRole role = roleMapper.selectByPrimaryKey(param.getId());
         if (role == null) {
             return 0;
         }
+        logger.info("=====update1");
         BeanUtils.copyProperties(param, role);
+        logger.info("=====update2");
         return roleMapper.updateByPrimaryKey(role);
     }
+
+    //更新角色状态
+    public int updateRoleStatus(UpdateStatusParam param) {
+        UmsRole role = roleMapper.selectByPrimaryKey(param.getId());
+        if (role == null) {
+            return 0;
+        }
+        role.setStatus(param.getStatus());
+        return roleMapper.updateByPrimaryKey(role);
+    }
+
+
 
     //删除角色 by id
     public int deleteRole(Long id){

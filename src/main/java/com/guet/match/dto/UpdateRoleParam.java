@@ -22,6 +22,9 @@ public class UpdateRoleParam {
     @ApiModelProperty("描述")
     private String description;
 
+    @ApiModelProperty("状态")
+    private Integer status;
+
     public Long getId() {
         return id;
     }
@@ -52,5 +55,13 @@ public class UpdateRoleParam {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }

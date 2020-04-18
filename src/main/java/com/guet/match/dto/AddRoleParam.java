@@ -14,13 +14,16 @@ public class AddRoleParam {
 
     private Long adminId;
 
+    private Integer status;
+
     @Override
     public String toString() {
-        return "RoleParam{" +
+        return "AddRoleParam{" +
                 "tag='" + tag + '\'' +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", adminId=" + adminId +
+                ", status=" + status +
                 '}';
     }
 
@@ -40,7 +43,6 @@ public class AddRoleParam {
         this.name = name;
     }
 
-
     public String getDescription() {
         return description;
     }
@@ -55,5 +57,13 @@ public class AddRoleParam {
 
     public void setAdminId(Long adminId) {
         this.adminId = adminId;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }

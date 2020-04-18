@@ -1,5 +1,8 @@
 package com.guet.match.service;
 
+import com.github.pagehelper.PageHelper;
+import com.guet.match.common.CommonPage;
+import com.guet.match.common.CommonResult;
 import com.guet.match.common.UsableStatus;
 import com.guet.match.dto.AddAdminParam;
 import com.guet.match.dto.UpdatePasswordParam;
@@ -56,26 +59,47 @@ public class AdminService {
 
 
 
+
     //添加管理员(内管系统管理员)
     @Transactional
-    public int addAdmin(AddAdminParam param) {
+    public CommonResult addAdmin(AddAdminParam param) {
+        //查重
+        String username = param.getUsername();
+        String password = param.getPassword();
+        if (username == null || password == null){
+            return CommonResult.failed("账号密码不能为空");
+        }
+        if (isDuplicate(username)) {
+            return CommonResult.failed("账号" + username + "已存在");
+        }
+
         UmsAdmin admin = new UmsAdmin();
         BeanUtils.copyProperties(param, admin);
+
+        //将密码进行加密操作
+        String encodePassword = passwordEncoder.encode(password);
+        admin.setPassword(encodePassword);
+
         try {
-            //插入用户信息
+            //插入账号信息
             adminMapper.insertSelective(admin);
             //插入 (角色-用户) 关系
-            for (int i = 0; i < param.getRoleIds().length; i++) {
+            List<Long> ids = param.getRoleIds();
+            //没有角色就不插入
+            if (ids == null || ids.size()<1){
+                return CommonResult.success(null);
+            }
+            for (int i = 0; i < ids.size(); i++) {
                 UmsRoleAdmin relation = new UmsRoleAdmin();
                 relation.setAdminId(admin.getId());
-                relation.setRoleId(param.getRoleIds()[i]);
+                relation.setRoleId(ids.get(i));
                 roleAdminMapper.insert(relation);
             }
-            return 1;
+            return CommonResult.success(null);
         } catch (Exception e) {
             logger.error("插入管理员信息错误, 原始请求参数{}", param.toString());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return 0;
+            return CommonResult.failed();
         }
 
     }
@@ -88,13 +112,13 @@ public class AdminService {
         return adminMapper.selectByPrimaryKey(id);
     }
 
-    public UmsAdmin getAdminByUsername(String username){
+    public UmsAdmin getAdminByUsername(String username) {
         logger.info("原始参数username->{}", username);
         UmsAdminExample example = new UmsAdminExample();
         example.createCriteria().andUsernameEqualTo(username);
         List<UmsAdmin> list = adminMapper.selectByExample(example);
-        if (list == null || list.size()==0){
-            logger.error("用户不存在, list->{},size->{}",list,list.size());
+        if (list == null || list.size() == 0) {
+            logger.error("用户不存在, list->{},size->{}", list, list.size());
             return null;
         }
         return list.get(0);
@@ -127,7 +151,7 @@ public class AdminService {
     }
 
     //重置管理员密码，使密码 = 用户名
-    public int resetPassword(Long id){
+    public int resetPassword(Long id) {
         UmsAdmin admin = adminMapper.selectByPrimaryKey(id);
         if (admin == null) {
             return 0;
@@ -137,7 +161,7 @@ public class AdminService {
     }
 
     //修改密码
-    public int updatePassword(UpdatePasswordParam param){
+    public int updatePassword(UpdatePasswordParam param) {
         UmsAdmin admin = adminMapper.selectByPrimaryKey(param.getId());
         if (admin == null) {
             return 0;
@@ -147,10 +171,13 @@ public class AdminService {
     }
 
     //删除管理员 by id
-    public int deleteAdmin(Long id){
+    public int deleteAdmin(Long id) {
+        //删除对应关系
+        UmsRoleAdminExample role_admin = new UmsRoleAdminExample();
+        role_admin.createCriteria().andAdminIdEqualTo(id);
+        roleAdminMapper.deleteByExample(role_admin);
         return adminMapper.deleteByPrimaryKey(id);
     }
-
 
 
     //系统管理员登录
@@ -182,7 +209,7 @@ public class AdminService {
 
     //register
     public UmsAdmin register(UmsAdmin param) {
-        if (isDuplicate(param.getUsername())){
+        if (isDuplicate(param.getUsername())) {
             return null;
         }
         UmsAdmin admin = new UmsAdmin();
@@ -195,6 +222,21 @@ public class AdminService {
         return admin;
     }
 
+    //获取全部管理员
+    public CommonResult getAdminList(String keyword, Integer pageNum, Integer pageSize) {
+        UmsAdminExample example = new UmsAdminExample();
+        example.setOrderByClause("id desc");
+        //昵称或账号搜索
+        if (keyword != null && keyword.trim().length() > 0) {
+            example.createCriteria().andUsernameLike("%" + keyword + "%");
+            example.or(example.createCriteria().andNickNameLike("%" + keyword + "%"));
+        }
+        PageHelper.startPage(pageNum, pageSize);
+        List<UmsAdmin> list = adminMapper.selectByExample(example);
+        //密码置空
+        list.stream().forEach(admin -> admin.setPassword(null));
+        return CommonResult.success(CommonPage.restPage(list));
+    }
 
 
 }

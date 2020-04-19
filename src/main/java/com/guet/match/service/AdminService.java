@@ -4,9 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.guet.match.common.CommonPage;
 import com.guet.match.common.CommonResult;
 import com.guet.match.common.UsableStatus;
-import com.guet.match.dto.AddAdminParam;
-import com.guet.match.dto.UpdatePasswordParam;
-import com.guet.match.dto.UpdateStatusParam;
+import com.guet.match.dto.*;
 import com.guet.match.mapper.UmsAdminMapper;
 import com.guet.match.mapper.UmsRoleAdminMapper;
 import com.guet.match.model.*;
@@ -27,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,6 +55,8 @@ public class AdminService {
 
     @Value("${jwt.tokenHead}")
     private String tokenHead;
+
+
 
 
 
@@ -140,6 +141,16 @@ public class AdminService {
         return adminList;
     }
 
+    //更新管理员
+    public CommonResult updateAdmin(UpdateAdminParam param) {
+        UmsAdmin admin = adminMapper.selectByPrimaryKey(param.getId());
+        if (admin == null){
+            return CommonResult.failed();
+        }
+        BeanUtils.copyProperties(param,admin);
+        return adminMapper.updateByPrimaryKeySelective(admin) == 1 ? CommonResult.success(null) : CommonResult.failed();
+    }
+
     //更新管理员状态
     public int updateAdminStatus(UpdateStatusParam param) {
         UmsAdmin admin = adminMapper.selectByPrimaryKey(param.getId());
@@ -160,23 +171,38 @@ public class AdminService {
         return adminMapper.updateByPrimaryKey(admin);
     }
 
-    //修改密码
-    public int updatePassword(UpdatePasswordParam param) {
+    //重置密码
+    public CommonResult updatePassword(UpdatePasswordParam param) {
         UmsAdmin admin = adminMapper.selectByPrimaryKey(param.getId());
         if (admin == null) {
-            return 0;
+            return CommonResult.failed();
         }
-        admin.setPassword(param.getPassword());
-        return adminMapper.updateByPrimaryKey(admin);
+        //将密码进行加密操作
+        String encodePassword = passwordEncoder.encode(param.getPassword());
+        admin.setPassword(encodePassword);
+        return adminMapper.updateByPrimaryKey(admin) == 1 ? CommonResult.success(null) : CommonResult.failed();
     }
 
     //删除管理员 by id
-    public int deleteAdmin(Long id) {
+    public CommonResult deleteAdmin(Principal principal, Long id) {
+
+        UmsAdmin admin = adminMapper.selectByPrimaryKey(id);
+        if (admin == null) {
+            return CommonResult.failed("用户不存在");
+        }
+
+        if (principal.getName().equals(admin.getUsername())){
+            return CommonResult.failed("不能删除自己的账号");
+        }
+
+
+
         //删除对应关系
         UmsRoleAdminExample role_admin = new UmsRoleAdminExample();
         role_admin.createCriteria().andAdminIdEqualTo(id);
         roleAdminMapper.deleteByExample(role_admin);
-        return adminMapper.deleteByPrimaryKey(id);
+        return adminMapper.deleteByPrimaryKey(id) == 1 ? CommonResult.success(null) : CommonResult.failed();
+
     }
 
 
@@ -236,6 +262,39 @@ public class AdminService {
         //密码置空
         list.stream().forEach(admin -> admin.setPassword(null));
         return CommonResult.success(CommonPage.restPage(list));
+    }
+
+    //为用户分配角色
+    public CommonResult allocRole(AllocParam param){
+        logger.info("分配角色{}->",param.toString());
+        Long adminId = param.getId();
+        List<Long> ids = param.getIds();
+        if (adminId == null || ids == null){
+            return CommonResult.failed("不合法的参数");
+        }
+
+        UmsAdmin admin = adminMapper.selectByPrimaryKey(adminId);
+        if (admin == null){
+            return CommonResult.failed("不存在的管理员");
+        }
+
+        try {
+            //删除原有关系
+            UmsRoleAdminExample role_admin_example = new UmsRoleAdminExample();
+            role_admin_example.createCriteria().andAdminIdEqualTo(adminId);
+            roleAdminMapper.deleteByExample(role_admin_example);
+
+            //插入新关系
+            ids.stream().forEach(roleId->{
+                UmsRoleAdmin role_admin = new UmsRoleAdmin();
+                role_admin.setAdminId(adminId);
+                role_admin.setRoleId(roleId);
+                roleAdminMapper.insertSelective(role_admin);
+            });
+            return CommonResult.success(null);
+        }catch (Exception e){
+            return CommonResult.failed();
+        }
     }
 
 

@@ -1,5 +1,8 @@
 package com.guet.match.service;
 
+import cn.hutool.core.util.StrUtil;
+import com.github.pagehelper.PageHelper;
+import com.guet.match.common.CommonPage;
 import com.guet.match.common.CommonResult;
 import com.guet.match.common.ResourceType;
 import com.guet.match.dto.AddResourceParam;
@@ -17,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import sun.rmi.runtime.Log;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collector;
@@ -42,6 +46,41 @@ public class ResourceService {
     @Autowired
     private UmsRoleAdminMapper roleAdminMapper;
 
+    //获取资源种类(表头)(parent_id = 0)可以合并下面
+    public List<UmsResource> getResourceCateList() {
+        UmsResourceExample example = new UmsResourceExample();
+        example.setOrderByClause("sort asc");
+        example.createCriteria().andParentIdEqualTo(0L);
+        return resourceMapper.selectByExample(example);
+    }
+
+    //获取所有子资源(parent_id != 0)可以合并上面
+    public List<UmsResource> getAllResourceList() {
+        UmsResourceExample example = new UmsResourceExample();
+        example.createCriteria().andParentIdNotEqualTo(0L);
+        return resourceMapper.selectByExample(example);
+    }
+
+    //获取所有子资源(分页)
+    public CommonResult getResourceListWithPage(Long parentId, String nameKeyword, String urlKeyword, Integer pageNum, Integer pageSize) {
+        UmsResourceExample example = new UmsResourceExample();
+        example.setOrderByClause("id desc");
+        UmsResourceExample.Criteria criteria = example.createCriteria();
+        criteria.andParentIdNotEqualTo(0L);
+        if (parentId != null) {
+            criteria.andParentIdEqualTo(parentId);
+        }
+        if (StrUtil.isNotEmpty(nameKeyword)) {
+            criteria.andNameLike('%' + nameKeyword + '%');
+        }
+        if (StrUtil.isNotEmpty(urlKeyword)) {
+            criteria.andUrlLike('%' + urlKeyword + '%');
+        }
+        PageHelper.startPage(pageNum, pageSize);
+        List<UmsResource> list = resourceMapper.selectByExample(example);
+        return CommonResult.success(CommonPage.restPage(list));
+    }
+
     //添加资源
     @Transactional
     public int addResource(AddResourceParam param) {
@@ -65,19 +104,6 @@ public class ResourceService {
         return resourceMapper.selectByPrimaryKey(id);
     }
 
-    //获取资源种类(表头)(parent_id = 0)可以合并下面
-    public List<UmsResource> getResourceCateList() {
-        UmsResourceExample example = new UmsResourceExample();
-        example.createCriteria().andParentIdEqualTo(0L);
-        return resourceMapper.selectByExample(example);
-    }
-
-    //获取所有子资源(parent_id != 0)可以合并上面
-    public List<UmsResource> getAllResourceList() {
-        UmsResourceExample example = new UmsResourceExample();
-        example.createCriteria().andParentIdNotEqualTo(0L);
-        return resourceMapper.selectByExample(example);
-    }
 
     //获取资源by 角色,todo左连接
     public List<UmsResource> getResourceByRole(Long roleId) {
@@ -86,7 +112,8 @@ public class ResourceService {
         List<Long> resourceIds = roleResourceMapper.selectByExample(role_resourceExample).stream().map(role_Resource -> role_Resource.getResourceId()).collect(Collectors.toList());
         logger.info("得到资源ids, 大小->{},resourceIds->{}", resourceIds.size(), resourceIds.toString());
         if (resourceIds.size() == 0) {
-            return null;
+            //return null;4.20注释
+            return new ArrayList<>();
         }
         //由资源ids得到资源
         UmsResourceExample resourceExample = new UmsResourceExample();
@@ -107,7 +134,7 @@ public class ResourceService {
         List<Long> roleIds = roleAdminMapper.selectByExample(roleAdminExample).stream().map(role_Admin -> role_Admin.getRoleId()).collect(Collectors.toList());
         logger.info("得到角色ids, 大小->{},roleIds->{}", roleIds.size(), roleIds.toString());
         if (roleIds.size() == 0) {
-            return null;
+            return new ArrayList<>();
         }
         //由角色得到资源ids
         UmsRoleResourceExample roleResourceExample = new UmsRoleResourceExample();
@@ -115,7 +142,7 @@ public class ResourceService {
         List<Long> resourceIds = roleResourceMapper.selectByExample(roleResourceExample).stream().map(role_Resource -> role_Resource.getResourceId()).collect(Collectors.toList());
         logger.info("得到资源ids, 大小->{},resourceIds->{}", resourceIds.size(), resourceIds.toString());
         if (resourceIds.size() == 0) {
-            return null;
+            return new ArrayList<>();
         }
         //由资源ids得到资源
         UmsResourceExample resourceExample = new UmsResourceExample();
@@ -152,8 +179,45 @@ public class ResourceService {
         return resourceMapper.updateByPrimaryKey(resource);
     }
 
-    //删除资源 by id todo 要不要判断是否具有删除的权限
+    //删除资源 by id 这个不好写触发器，角色那个可以，没有特殊性的容易写
     public int deleteResource(Long id) {
+        logger.info("=====资源id->{}", id);
+
+        //如果是父类资源，则删除所有子资源，以及所有 角色-资源关系
+        UmsResource resource = resourceMapper.selectByPrimaryKey(id);
+        if (resource.getParentId() == 0L) {
+            //得到子资源
+            UmsResourceExample resourceExample = new UmsResourceExample();
+            resourceExample.createCriteria().andParentIdEqualTo(id);
+
+
+            //清除子资源，得到ids
+            List<Long> ids = new ArrayList<>();
+            resourceMapper.selectByExample(resourceExample).stream().forEach(item -> {
+                ids.add(item.getId());
+                resourceMapper.deleteByPrimaryKey(item.getId());
+            });
+            ids.add(id);
+
+            //清除 角色-资源关系，根据ids
+            UmsRoleResourceExample role_resource_example = new UmsRoleResourceExample();
+            role_resource_example.createCriteria().andResourceIdIn(ids);
+            int count = roleResourceMapper.deleteByExample(role_resource_example);
+            logger.info("删除了{}条 角色-资源 关系", count);
+
+            //删除自身
+            return resourceMapper.deleteByPrimaryKey(id);
+        }
+
+        //否则，就是子类资源
+        //删除关系
+        UmsRoleResourceExample role_resource_example = new UmsRoleResourceExample();
+        role_resource_example.createCriteria().andResourceIdEqualTo(id);
+        int count = roleResourceMapper.deleteByExample(role_resource_example);
+        logger.info("删除了{}条 角色-资源 关系", count);
+
+        //删除资源
+        logger.info("删除资源,id->{}", id);
         return resourceMapper.deleteByPrimaryKey(id);
     }
 
@@ -161,7 +225,7 @@ public class ResourceService {
     public CommonResult allocResource(AllocParam param) {
         Long roleId = param.getId();
         List<Long> ids = param.getIds();
-        if (ids == null || ids==null) {
+        if (ids == null || ids == null) {
             return CommonResult.failed();
         }
         try {

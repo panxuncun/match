@@ -30,52 +30,61 @@ public class ResourceController {
 
     @ApiOperation("获取资源by id")
     @GetMapping("resource/info/{id}")
-    public CommonResult getResource(@PathVariable Long id){
+    public CommonResult getResource(@PathVariable Long id) {
         return CommonResult.success(resourceService.getResource(id));
 
     }
 
     @ApiOperation("获取资源种类(表头)")
     @GetMapping("resource/cate/list")
-    public CommonResult getResourceCateList(){
+    public CommonResult getResourceCateList() {
         return CommonResult.success(resourceService.getResourceCateList());
     }
 
-    @ApiOperation("获取所有资源")
+    @ApiOperation("获取所有子资源")
     @GetMapping("resource/list")
-    public CommonResult getAllResourceList(){
+    public CommonResult getAllResourceList() {
         return CommonResult.success(resourceService.getAllResourceList());
+    }
+
+    @ApiOperation("获取所有资源(搜索 + 分页)")
+    @GetMapping("resource/listWithPage")
+    public CommonResult getResourceListWithPage(@RequestParam(required = false) Long parentId,
+                                                @RequestParam(required = false) String nameKeyword,
+                                                @RequestParam(required = false) String urlKeyword,
+                                                @RequestParam(required = false, value = "page", defaultValue = "1") Integer pageNum,
+                                                @RequestParam(required = false, value = "limit", defaultValue = "5") Integer pageSize) {
+        return resourceService.getResourceListWithPage(parentId,nameKeyword, urlKeyword, pageNum, pageSize);
     }
 
     @ApiOperation("获取资源by 角色")
     @GetMapping("resource/listByRole/{roleId}")
-    public CommonResult getResourceListByRole(@PathVariable Long roleId){
+    public CommonResult getResourceListByRole(@PathVariable Long roleId) {
         return CommonResult.success(resourceService.getResourceByRole(roleId));
     }
 
     @ApiOperation("获取资源by admin id")
     @GetMapping("resource/listByadmin/{adminId}")
-    public CommonResult getResourceListByAdmin(@PathVariable Long adminId){
+    public CommonResult getResourceListByAdmin(@PathVariable Long adminId) {
         return CommonResult.success(resourceService.getResourceListByAdminId(adminId));
     }
 
     @ApiOperation("获取资源列表 by 类型")
     @GetMapping("resource/list/{type}")
-    public CommonResult getResourceListByType(@PathVariable Integer type){
+    public CommonResult getResourceListByType(@PathVariable Integer type) {
         return CommonResult.success(resourceService.getResourceListByType(type));
     }
-
 
 
     @ApiOperation("更新资源")
     @PostMapping("resource/update")
     public CommonResult updateResource(@RequestBody UpdateResourceParam param) {
-        return resourceService.updateResource(param) == 1? CommonResult.success(null) : CommonResult.failed();
+        return resourceService.updateResource(param) == 1 ? CommonResult.success(null) : CommonResult.failed();
     }
 
     @ApiOperation("删除资源 by id")
-    @PostMapping("resource/delete/{id}")
-    public CommonResult deleteResource(Long id){
-        return resourceService.deleteResource(id) == 1? CommonResult.success(null) : CommonResult.failed();
+    @PostMapping("resource/delete/{resourceId}")
+    public CommonResult deleteResource(@PathVariable Long resourceId) {
+        return resourceService.deleteResource(resourceId) == 1 ? CommonResult.success(null) : CommonResult.failed();
     }
 }

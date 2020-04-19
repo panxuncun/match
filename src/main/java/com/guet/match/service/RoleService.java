@@ -6,9 +6,10 @@ import com.guet.match.common.RoleType;
 import com.guet.match.dto.AddRoleParam;
 import com.guet.match.dto.UpdateRoleParam;
 import com.guet.match.dto.UpdateStatusParam;
+import com.guet.match.mapper.UmsRoleAdminMapper;
 import com.guet.match.mapper.UmsRoleMapper;
-import com.guet.match.model.UmsRole;
-import com.guet.match.model.UmsRoleExample;
+import com.guet.match.mapper.UmsRoleResourceMapper;
+import com.guet.match.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -17,7 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Auther: sefer
@@ -29,6 +32,12 @@ public class RoleService {
     Logger logger = LoggerFactory.getLogger(RoleService.class);
     @Autowired
     private UmsRoleMapper roleMapper;
+
+    @Autowired
+    private UmsRoleAdminMapper roleAdminMapper;
+
+    @Autowired
+    private UmsRoleResourceMapper roleResourceMapper;
 
     //添加角色(内管系统角色)
     @Transactional
@@ -56,12 +65,12 @@ public class RoleService {
 
     //获取全部角色
     //todo pricipal
-    public List<UmsRole> listAllRole(String keyword,Integer pageNum, Integer pageSize){
+    public List<UmsRole> listAllRole(String keyword, Integer pageNum, Integer pageSize) {
         UmsRoleExample example = new UmsRoleExample();
         example.setOrderByClause("id desc");
 
         //角色名称搜索
-        if (keyword != null && keyword.trim().length() > 0){
+        if (keyword != null && keyword.trim().length() > 0) {
             example.createCriteria().andNameLike("%" + keyword + "%");
         }
         PageHelper.startPage(pageNum, pageSize);
@@ -69,12 +78,23 @@ public class RoleService {
     }
 
     //获取全部角色by admin
-    public List<UmsRole> listByAdmin(Long adminId){
-        UmsRoleExample example = new UmsRoleExample();
-        example.createCriteria().andAdminIdEqualTo(adminId);
-        return roleMapper.selectByExample(example);
-    }
+    public List<UmsRole> listByAdmin(Long adminId) {
+        //获得角色ids
+        UmsRoleAdminExample role_admin_example = new UmsRoleAdminExample();
+        role_admin_example.createCriteria().andAdminIdEqualTo(adminId);
+        List<Long> ids = roleAdminMapper.selectByExample(role_admin_example).stream().map(UmsRoleAdmin::getRoleId).collect(Collectors.toList());
 
+        //判空
+        if (ids.size() < 1) {
+            return new ArrayList<>();
+        }
+
+        //获得角色
+        UmsRoleExample example = new UmsRoleExample();
+        example.createCriteria().andIdIn(ids);
+        return roleMapper.selectByExample(example);
+
+    }
 
 
     //获取角色list by 类型
@@ -111,13 +131,22 @@ public class RoleService {
     }
 
 
-
     //删除角色 by id
-    public int deleteRole(Long id){
+    public int deleteRole(Long id) {
+
+        //删除 角色-用户 关系
+        UmsRoleAdminExample role_admin_example = new UmsRoleAdminExample();
+        role_admin_example.createCriteria().andRoleIdEqualTo(id);
+        roleAdminMapper.deleteByExample(role_admin_example);
+
+        //删除 角色-资源 关系
+        UmsRoleResourceExample role_resource_example = new UmsRoleResourceExample();
+        role_resource_example.createCriteria().andRoleIdEqualTo(id);
+        roleResourceMapper.deleteByExample(role_resource_example);
+
+        //删除角色
         return roleMapper.deleteByPrimaryKey(id);
     }
-
-
 
 
 }

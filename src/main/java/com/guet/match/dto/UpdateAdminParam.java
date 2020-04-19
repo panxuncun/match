@@ -2,15 +2,17 @@ package com.guet.match.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
  * @Auther: sefer
- * @Date: 2020/3/26
- * @Description: 添加管理员所需参数
+ * @Date: 2020/4/19
+ * @Description: 更新管理员信息。特征是有id，且没有密码。
  */
-public class AddAdminParam {
+public class UpdateAdminParam {
+
+    @ApiModelProperty("id")
+    private Long id;
 
     @ApiModelProperty("管理员姓名")
     private String nickName;
@@ -18,12 +20,10 @@ public class AddAdminParam {
     @ApiModelProperty("管理员账号")
     private String username;
 
-    @ApiModelProperty("管理员密码")
-    private String password;
-
     @ApiModelProperty("是否启用")
     private Integer status;
 
+    //实质上这个属性也用不到
     @ApiModelProperty("角色")
     private List<Long> roleIds;
 
@@ -32,14 +32,22 @@ public class AddAdminParam {
 
     @Override
     public String toString() {
-        return "AddAdminParam{" +
-                "nickName='" + nickName + '\'' +
+        return "UpdateAdminParam{" +
+                "id=" + id +
+                ", nickName='" + nickName + '\'' +
                 ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
                 ", status=" + status +
                 ", roleIds=" + roleIds +
                 ", note='" + note + '\'' +
                 '}';
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getNickName() {
@@ -56,14 +64,6 @@ public class AddAdminParam {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public Integer getStatus() {

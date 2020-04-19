@@ -36,7 +36,7 @@ public class RoleController {
     @Autowired
     private ResourceService resourceService;
 
-    @ApiOperation("获取全部角色")
+    @ApiOperation("获取全部角色, 分页")
     @GetMapping("role/list")
     public CommonResult listAllRole(@RequestParam(required = false, defaultValue = "") String keyword,
                                     @RequestParam(required = false, value = "page", defaultValue = "1") Integer pageNum,

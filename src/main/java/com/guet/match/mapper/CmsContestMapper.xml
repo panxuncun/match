@@ -5,7 +5,6 @@
     <id column="id" property="id" jdbcType="BIGINT" />
     <result column="organizer_id" property="organizerId" jdbcType="BIGINT" />
     <result column="name" property="name" jdbcType="VARCHAR" />
-    <result column="type" property="type" jdbcType="VARCHAR" />
     <result column="location" property="location" jdbcType="VARCHAR" />
     <result column="logo" property="logo" jdbcType="VARCHAR" />
     <result column="banner" property="banner" jdbcType="VARCHAR" />
@@ -17,6 +16,7 @@
     <result column="last_check_id" property="lastCheckId" jdbcType="BIGINT" />
     <result column="last_check_time" property="lastCheckTime" jdbcType="TIMESTAMP" />
     <result column="last_check_note" property="lastCheckNote" jdbcType="VARCHAR" />
+    <result column="cate_id" property="cateId" jdbcType="BIGINT" />
   </resultMap>
 
 
@@ -89,8 +89,9 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    id, organizer_id, name, type, location, logo, banner, open_enrollment_time, close_enrollment_time, 
-    contest_time, create_time, status, last_check_id, last_check_time, last_check_note
+    id, organizer_id, name, location, logo, banner, open_enrollment_time, close_enrollment_time,
+    contest_time, create_time, status, last_check_id, last_check_time, last_check_note,
+    cate_id
   </sql>
   <sql id="Blob_Column_List" >
     details
@@ -126,14 +127,13 @@
     </if>
   </select>
   <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Long" >
-    select 
+    select
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
     from cms_contest
     where id = #{id,jdbcType=BIGINT}
   </select>
-
 
   <!--getContestDtoByid-->
   <select id="getContestDtoByid" resultMap="DtoResultMap" parameterType="java.lang.Long" >
@@ -157,18 +157,18 @@
     <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into cms_contest (organizer_id, name, type, 
-      location, logo, banner, 
-      open_enrollment_time, close_enrollment_time, 
-      contest_time, status,
-      last_check_id, last_check_time, last_check_note, 
-      details)
-    values (#{organizerId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, 
-      #{location,jdbcType=VARCHAR}, #{logo,jdbcType=VARCHAR}, #{banner,jdbcType=VARCHAR}, 
-      #{openEnrollmentTime,jdbcType=TIMESTAMP}, #{closeEnrollmentTime,jdbcType=TIMESTAMP}, 
-      #{contestTime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER},
-      #{lastCheckId,jdbcType=BIGINT}, #{lastCheckTime,jdbcType=TIMESTAMP}, #{lastCheckNote,jdbcType=VARCHAR}, 
-      #{details,jdbcType=LONGVARCHAR})
+    insert into cms_contest (organizer_id, name, location,
+    logo, banner, open_enrollment_time,
+    close_enrollment_time, contest_time, create_time,
+    status, last_check_id, last_check_time,
+    last_check_note, cate_id, details
+    )
+    values (#{organizerId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{location,jdbcType=VARCHAR},
+    #{logo,jdbcType=VARCHAR}, #{banner,jdbcType=VARCHAR}, #{openEnrollmentTime,jdbcType=TIMESTAMP},
+    #{closeEnrollmentTime,jdbcType=TIMESTAMP}, #{contestTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP},
+    #{status,jdbcType=INTEGER}, #{lastCheckId,jdbcType=BIGINT}, #{lastCheckTime,jdbcType=TIMESTAMP},
+    #{lastCheckNote,jdbcType=VARCHAR}, #{cateId,jdbcType=BIGINT}, #{details,jdbcType=LONGVARCHAR}
+    )
   </insert>
   <insert id="insertSelective" parameterType="com.guet.match.model.CmsContest" >
     <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
@@ -181,9 +181,6 @@
       </if>
       <if test="name != null" >
         name,
-      </if>
-      <if test="type != null" >
-        type,
       </if>
       <if test="location != null" >
         location,
@@ -218,6 +215,9 @@
       <if test="lastCheckNote != null" >
         last_check_note,
       </if>
+      <if test="cateId != null" >
+        cate_id,
+      </if>
       <if test="details != null" >
         details,
       </if>
@@ -228,9 +228,6 @@
       </if>
       <if test="name != null" >
         #{name,jdbcType=VARCHAR},
-      </if>
-      <if test="type != null" >
-        #{type,jdbcType=VARCHAR},
       </if>
       <if test="location != null" >
         #{location,jdbcType=VARCHAR},
@@ -265,6 +262,9 @@
       <if test="lastCheckNote != null" >
         #{lastCheckNote,jdbcType=VARCHAR},
       </if>
+      <if test="cateId != null" >
+        #{cateId,jdbcType=BIGINT},
+      </if>
       <if test="details != null" >
         #{details,jdbcType=LONGVARCHAR},
       </if>
@@ -287,9 +287,6 @@
       </if>
       <if test="record.name != null" >
         name = #{record.name,jdbcType=VARCHAR},
-      </if>
-      <if test="record.type != null" >
-        type = #{record.type,jdbcType=VARCHAR},
       </if>
       <if test="record.location != null" >
         location = #{record.location,jdbcType=VARCHAR},
@@ -324,6 +321,9 @@
       <if test="record.lastCheckNote != null" >
         last_check_note = #{record.lastCheckNote,jdbcType=VARCHAR},
       </if>
+      <if test="record.cateId != null" >
+        cate_id = #{record.cateId,jdbcType=BIGINT},
+      </if>
       <if test="record.details != null" >
         details = #{record.details,jdbcType=LONGVARCHAR},
       </if>
@@ -335,21 +335,21 @@
   <update id="updateByExampleWithBLOBs" parameterType="map" >
     update cms_contest
     set id = #{record.id,jdbcType=BIGINT},
-      organizer_id = #{record.organizerId,jdbcType=BIGINT},
-      name = #{record.name,jdbcType=VARCHAR},
-      type = #{record.type,jdbcType=VARCHAR},
-      location = #{record.location,jdbcType=VARCHAR},
-      logo = #{record.logo,jdbcType=VARCHAR},
-      banner = #{record.banner,jdbcType=VARCHAR},
-      open_enrollment_time = #{record.openEnrollmentTime,jdbcType=TIMESTAMP},
-      close_enrollment_time = #{record.closeEnrollmentTime,jdbcType=TIMESTAMP},
-      contest_time = #{record.contestTime,jdbcType=TIMESTAMP},
-      create_time = #{record.createTime,jdbcType=TIMESTAMP},
-      status = #{record.status,jdbcType=INTEGER},
-      last_check_id = #{record.lastCheckId,jdbcType=BIGINT},
-      last_check_time = #{record.lastCheckTime,jdbcType=TIMESTAMP},
-      last_check_note = #{record.lastCheckNote,jdbcType=VARCHAR},
-      details = #{record.details,jdbcType=LONGVARCHAR}
+    organizer_id = #{record.organizerId,jdbcType=BIGINT},
+    name = #{record.name,jdbcType=VARCHAR},
+    location = #{record.location,jdbcType=VARCHAR},
+    logo = #{record.logo,jdbcType=VARCHAR},
+    banner = #{record.banner,jdbcType=VARCHAR},
+    open_enrollment_time = #{record.openEnrollmentTime,jdbcType=TIMESTAMP},
+    close_enrollment_time = #{record.closeEnrollmentTime,jdbcType=TIMESTAMP},
+    contest_time = #{record.contestTime,jdbcType=TIMESTAMP},
+    create_time = #{record.createTime,jdbcType=TIMESTAMP},
+    status = #{record.status,jdbcType=INTEGER},
+    last_check_id = #{record.lastCheckId,jdbcType=BIGINT},
+    last_check_time = #{record.lastCheckTime,jdbcType=TIMESTAMP},
+    last_check_note = #{record.lastCheckNote,jdbcType=VARCHAR},
+    cate_id = #{record.cateId,jdbcType=BIGINT},
+    details = #{record.details,jdbcType=LONGVARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -357,20 +357,20 @@
   <update id="updateByExample" parameterType="map" >
     update cms_contest
     set id = #{record.id,jdbcType=BIGINT},
-      organizer_id = #{record.organizerId,jdbcType=BIGINT},
-      name = #{record.name,jdbcType=VARCHAR},
-      type = #{record.type,jdbcType=VARCHAR},
-      location = #{record.location,jdbcType=VARCHAR},
-      logo = #{record.logo,jdbcType=VARCHAR},
-      banner = #{record.banner,jdbcType=VARCHAR},
-      open_enrollment_time = #{record.openEnrollmentTime,jdbcType=TIMESTAMP},
-      close_enrollment_time = #{record.closeEnrollmentTime,jdbcType=TIMESTAMP},
-      contest_time = #{record.contestTime,jdbcType=TIMESTAMP},
-      create_time = #{record.createTime,jdbcType=TIMESTAMP},
-      status = #{record.status,jdbcType=INTEGER},
-      last_check_id = #{record.lastCheckId,jdbcType=BIGINT},
-      last_check_time = #{record.lastCheckTime,jdbcType=TIMESTAMP},
-      last_check_note = #{record.lastCheckNote,jdbcType=VARCHAR}
+    organizer_id = #{record.organizerId,jdbcType=BIGINT},
+    name = #{record.name,jdbcType=VARCHAR},
+    location = #{record.location,jdbcType=VARCHAR},
+    logo = #{record.logo,jdbcType=VARCHAR},
+    banner = #{record.banner,jdbcType=VARCHAR},
+    open_enrollment_time = #{record.openEnrollmentTime,jdbcType=TIMESTAMP},
+    close_enrollment_time = #{record.closeEnrollmentTime,jdbcType=TIMESTAMP},
+    contest_time = #{record.contestTime,jdbcType=TIMESTAMP},
+    create_time = #{record.createTime,jdbcType=TIMESTAMP},
+    status = #{record.status,jdbcType=INTEGER},
+    last_check_id = #{record.lastCheckId,jdbcType=BIGINT},
+    last_check_time = #{record.lastCheckTime,jdbcType=TIMESTAMP},
+    last_check_note = #{record.lastCheckNote,jdbcType=VARCHAR},
+    cate_id = #{record.cateId,jdbcType=BIGINT}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -383,9 +383,6 @@
       </if>
       <if test="name != null" >
         name = #{name,jdbcType=VARCHAR},
-      </if>
-      <if test="type != null" >
-        type = #{type,jdbcType=VARCHAR},
       </if>
       <if test="location != null" >
         location = #{location,jdbcType=VARCHAR},
@@ -420,6 +417,9 @@
       <if test="lastCheckNote != null" >
         last_check_note = #{lastCheckNote,jdbcType=VARCHAR},
       </if>
+      <if test="cateId != null" >
+        cate_id = #{cateId,jdbcType=BIGINT},
+      </if>
       <if test="details != null" >
         details = #{details,jdbcType=LONGVARCHAR},
       </if>
@@ -430,7 +430,6 @@
     update cms_contest
     set organizer_id = #{organizerId,jdbcType=BIGINT},
       name = #{name,jdbcType=VARCHAR},
-      type = #{type,jdbcType=VARCHAR},
       location = #{location,jdbcType=VARCHAR},
       logo = #{logo,jdbcType=VARCHAR},
       banner = #{banner,jdbcType=VARCHAR},
@@ -442,6 +441,7 @@
       last_check_id = #{lastCheckId,jdbcType=BIGINT},
       last_check_time = #{lastCheckTime,jdbcType=TIMESTAMP},
       last_check_note = #{lastCheckNote,jdbcType=VARCHAR},
+      cate_id = #{cateId,jdbcType=BIGINT},
       details = #{details,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -449,7 +449,6 @@
     update cms_contest
     set organizer_id = #{organizerId,jdbcType=BIGINT},
       name = #{name,jdbcType=VARCHAR},
-      type = #{type,jdbcType=VARCHAR},
       location = #{location,jdbcType=VARCHAR},
       logo = #{logo,jdbcType=VARCHAR},
       banner = #{banner,jdbcType=VARCHAR},
@@ -460,7 +459,8 @@
       status = #{status,jdbcType=INTEGER},
       last_check_id = #{lastCheckId,jdbcType=BIGINT},
       last_check_time = #{lastCheckTime,jdbcType=TIMESTAMP},
-      last_check_note = #{lastCheckNote,jdbcType=VARCHAR}
+      last_check_note = #{lastCheckNote,jdbcType=VARCHAR},
+      cate_id = #{cateId,jdbcType=BIGINT}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

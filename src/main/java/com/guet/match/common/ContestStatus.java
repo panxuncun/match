@@ -19,7 +19,6 @@ public enum ContestStatus {
     private ContestStatus(int status, String description) {
         this.status = status;
         this.description = description;
-
     }
 
     public int getStatus() {

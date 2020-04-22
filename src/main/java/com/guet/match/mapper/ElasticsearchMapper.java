@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface ElasticsearchMapper extends ElasticsearchRepository<CmsContest, Long> {
     List<CmsContest> findByName(String name);
-    List<CmsContest> findByType(String type);
+    List<CmsContest> findByCateId(Long cateId);
     List<CmsContest> findByDetailsContains(String details);
 
     //todo set status为审核通过的
@@ -20,6 +20,5 @@ public interface ElasticsearchMapper extends ElasticsearchRepository<CmsContest,
 
     //like最为智能
     List<CmsContest> findByDetailsLikeOrNameLike(String keyword1,String keyword2);
-    //注意方法名，不要把find携程fin
     List<CmsContest> findByNameOrDetails(String name,String details);
 }

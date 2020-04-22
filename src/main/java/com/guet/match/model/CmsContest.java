@@ -23,9 +23,6 @@ public class CmsContest implements Serializable {
     @Field(analyzer = "ik_max_word", type = FieldType.Text)
     private String name;
 
-    @Field(analyzer = "ik_max_word", type = FieldType.Text)
-    private String type;
-
     private String location;
 
     private String logo;
@@ -60,6 +57,16 @@ public class CmsContest implements Serializable {
     @Field(analyzer = "ik_max_word", type = FieldType.Text)
     private String details;
 
+    private Long cateId;
+
+    public Long getCateId() {
+        return cateId;
+    }
+
+    public void setCateId(Long cateId) {
+        this.cateId = cateId;
+    }
+
     public Long getId() {
         return id;
     }
@@ -84,13 +91,6 @@ public class CmsContest implements Serializable {
         this.name = name;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
 
     public String getLocation() {
         return location;

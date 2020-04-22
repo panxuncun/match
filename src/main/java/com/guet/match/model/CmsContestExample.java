@@ -295,76 +295,6 @@ public class CmsContestExample {
             return (Criteria) this;
         }
 
-        public Criteria andTypeIsNull() {
-            addCriterion("type is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andTypeIsNotNull() {
-            addCriterion("type is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andTypeEqualTo(String value) {
-            addCriterion("type =", value, "type");
-            return (Criteria) this;
-        }
-
-        public Criteria andTypeNotEqualTo(String value) {
-            addCriterion("type <>", value, "type");
-            return (Criteria) this;
-        }
-
-        public Criteria andTypeGreaterThan(String value) {
-            addCriterion("type >", value, "type");
-            return (Criteria) this;
-        }
-
-        public Criteria andTypeGreaterThanOrEqualTo(String value) {
-            addCriterion("type >=", value, "type");
-            return (Criteria) this;
-        }
-
-        public Criteria andTypeLessThan(String value) {
-            addCriterion("type <", value, "type");
-            return (Criteria) this;
-        }
-
-        public Criteria andTypeLessThanOrEqualTo(String value) {
-            addCriterion("type <=", value, "type");
-            return (Criteria) this;
-        }
-
-        public Criteria andTypeLike(String value) {
-            addCriterion("type like", value, "type");
-            return (Criteria) this;
-        }
-
-        public Criteria andTypeNotLike(String value) {
-            addCriterion("type not like", value, "type");
-            return (Criteria) this;
-        }
-
-        public Criteria andTypeIn(List<String> values) {
-            addCriterion("type in", values, "type");
-            return (Criteria) this;
-        }
-
-        public Criteria andTypeNotIn(List<String> values) {
-            addCriterion("type not in", values, "type");
-            return (Criteria) this;
-        }
-
-        public Criteria andTypeBetween(String value1, String value2) {
-            addCriterion("type between", value1, value2, "type");
-            return (Criteria) this;
-        }
-
-        public Criteria andTypeNotBetween(String value1, String value2) {
-            addCriterion("type not between", value1, value2, "type");
-            return (Criteria) this;
-        }
-
         public Criteria andLocationIsNull() {
             addCriterion("location is null");
             return (Criteria) this;
@@ -1062,6 +992,66 @@ public class CmsContestExample {
 
         public Criteria andLastCheckNoteNotBetween(String value1, String value2) {
             addCriterion("last_check_note not between", value1, value2, "lastCheckNote");
+            return (Criteria) this;
+        }
+
+        public Criteria andCateIdIsNull() {
+            addCriterion("cate_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCateIdIsNotNull() {
+            addCriterion("cate_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCateIdEqualTo(Long value) {
+            addCriterion("cate_id =", value, "cateId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCateIdNotEqualTo(Long value) {
+            addCriterion("cate_id <>", value, "cateId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCateIdGreaterThan(Long value) {
+            addCriterion("cate_id >", value, "cateId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCateIdGreaterThanOrEqualTo(Long value) {
+            addCriterion("cate_id >=", value, "cateId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCateIdLessThan(Long value) {
+            addCriterion("cate_id <", value, "cateId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCateIdLessThanOrEqualTo(Long value) {
+            addCriterion("cate_id <=", value, "cateId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCateIdIn(List<Long> values) {
+            addCriterion("cate_id in", values, "cateId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCateIdNotIn(List<Long> values) {
+            addCriterion("cate_id not in", values, "cateId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCateIdBetween(Long value1, Long value2) {
+            addCriterion("cate_id between", value1, value2, "cateId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCateIdNotBetween(Long value1, Long value2) {
+            addCriterion("cate_id not between", value1, value2, "cateId");
             return (Criteria) this;
         }
     }

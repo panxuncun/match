@@ -5,6 +5,7 @@ import com.guet.match.common.CommonResult;
 import com.guet.match.dto.CheckContestParam;
 import com.guet.match.dto.ContestInfoDTO;
 import com.guet.match.dto.EnrollmentDTO;
+import com.guet.match.dto.QueryContestParam;
 import com.guet.match.model.CmsContest;
 import com.guet.match.model.CmsFavorite;
 import com.guet.match.service.ContestService;
@@ -56,6 +57,14 @@ public class ContestController {
         return CommonResult.success(contestService.getContestInfo(id));
     }
 
+    @ApiOperation("管理员：获取所有赛事")
+    @GetMapping("contest/list")
+    public CommonResult list(QueryContestParam param,
+                             @RequestParam(required = false, value = "page", defaultValue = "1") Integer pageNum,
+                             @RequestParam(required = false, value = "limit", defaultValue = "5") Integer pageSize) {
+        return contestService.list(param, pageNum, pageSize);
+    }
+
     @ApiOperation("主办方：查看我举办的赛事")
     @GetMapping("contest/listByOrganizer")
     public CommonResult getContestByOrganizer(Principal principal,
@@ -84,7 +93,7 @@ public class ContestController {
 
     @ApiOperation("主办方：导出成绩模板")
     @GetMapping("contest/enrollment/export/{contestId}")
-    public void exportEnrollmentByContestId(HttpServletResponse response, @PathVariable Long contestId){
+    public void exportEnrollmentByContestId(HttpServletResponse response, @PathVariable Long contestId) {
         logger.info("下载请求：导出成绩模板");
         try {
             HSSFWorkbook excel = contestService.exportEnrollmentByContestId(contestId);
@@ -93,17 +102,16 @@ public class ContestController {
             response.flushBuffer();
             excel.write(response.getOutputStream());
         } catch (Exception e) {
-            logger.error("导出excel文件出错, 传入参数contestId->{}",contestId);
+            logger.error("导出excel文件出错, 传入参数contestId->{}", contestId);
         }
     }
 
     @ApiOperation("主办方：导入成绩表格")
     @PostMapping("contest/enrollment/import/{contestId}")
-    public CommonResult importEnrollmentByContestId(@RequestParam(value = "file") MultipartFile file, @PathVariable Long contestId){
-        logger.info("导入成绩表格,contestId->{}",contestId);
+    public CommonResult importEnrollmentByContestId(@RequestParam(value = "file") MultipartFile file, @PathVariable Long contestId) {
+        logger.info("导入成绩表格,contestId->{}", contestId);
         return contestService.importEnrollmentByContestId(file, contestId);
     }
-
 
 
     @ApiOperation("小程序：查看赛事记录by openId")

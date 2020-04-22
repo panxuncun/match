@@ -425,7 +425,6 @@ public class ContestService {
         CmsContestExample contestExample = new CmsContestExample();
         contestExample.createCriteria().andIdIn(ids);
         return contestMapper.selectByExample(contestExample);
-
     }
 
     //查询是否收藏
@@ -451,7 +450,8 @@ public class ContestService {
         //设置排序
         example.setOrderByClause(SortCode.getSqlBySortType(sortCode));
         //添加条件
-        CmsContestExample.Criteria criteria = example.createCriteria().andTypeEqualTo(typeName);
+        //CmsContestExample.Criteria criteria = example.createCriteria().andTypeEqualTo(typeName);
+        CmsContestExample.Criteria criteria = example.createCriteria();
         if (sortCode == SortCode.CLOSE_ENROLLMENT_TIME.getCode()) {
             //截止报名时间大于此刻
             criteria.andCloseEnrollmentTimeGreaterThan(new Date());
@@ -462,5 +462,30 @@ public class ContestService {
         return contestMapper.selectByExample(example);
     }
 
+    //管理员：获取所有赛事
+    public CommonResult list(QueryContestParam param,Integer pageNum, Integer pageSize){
+        CmsContestExample example = new CmsContestExample();
+        CmsContestExample.Criteria criteria = example.createCriteria();
+        if (param.getId() != null){
+            //这里return得了
+            criteria.andIdEqualTo(param.getId());
+        }
+
+        if (param.getCate() != null) {
+            criteria.andCateIdEqualTo(param.getCate());
+        }
+
+        if (param.getKeyword()!=null){
+            criteria.andNameLike("%" + param.getKeyword() + "%");
+        }
+
+        if (param.getStatus() != null) {
+            criteria.andStatusEqualTo(param.getStatus());
+        }
+
+        PageHelper.startPage(pageNum, pageSize);
+        List<CmsContest> list = contestMapper.selectByExample(example);
+        return CommonResult.success(CommonPage.restPage(list));
+    }
 
 }

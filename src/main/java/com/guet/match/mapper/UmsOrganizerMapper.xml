@@ -102,6 +102,17 @@
     from ums_organizer
     where id = #{id,jdbcType=BIGINT}
   </select>
+
+  <!--查询机构名字-->
+  <select id="getNameById" resultType="java.lang.String" parameterType="java.lang.Long" >
+    select
+    organizer_name
+    from ums_organizer
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <!--end 查询机构名字-->
+
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
     delete from ums_organizer
     where id = #{id,jdbcType=BIGINT}

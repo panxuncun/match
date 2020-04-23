@@ -17,6 +17,16 @@ public class CheckContestParam {
     //审核备注
     private String LastCheckNote;
 
+    @Override
+    public String toString() {
+        return "CheckContestParam{" +
+                "contestId=" + contestId +
+                ", status=" + status +
+                ", lastCheckId=" + lastCheckId +
+                ", LastCheckNote='" + LastCheckNote + '\'' +
+                '}';
+    }
+
     public long getContestId() {
         return contestId;
     }

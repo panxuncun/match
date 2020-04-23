@@ -313,13 +313,13 @@ public class ContestService {
     public int checkContest(CheckContestParam dto) {
         CmsContest contest = contestMapper.selectByPrimaryKey(dto.getContestId());
         if (contest == null) {
-            logger.error("赛事不存在，方法checkContest");
+            logger.error("赛事不存在，原始参数->{}",dto.toString());
             return 0;
         }
-        contest.setCreateTime(new Date());
+        contest.setLastCheckTime(new Date());
         //copy dto -> contest
         BeanUtils.copyProperties(dto, contest);
-        logger.info("审核赛事");
+        logger.info("审核赛事,原始参数->{}",dto.toString());
         return contestMapper.updateByPrimaryKey(contest);
     }
 
@@ -465,6 +465,7 @@ public class ContestService {
     //管理员：获取所有赛事
     public CommonResult list(QueryContestParam param,Integer pageNum, Integer pageSize){
         CmsContestExample example = new CmsContestExample();
+        example.setOrderByClause("id desc");
         CmsContestExample.Criteria criteria = example.createCriteria();
         if (param.getId() != null){
             //这里return得了

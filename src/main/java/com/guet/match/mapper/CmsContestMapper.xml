@@ -22,6 +22,14 @@
 
   <!-- 自定义contestdto结果集-->
   <resultMap id="DtoResultMap" type="com.guet.match.dto.ContestInfoDTO" extends="BaseResultMap">
+    <!--机构名称-->
+    <association property="organizerName" column="organizer_id"
+                 select="com.guet.match.mapper.UmsOrganizerMapper.getNameById">
+    </association>
+    <!--赛事种类名称-->
+    <association property="cateName" column="cate_id"
+                 select="com.guet.match.mapper.CmsContestCateMapper.getNameById">
+    </association>
     <collection property="groupList" column="id" ofType="com.guet.match.model.CmsContestGroup" select="com.guet.match.mapper.CmsContestGroupMapper.getGroupListByContestId"></collection>
     <collection property="extensionPropertyList" column="id" ofType="com.guet.match.model.CmsContestExtensionProperty" select="com.guet.match.mapper.CmsContestExtensionPropertyMapper.getExtensionListByContestId"></collection>
   </resultMap>

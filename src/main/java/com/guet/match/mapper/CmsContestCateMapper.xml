@@ -89,6 +89,17 @@
     from cms_contest_cate
     where id = #{id,jdbcType=BIGINT}
   </select>
+
+  <!--级联-->
+  <select id="getNameById" resultType="java.lang.String" parameterType="java.lang.Long" >
+    select
+    name
+    from cms_contest_cate
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <!--end 级联-->
+
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
     delete from cms_contest_cate
     where id = #{id,jdbcType=BIGINT}

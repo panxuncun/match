@@ -28,4 +28,7 @@ public interface UmsOrganizerMapper {
     int updateByPrimaryKeySelective(UmsOrganizer record);
 
     int updateByPrimaryKey(UmsOrganizer record);
+
+    //查询机构名称(用于级联查询contestDTO)
+    String getNameById(Long id);
 }

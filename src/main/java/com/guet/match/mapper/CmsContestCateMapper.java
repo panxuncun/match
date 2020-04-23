@@ -28,4 +28,7 @@ public interface CmsContestCateMapper {
     int updateByPrimaryKeySelective(CmsContestCate record);
 
     int updateByPrimaryKey(CmsContestCate record);
+
+    //用于级联查询contestDTO
+    String getNameById(Long id);
 }

@@ -1,11 +1,14 @@
 package com.guet.match.service;
 
 import com.github.pagehelper.PageHelper;
+import com.guet.match.common.CommonPage;
 import com.guet.match.common.CommonResult;
 import com.guet.match.common.EnrollmentStatus;
 import com.guet.match.common.PaymentStatus;
 import com.guet.match.dto.OrderDTO;
 import com.guet.match.dto.OrderParam;
+import com.guet.match.dto.QueryContestParam;
+import com.guet.match.dto.QueryOrderParam;
 import com.guet.match.mapper.CmsContestGroupMapper;
 import com.guet.match.mapper.CmsEnrollmentRecordMapper;
 import com.guet.match.mapper.OmsOrderMapper;
@@ -15,8 +18,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -36,6 +41,7 @@ public class OrderService {
 
     @Autowired
     private CmsContestGroupMapper groupMapper;
+
 
     //判断是否重复报名(同一小组 & 同一证件号)
     public boolean hasEnrollmentRecord(OrderParam dto) {
@@ -57,6 +63,7 @@ public class OrderService {
         }
         return group.getPrice();
     }
+
 
     //添加订单,先有订单，后有记录.  -1->创建失败;  -2->已报名，拒绝订单创建;  -3->可用名额不足;  正整数(订单号)->创建成功;
     //todo 临时创建报名记录，因为携带了很多参数，报名记录有一个字段叫 order_id,可以追溯来源的
@@ -130,7 +137,8 @@ public class OrderService {
         if (record == null){
             logger.error("找不到原始报名数据，方法pay，订单号->{}", id);
         }
-        record.setStatus(EnrollmentStatus.NORMAL.getStatus());
+        //支付后就是待审核状态
+        record.setStatus(EnrollmentStatus.WAIT.getStatus());
         if (enrollmentRecordMapper.updateByPrimaryKey(record) == 0){
             logger.error("无法更新报名数据，方法pay，订单号->{}, 报名记录id->{}", id,record.getId());
         }
@@ -241,6 +249,120 @@ public class OrderService {
         return orderMapper.updateByPrimaryKey(order);
     }
 
+    /**
+     * 公共方法
+     * 批量退款,即取消订单
+     * @param ids 订单ids，由contestService传入
+     *            ids为空说明有报名记录，但是无订单，是严重的错误
+     * @return CommonResult
+     */
+    public CommonResult batchRefund(List<Long> ids){
+        if (ids == null || ids.size() == 0) {
+            logger.error("错误：找不到关联的订单");
+            return CommonResult.failed("没有对应的订单数据");
+        }
+
+        OmsOrderExample example = new OmsOrderExample();
+        example.createCriteria().andIdIn(ids);
+        List<OmsOrder> list = orderMapper.selectByExample(example);
+
+        //判断状态是否为 “已支付”
+        for (OmsOrder item:list){
+            if (item.getStatus()!= PaymentStatus.PAID.getStatus()){
+                String errMsg = "只有已支付的订单可以申请退款。编号为" + item.getId() + "的订单不合法";
+                return CommonResult.failed(errMsg);
+            }
+        }
+
+        //更新
+        list.stream().forEach(item->{
+            //更新订单
+            item.setStatus(PaymentStatus.REFUND.getStatus());
+            orderMapper.updateByPrimaryKey(item);
+            //回库
+            groupMapper.sizePlus(item.getContestGroupId());
+        });
+
+        return CommonResult.success(null);
+    }
+
+    /**
+     * 批量同意退款
+     * 针对已经申请的订单
+     * @param orderIds
+     * @return
+     */
+    @Transactional
+    public CommonResult batchAgreeRefund(List<Long> orderIds){
+        if (orderIds == null || orderIds.size() == 0) {
+            return CommonResult.failed("orderIds不能为空");
+        }
+        logger.info("批量同意退款, orderIds->{}",orderIds);
+        OmsOrderExample example = new OmsOrderExample();
+        example.createCriteria().andIdIn(orderIds);
+        List<OmsOrder> orderList = orderMapper.selectByExample(example);
+
+        //判断状态是否为 “申请退款”
+        for (OmsOrder item:orderList){
+            if (item.getStatus()!= PaymentStatus.APPLY_REFUND.getStatus()){
+                String errMsg = "错误：编号为" + item.getId() + "的订单未申请退款";
+                return CommonResult.failed(errMsg);
+            }
+        }
+
+        //更新，设置报名为“拒绝参赛”态。
+        CmsEnrollmentRecordExample recordExample = new CmsEnrollmentRecordExample();
+        recordExample.createCriteria().andOrderIdIn(orderIds);
+        List<CmsEnrollmentRecord> recordList = enrollmentRecordMapper.selectByExample(recordExample);
+        recordList.stream().forEach(item->{
+            item.setStatus(EnrollmentStatus.REFUSE.getStatus());
+            enrollmentRecordMapper.updateByPrimaryKey(item);
+        });
+
+
+        //开始退款
+        orderList.stream().forEach(item->{
+            //更新订单
+            item.setStatus(PaymentStatus.REFUND.getStatus());
+            orderMapper.updateByPrimaryKey(item);
+            //回库
+            groupMapper.sizePlus(item.getContestGroupId());
+        });
+        return CommonResult.success(null);
+    }
+
+    /**
+     * 批量拒绝退款
+     * 针对已经申请的订单
+     * @param orderIds
+     * @return
+     */
+    public CommonResult batchRefuseRefund(List<Long> orderIds){
+        if (orderIds == null || orderIds.size() == 0) {
+            return CommonResult.failed("orderIds不能为空");
+        }
+        logger.info("批量拒绝退款, orderIds->{}",orderIds);
+        OmsOrderExample example = new OmsOrderExample();
+        example.createCriteria().andIdIn(orderIds);
+        List<OmsOrder> orderList = orderMapper.selectByExample(example);
+
+        //判断状态是否为 “申请退款”
+        for (OmsOrder item:orderList){
+            if (item.getStatus()!= PaymentStatus.APPLY_REFUND.getStatus()){
+                String errMsg = "错误：编号为" + item.getId() + "的订单未申请退款";
+                return CommonResult.failed(errMsg);
+            }
+        }
+
+        //拒绝退款：报名记录不变，订单状态回归正常（“已支付”）状态
+        orderList.stream().forEach(item->{
+            item.setStatus(PaymentStatus.PAID.getStatus());
+            orderMapper.updateByPrimaryKey(item);
+        });
+        return CommonResult.success(null);
+    }
+
+
     //拒绝退款（主办方）
     public int refuseRefund(long orderId) {
         OmsOrder order = orderMapper.selectByPrimaryKey(orderId);
@@ -256,5 +378,29 @@ public class OrderService {
         order.setNote("拒绝理由");
         return orderMapper.updateByPrimaryKey(order);
     }
+
+    //主办方：获取订单
+    public CommonResult listOrderByQuery(QueryOrderParam param, Integer pageNum, Integer pageSize) {
+        OmsOrderExample example = new OmsOrderExample();
+        example.setOrderByClause("id desc");
+        OmsOrderExample.Criteria criteria = example.createCriteria();
+        if (param.getId() != null) {
+            criteria.andIdEqualTo(param.getId());
+        }
+
+        if (param.getGroupId() != null){
+            criteria.andContestGroupIdEqualTo(param.getGroupId());
+        }
+
+
+        if (param.getStatus() != null) {
+            criteria.andStatusEqualTo(param.getStatus());
+        }
+
+        PageHelper.startPage(pageNum, pageSize);
+        List<OmsOrder> list = orderMapper.selectByExample(example);
+        return CommonResult.success(CommonPage.restPage(list));
+    }
+
 
 }

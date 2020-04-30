@@ -6,9 +6,11 @@ import com.guet.match.common.Events;
 import com.guet.match.common.States;
 import com.guet.match.dto.OrderDTO;
 import com.guet.match.dto.OrderParam;
+import com.guet.match.dto.QueryOrderParam;
 import com.guet.match.service.OrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,5 +99,32 @@ public class OrderController {
         stateMachine.sendEvent(Events.PAY);
         stateMachine.sendEvent(Events.RECEIVE);
         return "ok";
+    }
+
+    @ApiOperation("主办方：获取订单")
+    @GetMapping("order/listByQuery")
+    public CommonResult getOrderList(QueryOrderParam param,
+                                     @RequestParam(required = false, value = "page", defaultValue = "1") Integer pageNum,
+                                     @RequestParam(required = false, value = "limit", defaultValue = "5") Integer pageSize) {
+        return orderService.listOrderByQuery(param, pageNum, pageSize);
+    }
+
+
+    @ApiOperation("批量同意退款")
+    @PostMapping("order/batchAgreeRefund")
+    public CommonResult batchAgreeRefund(@RequestBody List<Long> ids){
+        return orderService.batchAgreeRefund(ids);
+    }
+
+    @ApiOperation("批量拒绝退款")
+    @PostMapping("order/batchRefuseRefund")
+    public CommonResult batchRefuseRefund(@RequestBody List<Long> orderIds){
+        return orderService.batchRefuseRefund(orderIds);
+    }
+
+    @ApiOperation("批量取消订单")
+    @PostMapping("order/batchCancelOrder")
+    public CommonResult batchCancelOrder(@RequestBody List<Long> orderIds){
+        return orderService.batchRefund(orderIds);
     }
 }

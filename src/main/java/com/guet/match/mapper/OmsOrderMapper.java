@@ -42,7 +42,7 @@ public interface OmsOrderMapper {
     //小程序获取订单
     List<OrderDTO> getOrderListByOpenIdAndStatus(@Param("openId") String openId,@Param("status") int status);
 
+    //小程序获取全部订单
     List<OrderDTO> getAllOrderListByOpenId(@Param("openId") String  openId);
-
 
 }

@@ -2,10 +2,7 @@ package com.guet.match.controller;
 
 import com.guet.match.common.CommonPage;
 import com.guet.match.common.CommonResult;
-import com.guet.match.dto.CheckContestParam;
-import com.guet.match.dto.ContestInfoDTO;
-import com.guet.match.dto.EnrollmentDTO;
-import com.guet.match.dto.QueryContestParam;
+import com.guet.match.dto.*;
 import com.guet.match.model.CmsContest;
 import com.guet.match.model.CmsFavorite;
 import com.guet.match.service.ContestService;
@@ -51,6 +48,24 @@ public class ContestController {
         return contestService.checkContest(dto) == 1 ? CommonResult.success(null) : CommonResult.failed();
     }
 
+    @ApiOperation("主办方：审核报名")
+    @PostMapping("contest/enrollment/check")
+    public CommonResult checkContest(@RequestBody CheckEnrollmentParam param) {
+        return contestService.checkEnrollment(param);
+    }
+
+
+    /**
+     * 批量退款。涉及到记录和订单，由记录调用订单方法.
+     * @param ids 报名ids
+     * @return CommonResult
+     */
+    @ApiOperation("主办方：批量退款")
+    @PostMapping("contest/enrollment/batchRefund")
+    public CommonResult batchRefund(@RequestBody List<Long> ids){
+        return contestService.batchRefund(ids);
+    }
+
     @ApiOperation("公共：查看赛事by id")
     @GetMapping("contest/info/{id}")
     public CommonResult getContestInfo(@PathVariable long id) {
@@ -64,6 +79,20 @@ public class ContestController {
                              @RequestParam(required = false, value = "limit", defaultValue = "5") Integer pageSize) {
         return contestService.list(param, pageNum, pageSize);
     }
+
+    @GetMapping("contest/group/list/{contestId}")
+    public CommonResult getGroupListById(@PathVariable Long contestId){
+        return contestService.getGroupListById(contestId);
+    }
+
+    @ApiOperation("主办方：管理报名")
+    @GetMapping("contest/enrollment/listByQuery")
+    public CommonResult listByQuery(QueryEnrollmentParam param,
+                                    @RequestParam(required = false, value = "page", defaultValue = "1") Integer pageNum,
+                                    @RequestParam(required = false, value = "limit", defaultValue = "5") Integer pageSize) {
+        return contestService.listByQuery(param, pageNum, pageSize);
+    }
+
 
     @ApiOperation("主办方：查看我举办的赛事")
     @GetMapping("contest/listByOrganizer")

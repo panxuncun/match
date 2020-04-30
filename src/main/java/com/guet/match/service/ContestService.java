@@ -54,6 +54,9 @@ public class ContestService {
     @Autowired
     private OrganizeService organizeService;
 
+    @Autowired
+    private OrderService orderService;
+
 
     /**
      * 工具：获取主办方id By username
@@ -70,6 +73,13 @@ public class ContestService {
     public ContestInfoDTO getContestInfo(Long id) {
         logger.info("查看赛事详细信息");
         return contestMapper.getContestDtoByid(id);
+    }
+
+    //得到组别列表by id
+    public CommonResult getGroupListById(Long contestId) {
+        CmsContestGroupExample example = new CmsContestGroupExample();
+        example.createCriteria().andContestIdEqualTo(contestId);
+        return CommonResult.success(groupMapper.selectByExample(example));
     }
 
     //主办方：查看我举办的赛事
@@ -313,13 +323,13 @@ public class ContestService {
     public int checkContest(CheckContestParam dto) {
         CmsContest contest = contestMapper.selectByPrimaryKey(dto.getContestId());
         if (contest == null) {
-            logger.error("赛事不存在，原始参数->{}",dto.toString());
+            logger.error("赛事不存在，原始参数->{}", dto.toString());
             return 0;
         }
         contest.setLastCheckTime(new Date());
         //copy dto -> contest
         BeanUtils.copyProperties(dto, contest);
-        logger.info("审核赛事,原始参数->{}",dto.toString());
+        logger.info("审核赛事,原始参数->{}", dto.toString());
         return contestMapper.updateByPrimaryKey(contest);
     }
 
@@ -397,6 +407,78 @@ public class ContestService {
         return enrollmentRecordMapper.insert(record);
     }
 
+    /**
+     * 主办方
+     * 批量审核：通过或拒绝
+     * 只有“等待审核”状态的记录可以使用此方法
+     * @param param = ids + status
+     * @return CommonResult
+     */
+    public CommonResult checkEnrollment(CheckEnrollmentParam param) {
+        if (param.getIds() == null || param.getIds().size() == 0) {
+            return CommonResult.failed("ids不能为空数组");
+        }
+
+        CmsEnrollmentRecordExample example = new CmsEnrollmentRecordExample();
+        example.createCriteria().andIdIn(param.getIds());
+        List<CmsEnrollmentRecord> list = enrollmentRecordMapper.selectByExample(example);
+
+        //判断状态是否为 “等待审核”
+        for (CmsEnrollmentRecord item:list){
+            if (item.getStatus()!= EnrollmentStatus.WAIT.getStatus()){
+                String errMsg = "只允许 “等待审核” 的报名进行此操作。编号为" + item.getId() + "的记录不合法";
+                return CommonResult.failed(errMsg);
+            }
+        }
+
+        //更新
+        list.stream().forEach(item->{
+            item.setStatus(param.getStatus());
+            enrollmentRecordMapper.updateByPrimaryKey(item);
+        });
+
+        return CommonResult.success(null);
+    }
+
+    /**
+     * 主办方
+     * 批量退款
+     * 只有“审核通过”的报名可以使用此方法
+     * @param enrollmentIds = 报名ids
+     * @return CommonResult
+     */
+    @Transactional
+    public CommonResult batchRefund(List<Long> enrollmentIds){
+        if (enrollmentIds == null || enrollmentIds.size() == 0) {
+            return CommonResult.failed("enrollmentIds不能为空");
+        }
+        logger.info("批量退款, enrollmentIds->{}",enrollmentIds);
+        CmsEnrollmentRecordExample example = new CmsEnrollmentRecordExample();
+        example.createCriteria().andIdIn(enrollmentIds);
+        List<CmsEnrollmentRecord> list = enrollmentRecordMapper.selectByExample(example);
+
+        //判断状态是否为 “审核通过”
+        for (CmsEnrollmentRecord item:list){
+            if (item.getStatus()!= EnrollmentStatus.PASS.getStatus()){
+                String errMsg = "编号为" + item.getId() + "的报名已退款，请勿重复操作";
+                return CommonResult.failed(errMsg);
+            }
+        }
+
+        //更新，设置为“拒绝参赛”态.并拿到订单号。
+        List<Long> orderIds = new ArrayList<>();
+        list.stream().forEach(item->{
+            item.setStatus(EnrollmentStatus.REFUSE.getStatus());
+            enrollmentRecordMapper.updateByPrimaryKey(item);
+            orderIds.add(item.getOrderId());
+        });
+        logger.info("批量退款, orderIds->{}",orderIds);
+
+        //报名记录更新完成。现在开始退款
+        return orderService.batchRefund(orderIds);
+
+    }
+
 
     //查询全部比赛
     public List<CmsContest> allOfContest() {
@@ -463,11 +545,11 @@ public class ContestService {
     }
 
     //管理员：获取所有赛事
-    public CommonResult list(QueryContestParam param,Integer pageNum, Integer pageSize){
+    public CommonResult list(QueryContestParam param, Integer pageNum, Integer pageSize) {
         CmsContestExample example = new CmsContestExample();
         example.setOrderByClause("id desc");
         CmsContestExample.Criteria criteria = example.createCriteria();
-        if (param.getId() != null){
+        if (param.getId() != null) {
             //这里return得了
             criteria.andIdEqualTo(param.getId());
         }
@@ -476,7 +558,7 @@ public class ContestService {
             criteria.andCateIdEqualTo(param.getCate());
         }
 
-        if (param.getKeyword()!=null){
+        if (param.getKeyword() != null) {
             criteria.andNameLike("%" + param.getKeyword() + "%");
         }
 
@@ -486,6 +568,43 @@ public class ContestService {
 
         PageHelper.startPage(pageNum, pageSize);
         List<CmsContest> list = contestMapper.selectByExample(example);
+        return CommonResult.success(CommonPage.restPage(list));
+    }
+
+    //主办方：获取所有报名记录
+    public CommonResult listByQuery(QueryEnrollmentParam param, Integer pageNum, Integer pageSize) {
+        CmsEnrollmentRecordExample example = new CmsEnrollmentRecordExample();
+        example.setOrderByClause("id desc");
+        CmsEnrollmentRecordExample.Criteria criteria = example.createCriteria();
+        criteria.andStatusNotEqualTo(EnrollmentStatus.TEMP.getStatus());
+
+        if (param.getContestId() != null) {
+            criteria.andContestIdEqualTo(param.getContestId());
+        }
+
+        if (param.getGroupId() != null) {
+            criteria.andContestGroupIdEqualTo(param.getGroupId());
+        }
+
+        if (param.getId() != null) {
+            //这里return得了
+            criteria.andIdEqualTo(param.getId());
+        }
+
+        if (param.getConstantNumber() != null) {
+            criteria.andContestantNumberEqualTo(param.getConstantNumber());
+        }
+
+        if (param.getKeyword() != null) {
+            criteria.andContestantRealNameLike("%" + param.getKeyword() + "%");
+        }
+
+        if (param.getStatus() != null) {
+            criteria.andStatusEqualTo(param.getStatus());
+        }
+
+        PageHelper.startPage(pageNum, pageSize);
+        List<CmsEnrollmentRecord> list = enrollmentRecordMapper.selectByExample(example);
         return CommonResult.success(CommonPage.restPage(list));
     }
 

@@ -16,11 +16,29 @@ public class ContestInfoDTO extends CmsContest {
 
     private String organizerName;
 
+    //赛事种类
+    private Long cateId;
+
+    //原先的遗留
     private String cateName;
 
     private List<CmsContestGroup> groupList;
 
     private List<CmsContestExtensionProperty> extensionPropertyList;
+
+
+
+    //------
+
+    @Override
+    public Long getCateId() {
+        return cateId;
+    }
+
+    @Override
+    public void setCateId(Long cateId) {
+        this.cateId = cateId;
+    }
 
     public List<CmsContestGroup> getGroupList() {
         return groupList;

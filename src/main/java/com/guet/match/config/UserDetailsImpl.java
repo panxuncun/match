@@ -69,6 +69,7 @@ public class UserDetailsImpl implements UserDetails {
         return true;
     }
 
+
     //启用状态
     @Override
     public boolean isEnabled() {

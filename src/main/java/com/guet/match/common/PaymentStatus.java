@@ -8,7 +8,7 @@ package com.guet.match.common;
 public enum PaymentStatus {
     UNPAID(0,"未支付"),
     PAID(1,"已支付"),
-    APPLY_REFUND(2,"申请退款"),
+    APPLY_REFUND(2,"退款中"),
     REFUND(3, "已退款"),
     LOCK(4,"暂时锁定以防清除"),
     DELETE_FLAG(5,"删除标记");

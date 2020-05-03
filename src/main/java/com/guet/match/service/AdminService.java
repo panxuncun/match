@@ -113,6 +113,7 @@ public class AdminService {
         return adminMapper.selectByPrimaryKey(id);
     }
 
+    //spring使用，不删不改
     public UmsAdmin getAdminByUsername(String username) {
         logger.info("原始参数username->{}", username);
         UmsAdminExample example = new UmsAdminExample();

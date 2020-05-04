@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,9 +19,10 @@ import java.util.stream.Collectors;
  * @Date: 2020/4/13
  * @Description:
  */
-public class UserDetailsForOrganizerImpl implements UserDetails {
+public class OrganizerUserDetails implements UserDetails {
     private UmsOrganizer organizer;
-    public UserDetailsForOrganizerImpl(UmsOrganizer organizer) {
+    private List<String> list;
+    public OrganizerUserDetails(UmsOrganizer organizer) {
         this.organizer = organizer;
     }
 
@@ -28,9 +30,7 @@ public class UserDetailsForOrganizerImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        LinkedList list = new LinkedList();
-        list.add("organizer");
-        return list;
+        return new ArrayList<>();
     }
 
     @Override

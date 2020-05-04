@@ -33,7 +33,7 @@ import java.util.List;
  */
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled=true)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private AdminService adminService;
@@ -101,32 +101,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        //获取登录用户信息
         return username -> {
+            //默认是管理员
             UmsAdmin admin = adminService.getAdminByUsername(username);
             if (admin != null) {
                 List<UmsResource> resourceList = resourceService.getResourceListByAdminId(admin.getId());
-                return new UserDetailsImpl(admin,resourceList);
+                return new AdminUserDetails(admin, resourceList);
             }
-            throw new UsernameNotFoundException("用户名或密码错误");
-        };
-    }
-
-    //4.13 主办方登录
-    @Bean
-    public UserDetailsService userDetailsServiceForOrganizer() {
-        //获取登录用户信息
-        return username -> {
+            //执行到此处，排除管理员
             UmsOrganizer organizer = organizeService.getOrganizerByUsername(username);
             if (organizer != null) {
-                return new UserDetailsForOrganizerImpl(organizer);
+                return new OrganizerUserDetails(organizer);
             }
             throw new UsernameNotFoundException("用户名或密码错误");
         };
     }
 
     @Bean
-    public JwtTokenFilter jwtAuthenticationTokenFilter(){
+    public JwtTokenFilter jwtAuthenticationTokenFilter() {
         return new JwtTokenFilter();
     }
 

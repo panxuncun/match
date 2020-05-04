@@ -16,23 +16,13 @@ import java.util.stream.Collectors;
  * @Description: security需要的用户详情，这个配置非常重要
  * @Source： 来源：http://www.macrozheng.com/#/architect/mall_arch_04?id=%e6%b7%bb%e5%8a%a0adminuserdetails
  */
-public class UserDetailsImpl implements UserDetails {
+public class AdminUserDetails implements UserDetails {
     private UmsAdmin umsAdmin;
     private List<UmsResource> resourceList;
-    public UserDetailsImpl(UmsAdmin umsAdmin, List<UmsResource> resourceList) {
+    public AdminUserDetails(UmsAdmin umsAdmin, List<UmsResource> resourceList) {
         this.umsAdmin = umsAdmin;
         this.resourceList = resourceList;
     }
-
-    //sefer，他这里的permissoin.getvalue长这样pms:product:delete
-    //@Override
-    //public Collection<? extends GrantedAuthority> getAuthorities() {
-    //    //返回当前用户的权限
-    //    return permissionList.stream()
-    //            .filter(permission -> permission.getValue()!=null)
-    //            .map(permission ->new SimpleGrantedAuthority(permission.getValue()))
-    //            .collect(Collectors.toList());
-    //}
 
 
 

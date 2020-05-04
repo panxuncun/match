@@ -6,6 +6,7 @@ import com.guet.match.common.CommonResult;
 import com.guet.match.common.UsableStatus;
 import com.guet.match.dto.*;
 import com.guet.match.mapper.UmsAdminMapper;
+import com.guet.match.mapper.UmsOrganizerMapper;
 import com.guet.match.mapper.UmsRoleAdminMapper;
 import com.guet.match.model.*;
 import com.guet.match.util.JwtTokenUtil;
@@ -40,6 +41,9 @@ public class AdminService {
     Logger logger = LoggerFactory.getLogger(AdminService.class);
     @Autowired
     private UmsAdminMapper adminMapper;
+
+    @Autowired
+    private UmsOrganizerMapper organizerMapper;
 
     @Autowired
     private UmsRoleAdminMapper roleAdminMapper;
@@ -115,7 +119,7 @@ public class AdminService {
 
     //spring使用，不删不改
     public UmsAdmin getAdminByUsername(String username) {
-        logger.info("原始参数username->{}", username);
+        logger.info("getAdminByUsername(),原始参数username->{}", username);
         UmsAdminExample example = new UmsAdminExample();
         example.createCriteria().andUsernameEqualTo(username);
         List<UmsAdmin> list = adminMapper.selectByExample(example);
@@ -209,6 +213,13 @@ public class AdminService {
 
     //系统管理员登录
     public String login(String username, String password) {
+        //-----
+        UmsAdminExample example = new UmsAdminExample();
+        example.createCriteria().andUsernameEqualTo(username);
+        if (adminMapper.selectByExample(example).size() == 0){
+            return null;
+        }
+        //-----
         String token = null;
         try {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
@@ -226,9 +237,16 @@ public class AdminService {
 
     //账号查重
     public boolean isDuplicate(String username) {
+        //查管理员
         UmsAdminExample example = new UmsAdminExample();
         example.createCriteria().andUsernameEqualTo(username);
         if (adminMapper.selectByExample(example).size() > 0) {
+            return true;
+        }
+        //查主办方
+        UmsOrganizerExample example1 = new UmsOrganizerExample();
+        example1.createCriteria().andUsernameEqualTo(username);
+        if (organizerMapper.selectByExample(example1).size() > 0) {
             return true;
         }
         return false;

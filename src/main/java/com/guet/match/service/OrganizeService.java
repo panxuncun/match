@@ -5,6 +5,7 @@ import com.guet.match.common.OrganizerStatus;
 import com.guet.match.common.UsableStatus;
 import com.guet.match.dto.*;
 import com.guet.match.mapper.CmsContestMapper;
+import com.guet.match.mapper.UmsAdminMapper;
 import com.guet.match.mapper.UmsOrganizerMapper;
 import com.guet.match.mapper.UmsOrganizerStaffMapper;
 import com.guet.match.model.*;
@@ -53,6 +54,9 @@ public class OrganizeService {
     private UmsOrganizerMapper organizerMapper;
 
     @Autowired
+    private UmsAdminMapper adminMapper;
+
+    @Autowired
     private CmsContestMapper contestMapper;
 
     @Autowired
@@ -72,9 +76,16 @@ public class OrganizeService {
 
     //账号查重
     public boolean isDuplicate(String username) {
-        UmsOrganizerExample example = new UmsOrganizerExample();
+        //查管理员
+        UmsAdminExample example = new UmsAdminExample();
         example.createCriteria().andUsernameEqualTo(username);
-        if (organizerMapper.selectByExample(example).size() > 0) {
+        if (adminMapper.selectByExample(example).size() > 0) {
+            return true;
+        }
+        //查主办方
+        UmsOrganizerExample example1 = new UmsOrganizerExample();
+        example1.createCriteria().andUsernameEqualTo(username);
+        if (organizerMapper.selectByExample(example1).size() > 0) {
             return true;
         }
         return false;
@@ -117,6 +128,13 @@ public class OrganizeService {
 
     //主办方登录
     public String login(String username, String password) {
+        //-----
+        UmsOrganizerExample example = new UmsOrganizerExample();
+        example.createCriteria().andUsernameEqualTo(username);
+        if (organizerMapper.selectByExample(example).size() == 0){
+            return null;
+        }
+        //-----
         String token = null;
         try {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);

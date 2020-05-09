@@ -6,6 +6,7 @@ import com.guet.match.dto.*;
 import com.guet.match.model.CmsContest;
 import com.guet.match.model.CmsFavorite;
 import com.guet.match.service.ContestService;
+import com.guet.match.service.CountService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -35,6 +36,9 @@ public class ContestController {
     @Autowired
     private ContestService contestService;
 
+    @Autowired
+    private CountService countService;
+
     //todo 前端处理一下默认分组
     @ApiOperation("添加赛事")
     @PostMapping("contest/add")
@@ -57,12 +61,13 @@ public class ContestController {
 
     /**
      * 批量退款。涉及到记录和订单，由记录调用订单方法.
+     *
      * @param ids 报名ids
      * @return CommonResult
      */
     @ApiOperation("主办方：批量退款")
     @PostMapping("contest/enrollment/batchRefund")
-    public CommonResult batchRefund(@RequestBody List<Long> ids){
+    public CommonResult batchRefund(@RequestBody List<Long> ids) {
         return contestService.batchRefund(ids);
     }
 
@@ -81,7 +86,7 @@ public class ContestController {
     }
 
     @GetMapping("contest/group/list/{contestId}")
-    public CommonResult getGroupListById(@PathVariable Long contestId){
+    public CommonResult getGroupListById(@PathVariable Long contestId) {
         return contestService.getGroupListById(contestId);
     }
 
@@ -153,12 +158,10 @@ public class ContestController {
     }
 
     @ApiOperation("筛选赛事")
-    @GetMapping("contest/filter")
-    public CommonResult filterContest(@RequestParam(required = false) String typeName,
-                                      @RequestParam(required = true, defaultValue = "0") Integer sortCode,
-                                      @RequestParam(required = false, defaultValue = "1") Integer pageNum,
-                                      @RequestParam(required = false, defaultValue = "5") Integer pageSize) {
-        List<CmsContest> list = contestService.filterContest(typeName, sortCode, pageNum, pageSize);
+    @PostMapping("contest/filter")
+    public CommonResult filterContest(@RequestBody FilterParam param) {
+        logger.info("filter请求参数->{}",param.toString());
+        List<CmsContest> list = contestService.filterContest(param.getCateIds(), param.getSortCode(), param.getPageNum(), param.getPageSize());
         return CommonResult.success(CommonPage.restPage(list));
     }
 
@@ -212,6 +215,12 @@ public class ContestController {
                                     @RequestParam(required = false, value = "pageSize", defaultValue = "5") Integer pageSize) {
         List<CmsContest> list = contestService.getFavorite(openId, pageNum, pageSize);
         return CommonResult.success(CommonPage.restPage(list));
+    }
+
+    @ApiOperation("统计：报名情况")
+    @GetMapping("contest/count/enrollmentArr")
+    public CommonResult countEnrollment(Principal principal,@RequestParam Integer day){
+        return countService.countEnrollment(principal,day);
     }
 
 }

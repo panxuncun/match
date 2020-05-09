@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -186,14 +187,12 @@ public class ContestService {
         //todo 统计行数是否一致
         //当前读取的行号，从第2行开始读取
         int i = 1;
-        //错误摘要
+
         String errMsg = "";
         try {
             String lowerCaseFileName = file.getOriginalFilename().toLowerCase();
             if (lowerCaseFileName.endsWith(".xlsx")) {
-                logger.info("office 2007");
                 //XSSFWorkbook excel = new XSSFWorkbook(file.getInputStream());
-                //不支持的格式
                 return CommonResult.failed("不支持的格式");
             }
 
@@ -216,11 +215,7 @@ public class ContestService {
                     row.getCell(j).setCellType(CellType.STRING);
                 }
 
-                logger.info("=====3.。");
-
                 errMsg = "序列号";
-                logger.info("=====preid");
-
                 Long id = Long.valueOf(row.getCell(2).getStringCellValue());
                 logger.info("=====id{}", id);
                 if (id == null) {
@@ -517,30 +512,31 @@ public class ContestService {
     }
 
     //筛选赛事(排序码依据枚举SortType)
-    public List<CmsContest> filterContest(String typeName, Integer sortCode, Integer pageNum, Integer pageSize) {
+    public List<CmsContest> filterContest(List<Long> cateIds, Integer sortCode, Integer pageNum, Integer pageSize) {
+        logger.info("原始参数：sortCode{}", sortCode);
 
-        PageHelper.startPage(pageNum, pageSize);
         CmsContestExample example = new CmsContestExample();
-        //类型为空，返回所有数据
-        if (typeName == null) {
-            example.createCriteria();
+        CmsContestExample.Criteria criteria = example.createCriteria();
+
+        //类型
+        if (cateIds != null && cateIds.size() > 0) {
+            criteria.andCateIdIn(cateIds);
             return contestMapper.selectByExample(example);
         }
 
-        logger.info("原始参数：sortCode{}", sortCode);
-
-        //设置排序
-        example.setOrderByClause(SortCode.getSqlBySortType(sortCode));
-        //添加条件
-        //CmsContestExample.Criteria criteria = example.createCriteria().andTypeEqualTo(typeName);
-        CmsContestExample.Criteria criteria = example.createCriteria();
-        if (sortCode == SortCode.CLOSE_ENROLLMENT_TIME.getCode()) {
-            //截止报名时间大于此刻
-            criteria.andCloseEnrollmentTimeGreaterThan(new Date());
-        } else if (sortCode == SortCode.CONTEST_TIME.getCode()) {
-            //比赛开始时间大于此刻
-            criteria.andContestTimeGreaterThan(new Date());
+        //排序
+        if (sortCode != null){
+            example.setOrderByClause(SortCode.getSqlBySortType(sortCode));
+            if (sortCode == SortCode.CLOSE_ENROLLMENT_TIME.getCode()) {
+                //即将截止报名
+                criteria.andCloseEnrollmentTimeGreaterThan(new Date());
+            } else if (sortCode == SortCode.CONTEST_TIME.getCode()) {
+                //即将开赛
+                criteria.andContestTimeGreaterThan(new Date());
+            }
         }
+
+        PageHelper.startPage(pageNum, pageSize);
         return contestMapper.selectByExample(example);
     }
 
@@ -607,5 +603,7 @@ public class ContestService {
         List<CmsEnrollmentRecord> list = enrollmentRecordMapper.selectByExample(example);
         return CommonResult.success(CommonPage.restPage(list));
     }
+
+
 
 }

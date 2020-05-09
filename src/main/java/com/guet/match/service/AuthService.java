@@ -1,6 +1,11 @@
 package com.guet.match.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.guet.match.common.CommonResult;
+import com.guet.match.mapper.UmsConstantMapper;
+import com.guet.match.model.UmsConstant;
+import com.guet.match.model.UmsConstantExample;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -13,6 +18,10 @@ import java.util.Map;
  */
 @Service
 public class AuthService {
+    @Autowired
+    private UmsConstantMapper constantMapper;
+
+
     private String APPID = "wx84487af617e5f965";
     private String APPSECRET = "a5bdd00685bec189d9002363a0ee4ef0";
 
@@ -28,7 +37,7 @@ public class AuthService {
             if (map.containsKey("errcode")){
                 return null;
             }
-            map.put("token", "abcde");//todo 实现token算法,利用session_key配合自己的
+            map.put("token", "tokenabcdefghijkl");//todo 实现token算法
             return map;
         } catch (Exception e) {
             return null;
@@ -49,5 +58,21 @@ public class AuthService {
             return null;
         }
 
+    }
+
+    //添加或者更新运动员信息
+    public CommonResult addOrUpdateConstant(UmsConstant param){
+        if (param.getOpenId() == null){
+            return CommonResult.failed("openId不能为空");
+        }
+        param.setCreateTime(null);
+        UmsConstantExample example = new UmsConstantExample();
+        example.createCriteria().andOpenIdEqualTo(param.getOpenId());
+        if (constantMapper.countByExample(example) > 0) {
+            constantMapper.updateByPrimaryKeySelective(param);
+        }else {
+            constantMapper.insertSelective(param);
+        }
+        return CommonResult.success(null);
     }
 }

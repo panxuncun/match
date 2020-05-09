@@ -6,6 +6,7 @@ import com.guet.match.common.CommonResult;
 import com.guet.match.dto.SignParam;
 import com.guet.match.mapper.UmsOrganizerMapper;
 import com.guet.match.model.UmsAdmin;
+import com.guet.match.model.UmsConstant;
 import com.guet.match.model.UmsOrganizer;
 import com.guet.match.model.UmsOrganizerExample;
 import com.guet.match.service.AdminService;
@@ -57,7 +58,7 @@ public class AuthController {
 
 
     @ApiOperation("小程序身份验证,并返回token")
-    @RequestMapping("auth/openid/{code}")
+    @GetMapping("auth/openid/{code}")
     public CommonResult getOpenId(@PathVariable("code")String code){
         Map map = authService.getAuth(code);
         if (map == null){
@@ -193,7 +194,12 @@ public class AuthController {
         return CommonResult.success(null);
     }
 
-
+    @ApiOperation("添加或者更新运动员信息")
+    @PostMapping("auth/updateConstant")
+    public CommonResult addOrUpdateConstant(@RequestBody UmsConstant param){
+        return authService.addOrUpdateConstant(param);
+    }
+    
 
 
 

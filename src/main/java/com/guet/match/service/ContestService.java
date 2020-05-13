@@ -61,7 +61,6 @@ public class ContestService {
 
     /**
      * 工具：获取主办方id By username
-     *
      * @param
      * @return 主办方id
      */
@@ -517,6 +516,8 @@ public class ContestService {
 
         CmsContestExample example = new CmsContestExample();
         CmsContestExample.Criteria criteria = example.createCriteria();
+
+        //未通过的不能查看、等待审核的能查看看。能查看：通过且取消
 
         //类型
         if (cateIds != null && cateIds.size() > 0) {

@@ -5,6 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.guet.match.common.CommonPage;
 import com.guet.match.common.CommonResult;
 import com.guet.match.common.ResourceType;
+import com.guet.match.common.UsableStatus;
 import com.guet.match.dto.AddResourceParam;
 import com.guet.match.dto.AllocParam;
 import com.guet.match.dto.UpdateResourceParam;
@@ -121,39 +122,25 @@ public class ResourceService {
         return resourceMapper.selectByExample(resourceExample);
     }
 
-    //获取资源by admin id,改造成sql语句更简单
+
+
+    //获取资源by admin id,改造成sql语句更简单 5.13改动
     public List<UmsResource> getResourceListByAdminId(Long adminId) {
         if (adminId == null) {
             logger.error("不合法的参数, AdminId->{}", adminId);
             return null;
         }
-        logger.info("原始参数adminId->{}", adminId);
-        //得到该管理员的角色ids
-        UmsRoleAdminExample roleAdminExample = new UmsRoleAdminExample();
-        roleAdminExample.createCriteria().andAdminIdEqualTo(adminId);
-        List<Long> roleIds = roleAdminMapper.selectByExample(roleAdminExample).stream().map(role_Admin -> role_Admin.getRoleId()).collect(Collectors.toList());
-        logger.info("得到角色ids, 大小->{},roleIds->{}", roleIds.size(), roleIds.toString());
-        if (roleIds.size() == 0) {
+        List<UmsResource> list = resourceMapper.getResourceByAdminId(adminId);
+        if (list == null || list.size() == 0){
             return new ArrayList<>();
         }
-        //由角色得到资源ids
-        UmsRoleResourceExample roleResourceExample = new UmsRoleResourceExample();
-        roleResourceExample.createCriteria().andRoleIdIn(roleIds);
-        List<Long> resourceIds = roleResourceMapper.selectByExample(roleResourceExample).stream().map(role_Resource -> role_Resource.getResourceId()).collect(Collectors.toList());
-        logger.info("得到资源ids, 大小->{},resourceIds->{}", resourceIds.size(), resourceIds.toString());
-        if (resourceIds.size() == 0) {
-            return new ArrayList<>();
-        }
-        //由资源ids得到资源
-        UmsResourceExample resourceExample = new UmsResourceExample();
-        resourceExample.createCriteria().andIdIn(resourceIds);
-        return resourceMapper.selectByExample(resourceExample);
+        return list;
     }
 
     //获取资源权限名称，用于前端动态路由，废弃。
     public List getResourceNameForRouter(Long id) {
         List<String> res = getResourceListByAdminId(id).stream().map(item -> item.getPermission()).collect(Collectors.toList());
-        res.add("test");//为了防止0长数组而加进去，因为前端不允许0长数组
+        res.add("base");//为了防止0长数组而加进去，因为前端不允许0长数组
         return res;
     }
 

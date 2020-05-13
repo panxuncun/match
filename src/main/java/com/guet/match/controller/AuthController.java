@@ -90,7 +90,7 @@ public class AuthController {
         logger.info("登录");
         String token = adminService.login(umsAdminLoginParam.getUsername(), umsAdminLoginParam.getPassword());
         if (token == null) {
-            return CommonResult.validateFailed("用户名或密码错误");
+            return CommonResult.validateFailed("用户名或密码错误，或者账户被停用。");
         }
         Map<String, String> tokenMap = new HashMap<>();
         //拆开，postman测试的时候更方便
@@ -123,7 +123,7 @@ public class AuthController {
     public CommonResult organizeLogin(@RequestBody SignParam param) {
         String token = organizeService.login(param.getUsername(), param.getPassword());
         if (token == null) {
-            return CommonResult.validateFailed("用户名或密码错误");
+            return CommonResult.validateFailed("用户名或密码错误，或者账户被停用。");
         }
         Map<String, String> tokenMap = new HashMap<>();
         //拆开，postman测试的时候更方便

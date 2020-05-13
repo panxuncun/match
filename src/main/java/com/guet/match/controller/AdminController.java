@@ -27,10 +27,11 @@ public class AdminController {
 
     @ApiOperation("获取全部管理员")
     @GetMapping("admin/list")
-    public CommonResult getAdminList(@RequestParam(required = false) String keyword,
+    public CommonResult getAdminList(Principal principal,
+                                     @RequestParam(required = false) String keyword,
                                      @RequestParam(required = false, value = "page", defaultValue = "1") Integer pageNum,
                                      @RequestParam(required = false, value = "limit", defaultValue = "5") Integer pageSize) {
-        return adminService.getAdminList(keyword, pageNum, pageSize);
+        return adminService.getAdminList(principal,keyword, pageNum, pageSize);
     }
 
     @ApiOperation("更新管理员")

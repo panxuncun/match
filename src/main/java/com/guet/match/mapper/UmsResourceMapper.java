@@ -28,4 +28,7 @@ public interface UmsResourceMapper {
     int updateByPrimaryKeySelective(UmsResource record);
 
     int updateByPrimaryKey(UmsResource record);
+
+    //获取资源by admin id
+    List<UmsResource> getResourceByAdminId(Long adminId);
 }

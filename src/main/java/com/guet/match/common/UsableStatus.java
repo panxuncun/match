@@ -6,8 +6,8 @@ package com.guet.match.common;
  * @Description: 可用状态
  */
 public enum UsableStatus {
-    ON(0, "已停用"),
-    OFF(1, "已启用"),
+    OFF(0, "已停用"),
+    ON(1, "已启用"),
     DELETE_FLAG(2, "删除标记");
 
     private int status;

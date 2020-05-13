@@ -98,6 +98,34 @@
     from ums_resource
     where id = #{id,jdbcType=BIGINT}
   </select>
+
+  <!--获取资源by admin id-->
+  <select id="getResourceByAdminId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+SELECT
+	*
+FROM
+	ums_resource
+WHERE
+	id IN (
+		SELECT
+			resource_id
+		FROM
+			ums_role_resource
+		WHERE
+			role_id IN (
+				SELECT
+					role_id
+				FROM
+					ums_role_admin,
+					ums_role
+				WHERE
+					ums_role_admin.admin_id = #{id,jdbcType=BIGINT}
+				AND role_id = ums_role.id
+				AND ums_role.`status` = 1
+			)
+	)
+  </select>
+  <!--end 获取资源by admin id-->
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
     delete from ums_resource
     where id = #{id,jdbcType=BIGINT}

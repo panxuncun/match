@@ -4,6 +4,8 @@ import com.github.pagehelper.PageHelper;
 import com.guet.match.dto.TopicDTO;
 import com.guet.match.mapper.SmsTopicMapper;
 import com.guet.match.model.SmsTopic;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ import java.util.Map;
  */
 @Service
 public class TopicService {
+    Logger logger = LoggerFactory.getLogger(TopicService.class);
     @Autowired
     private SmsTopicMapper topicMapper;
 
@@ -38,6 +41,7 @@ public class TopicService {
     //得到一条话题(包含回复)
     //@PreAuthorize("hasAuthority('pms:brand:read')")
     public Map getTopicWithComment(Long topicId){
+        logger.info("=====查看topic->{}",topicId);
         Map map = new HashMap();
         map.put("topic",topicMapper.selectTopicDto(topicId));
         map.put("commentList", topicMapper.selectCommentList(topicId));
@@ -62,6 +66,7 @@ public class TopicService {
 
     //新建话题
     public Long insertTopic(SmsTopic topic){
+        logger.info("插入主题->{}",topic.toString());
         topic.setParentId(0L);
         return topicMapper.insertSelective(topic);
     }

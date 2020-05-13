@@ -1,5 +1,6 @@
 package com.guet.match.config;
 
+import com.guet.match.common.UsableStatus;
 import com.guet.match.model.UmsAdmin;
 import com.guet.match.model.UmsOrganizer;
 import com.guet.match.model.UmsResource;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -105,6 +107,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             //默认是管理员
             UmsAdmin admin = adminService.getAdminByUsername(username);
             if (admin != null) {
+                if (admin.getStatus() == UsableStatus.OFF.getStatus()){
+                    //throw new UsernameNotFoundException();
+                    throw new LockedException("账户已停用");
+                }
                 List<UmsResource> resourceList = resourceService.getResourceListByAdminId(admin.getId());
                 return new AdminUserDetails(admin, resourceList);
             }
@@ -113,7 +119,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             if (organizer != null) {
                 return new OrganizerUserDetails(organizer);
             }
-            throw new UsernameNotFoundException("用户名或密码错误");
+            throw new UsernameNotFoundException("用户名或密码错误。或者账户被停用。");
         };
     }
 

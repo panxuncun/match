@@ -61,8 +61,15 @@ public class AdminService {
     private String tokenHead;
 
 
-
-
+    /**
+     * 工具：获取管理员id By username
+     * @param
+     * @return 管理员id
+     */
+    public Long getAdminId(Principal principal) {
+        UmsAdmin admin = getAdminByUsername(principal.getName());
+        return admin.getId();
+    }
 
 
     //添加管理员(内管系统管理员)
@@ -268,13 +275,15 @@ public class AdminService {
     }
 
     //获取全部管理员
-    public CommonResult getAdminList(String keyword, Integer pageNum, Integer pageSize) {
+    public CommonResult getAdminList(Principal principal,String keyword, Integer pageNum, Integer pageSize) {
         UmsAdminExample example = new UmsAdminExample();
+        UmsAdminExample.Criteria criteria = example.createCriteria();
+        criteria.andIdNotEqualTo(getAdminId(principal));
         example.setOrderByClause("id desc");
         //昵称或账号搜索
         if (keyword != null && keyword.trim().length() > 0) {
-            example.createCriteria().andUsernameLike("%" + keyword + "%");
-            example.or(example.createCriteria().andNickNameLike("%" + keyword + "%"));
+            criteria.andUsernameLike("%" + keyword + "%");
+            example.or(example.createCriteria().andNickNameLike("%" + keyword + "%").andIdNotEqualTo(getAdminId(principal)));
         }
         PageHelper.startPage(pageNum, pageSize);
         List<UmsAdmin> list = adminMapper.selectByExample(example);

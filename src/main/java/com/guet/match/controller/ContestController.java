@@ -10,7 +10,6 @@ import com.guet.match.service.CountService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,16 +45,22 @@ public class ContestController {
         return contestService.insertContest(dto) ? CommonResult.success(null) : CommonResult.failed();
     }
 
-    @ApiOperation("审核赛事")
+    @ApiOperation("单个审核赛事")
     @PostMapping("contest/check")
     public CommonResult checkContest(@RequestBody CheckContestParam dto) {
         return contestService.checkContest(dto) == 1 ? CommonResult.success(null) : CommonResult.failed();
     }
 
-    @ApiOperation("主办方：审核报名")
+    @ApiOperation("主办方：单个或批量审核报名")
     @PostMapping("contest/enrollment/check")
-    public CommonResult checkContest(@RequestBody CheckEnrollmentParam param) {
+    public CommonResult checkContest(@RequestBody CheckParam param) {
         return contestService.checkEnrollment(param);
+    }
+
+    @ApiOperation("批量审核赛事")
+    @PostMapping("contest/batchCheck")
+    public CommonResult batchCheckContest(@RequestBody CheckParam param){
+        return contestService.batchCheckContest(param);
     }
 
 
@@ -140,11 +145,17 @@ public class ContestController {
         }
     }
 
+    @ApiOperation("首页，我的赛事，正在进行，且报名审核通过")
+    @GetMapping("contest/listMyContest/{openId}")
+    public CommonResult getMyContestOfIndexPage(@PathVariable String openId){
+        return contestService.getMyContestOfIndexPage(openId);
+    }
+
     @ApiOperation("主办方：导入成绩表格")
     @PostMapping("contest/enrollment/import/{contestId}")
-    public CommonResult importEnrollmentByContestId(@RequestParam(value = "file") MultipartFile file, @PathVariable Long contestId) {
+    public CommonResult importEnrollmentByContestId(Principal principal,@RequestParam(value = "file") MultipartFile file, @PathVariable Long contestId) {
         logger.info("导入成绩表格,contestId->{}", contestId);
-        return contestService.importEnrollmentByContestId(file, contestId);
+        return contestService.importEnrollmentByContestId(principal,file, contestId);
     }
 
 
@@ -222,5 +233,7 @@ public class ContestController {
     public CommonResult countEnrollment(Principal principal,@RequestParam Integer day){
         return countService.countEnrollment(principal,day);
     }
+
+
 
 }

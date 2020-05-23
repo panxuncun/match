@@ -42,6 +42,12 @@ public class OrderController {
         return orderService.createOrder(dto);
     }
 
+    @ApiOperation("小程序申请退款（取消订单）")
+    @PostMapping("order/applyRefund/{orderId}")
+    public CommonResult applyRefund(@PathVariable Long orderId){
+        return orderService.applyRefund(orderId);
+    }
+
     @ApiOperation("付款")
     @PostMapping("order/pay/{orderId}")
     public CommonResult pay(@PathVariable Long orderId) {

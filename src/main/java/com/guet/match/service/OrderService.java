@@ -146,7 +146,7 @@ public class OrderService {
         return 1;
     }
 
-    //取消未付款订单（直接删除）(针对未支付订单)
+    //关闭未付款订单（直接删除）(针对未支付订单)
     public int cancel(long id) {
         OmsOrder order = orderMapper.selectByPrimaryKey(id);
         if (order == null) {
@@ -158,6 +158,21 @@ public class OrderService {
             return 0;
         }
         return orderMapper.deleteByPrimaryKey(id);
+    }
+
+    //小程序申请退款（取消订单）
+    public CommonResult applyRefund(Long orderId){
+        OmsOrder order = orderMapper.selectByPrimaryKey(orderId);
+        if (order == null) {
+            logger.info("订单不存在，可能被清除。订单id->{}", orderId);
+            return CommonResult.failed("订单不存在");
+        }
+        if (order.getStatus() != PaymentStatus.PAID.getStatus()){
+            return CommonResult.failed("只有已支付的订单才能申请退款");
+        }
+        order.setStatus(PaymentStatus.APPLY_REFUND.getStatus());
+        orderMapper.updateByPrimaryKey(order);
+        return CommonResult.success(null);
     }
 
     //删除订单（针对已完成订单，设置删除标志位）
@@ -204,20 +219,7 @@ public class OrderService {
         return orderMapper.selectByExample(example);
     }
 
-    //申请退款（用户）
-    public int applyRefund(long orderId) {
-        OmsOrder order = orderMapper.selectByPrimaryKey(orderId);
-        if (order == null) {
-            logger.error("退款申请失败，无效的订单号{}", orderId);
-            return 0;
-        }
-        if (order.getStatus() != PaymentStatus.PAID.getStatus()) {
-            logger.error("只有支付完成的订单可以申请退款，订单号{}, 订单状态{}", orderId, order.getStatus());
-            return 0;
-        }
-        order.setStatus(PaymentStatus.REFUND.getStatus());
-        return orderMapper.updateByPrimaryKey(order);
-    }
+
 
     //取消退款申请（用户）
     public int cancelRefund(long orderId) {
@@ -384,6 +386,7 @@ public class OrderService {
         OmsOrderExample example = new OmsOrderExample();
         example.setOrderByClause("id desc");
         OmsOrderExample.Criteria criteria = example.createCriteria();
+        criteria.andContestIdEqualTo(param.getContestId());
         if (param.getId() != null) {
             criteria.andIdEqualTo(param.getId());
         }

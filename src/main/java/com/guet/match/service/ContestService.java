@@ -6,10 +6,7 @@ import com.guet.match.dto.*;
 import com.guet.match.mapper.*;
 import com.guet.match.model.*;
 import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xssf.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -17,13 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,6 +33,8 @@ public class ContestService {
 
     @Autowired
     private CmsContestMapper contestMapper;
+
+
 
     @Autowired
     private CmsContestGroupMapper groupMapper;
@@ -92,6 +88,8 @@ public class ContestService {
     }
 
 
+
+
     /**
      * 主办方：查看指定赛事下的报名记录
      *
@@ -108,7 +106,7 @@ public class ContestService {
         }
         //判断赛事所属主办方
         if (contest.getOrganizerId() != getOrganizerId(principal)) {
-            return CommonResult.forbidden("你没有权限");
+            return CommonResult.forbidden("你没有权限，该赛事由其他主办方发布");
         }
         //获取数据
         PageHelper.startPage(pageNum, pageSize);
@@ -146,7 +144,7 @@ public class ContestService {
 
 
         //标题（首行）
-        String[] title = {"赛事", "组别", "序列号", "运动员", "号码牌", "证件号", "完赛情况", "量化成绩", "组内名次", "获奖项"};
+        String[] title = {"赛事", "组别", "报名编号", "运动员", "号码牌", "证件号", "完赛情况", "量化成绩", "组内名次", "获奖项"};
         HSSFRow headRow = sheet.createRow(0);
         for (int i = 0; i < title.length; i++) {
             HSSFCell cell = headRow.createCell(i);
@@ -180,10 +178,23 @@ public class ContestService {
         return excel;
     }
 
+    //小程序：首页，我的赛事，正在进行的
+    public CommonResult getMyContestOfIndex(String openId){
+        return null;
+
+    }
+
+
+
     //主办方：导入成绩表格
-    public CommonResult importEnrollmentByContestId(MultipartFile file, Long contestId) {
-        //todo 判断序列号是否属于这个赛事
-        //todo 统计行数是否一致
+    @Transactional
+    public CommonResult importEnrollmentByContestId(Principal principal,MultipartFile file, Long contestId) {
+        //判断赛事是否属于主办方
+        CmsContest contest = contestMapper.selectByPrimaryKey(contestId);
+        if (contest == null || contest.getOrganizerId() != getOrganizerId(principal)) {
+            return CommonResult.failed("你没有权限");
+        }
+
         //当前读取的行号，从第2行开始读取
         int i = 1;
 
@@ -202,53 +213,71 @@ public class ContestService {
             HSSFSheet sheet = (HSSFSheet) excel.getSheetAt(0);
             //总行数
             int total = sheet.getLastRowNum() + 1;
+            logger.info("总行数->{}",total);
+
+            logger.info("=====pre");
 
 
             for (i = 1; i < total; i++) {
+                logger.info("=====a");
                 HSSFRow row = sheet.getRow(i);
+                if (row == null){
+                    logger.info("row为空,i->{}",i);
+                }
                 CmsEnrollmentRecord record = new CmsEnrollmentRecord();
 
 
-                //格式极易出错，原因是可能位数字,所以一定要强转为字符串
-                for (int j = 2; j <= 9; j++) {
-                    row.getCell(j).setCellType(CellType.STRING);
+
+                if (row.getCell(2) == null) {
+                    errMsg = "找不到报名编号";
+                }else {
+                    errMsg = "不合法的报名编号";
+                    Long id = Long.valueOf(row.getCell(2).getStringCellValue());//可能抛异常
+                    CmsEnrollmentRecord temp = enrollmentRecordMapper.selectByPrimaryKey(id);
+                    if (temp == null || temp.getContestId().longValue() != contestId.longValue()) {
+                        logger.info("====={},{}",temp.getContestId(),contestId);
+                        errMsg = "报名编号为" + id + "的记录不属于该赛事";
+                        throw new Exception();
+                    }
+
+                    record.setId(id);
                 }
 
-                errMsg = "序列号";
-                Long id = Long.valueOf(row.getCell(2).getStringCellValue());
-                logger.info("=====id{}", id);
-                if (id == null) {
-                    throw new Exception();
+
+                if (row.getCell(6) != null) {
+                    row.getCell(6).setCellType(CellType.STRING);
+                    record.setContestantStatus(row.getCell(6).getStringCellValue());
                 }
-                record.setId(id);
 
-                logger.info("即将更新的记录：enrollmentId->{}", id);
-
-                errMsg = "完赛情况";
-                record.setContestantStatus(row.getCell(6).getStringCellValue());
-
-                errMsg = "量化成绩";
-                record.setContestantAchievement(row.getCell(7).getStringCellValue());
-
-                errMsg = "名次";
-                String s = row.getCell(8).getStringCellValue();
-                record.setContestantRank(s);
+                if (row.getCell(7) != null) {
+                    row.getCell(7).setCellType(CellType.STRING);
+                    record.setContestantAchievement(row.getCell(7).getStringCellValue());
+                }
 
 
-                errMsg = "获奖项";
-                record.setContestantAward(row.getCell(9).getStringCellValue());
+                if (row.getCell(8) != null) {
+                    row.getCell(8).setCellType(CellType.STRING);
+                    record.setContestantRank(row.getCell(8).getStringCellValue());
+                }
+
+                if (row.getCell(9) != null) {
+                    row.getCell(9).setCellType(CellType.STRING);
+                    record.setContestantAward(row.getCell(9).getStringCellValue());
+                }
+
+                logger.info("=====d");
 
                 if (enrollmentRecordMapper.updateByPrimaryKeySelective(record) == 0) {
-                    errMsg = "原因： 1.序列号可能不存在，请勿改动模板中的序列号。\n   2.序列号";
+                    logger.info("=====更新失败，i->{}",i);
                     throw new Exception();
                 }
-                logger.info("更新完成：enrollmentId->{}", id);
-                errMsg = "附近可能存在空行。空行";
+                errMsg = "数据过长，建议每个单元格不要超过50字";
             }
             logger.info("全部插入完毕");
             return CommonResult.success(null);
         } catch (Exception e) {
-            errMsg = "导入错误: 第" + (i + 1) + "行" + errMsg + "不合法，请保证是文本格式。并且长度50字内。";
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            errMsg = "错误发生表格在第" + (i+1) + "行。可能原因：" + errMsg;
             logger.info("{}", errMsg);
             return CommonResult.failed(errMsg);
         }
@@ -332,6 +361,11 @@ public class ContestService {
     public CommonResult updateContest(ContestInfoDTO dto, Principal principal) {
         long contestId = dto.getId();
         CmsContest contest = contestMapper.selectByPrimaryKey(contestId);
+        int status = contest.getStatus();
+        //判断赛事状态
+        if (status != ContestStatus.WAIT.getStatus() && status != ContestStatus.REFUSE.getStatus()) {
+            return CommonResult.failed("该赛事状态不允许编辑");
+        }
         //判断赛事所属主办方
         if (contest.getOrganizerId() != getOrganizerId(principal)) {
             logger.error("拒绝赛事更新请求，原因：赛事不属于该主办方，原始参数: {}", dto.toString());
@@ -408,7 +442,7 @@ public class ContestService {
      * @param param = ids + status
      * @return CommonResult
      */
-    public CommonResult checkEnrollment(CheckEnrollmentParam param) {
+    public CommonResult checkEnrollment(CheckParam param) {
         if (param.getIds() == null || param.getIds().size() == 0) {
             return CommonResult.failed("ids不能为空数组");
         }
@@ -431,6 +465,37 @@ public class ContestService {
             enrollmentRecordMapper.updateByPrimaryKey(item);
         });
 
+        return CommonResult.success(null);
+    }
+
+    /**
+     * 管理员，批量审核赛事
+     * 批量审核：通过或拒绝
+     * 只有“等待审核”状态的记录可以使用此方法
+     * @param param = ids + status
+     * @return CommonResult
+     */
+    public CommonResult batchCheckContest(CheckParam param){
+        logger.info("====={}",param.toString());
+        if (param.getIds() == null || param.getIds().size() == 0) {
+            return CommonResult.failed("ids不能为空数组");
+        }
+
+        CmsContestExample example = new CmsContestExample();
+        example.createCriteria().andIdIn(param.getIds());
+        List<CmsContest> list = contestMapper.selectByExample(example);
+        for (CmsContest item : list) {
+            if (item.getStatus() != ContestStatus.WAIT.getStatus()) {
+                String errMsg = "只允许 “等待审核” 的赛事批量操作。编号为" + item.getId() + "的赛事不合法";
+                return CommonResult.failed(errMsg);
+            }
+        }
+
+        //update
+        list.stream().forEach(item->{
+            item.setStatus(param.getStatus());
+            contestMapper.updateByPrimaryKey(item);
+        });
         return CommonResult.success(null);
     }
 
@@ -516,9 +581,8 @@ public class ContestService {
 
         CmsContestExample example = new CmsContestExample();
         CmsContestExample.Criteria criteria = example.createCriteria();
-
-        //未通过的不能查看、等待审核的能查看看。能查看：通过且取消
-
+        criteria.andStatusEqualTo(ContestStatus.PASS.getStatus());
+        
         //类型
         if (cateIds != null && cateIds.size() > 0) {
             criteria.andCateIdIn(cateIds);
@@ -603,6 +667,12 @@ public class ContestService {
         PageHelper.startPage(pageNum, pageSize);
         List<CmsEnrollmentRecord> list = enrollmentRecordMapper.selectByExample(example);
         return CommonResult.success(CommonPage.restPage(list));
+    }
+
+
+    //首页，我的赛事，正在进行，且报名审核通过
+    public CommonResult getMyContestOfIndexPage(String openId){
+        return CommonResult.success(enrollmentRecordMapper.getMyContestOfIndexPage(openId));
     }
 
 

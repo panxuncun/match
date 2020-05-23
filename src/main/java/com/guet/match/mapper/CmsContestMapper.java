@@ -39,4 +39,6 @@ public interface CmsContestMapper {
     int updateByPrimaryKeyWithBLOBs(CmsContest record);
 
     int updateByPrimaryKey(CmsContest record);
+
+    //
 }

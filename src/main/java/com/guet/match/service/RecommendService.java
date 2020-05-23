@@ -4,6 +4,7 @@ import com.guet.match.common.CommonResult;
 import com.guet.match.common.ContestStatus;
 import com.guet.match.mapper.CmsContestMapper;
 import com.guet.match.mapper.CmsRecommendMapper;
+import com.guet.match.model.CmsContest;
 import com.guet.match.model.CmsContestExample;
 import com.guet.match.model.CmsRecommend;
 import com.guet.match.model.CmsRecommendExample;
@@ -30,8 +31,26 @@ public class RecommendService {
 
     private int MaxCount = 5;
 
+    //清除残余的无效id，因为回导致查不到，而且还占用了5的空间
+    public int cleanRecommend(){
+        CmsRecommendExample example = new CmsRecommendExample();
+        List<Long> ids = recommendMapper.selectByExample(example).stream().map(item -> item.getContestId()).collect(Collectors.toList());
+        for (Long id:ids){
+            CmsContest contest= contestMapper.selectByPrimaryKey(id);
+            if (contest == null) {
+                CmsRecommendExample example1 = new CmsRecommendExample();
+                example1.createCriteria().andContestIdEqualTo(id);
+                recommendMapper.deleteByExample(example1);
+            }
+        }
+        return 1;
+    }
+
     //添加推荐
     public CommonResult addRecommend(CmsRecommend recommend) {
+        //先清除残余的再说
+        cleanRecommend();
+        //开始添加推荐
         CmsRecommendExample example = new CmsRecommendExample();
         if (recommendMapper.countByExample(example) >= MaxCount) {
             return CommonResult.failed("推荐的赛事已达" + MaxCount + "个的上限，请移除非必要的赛事");

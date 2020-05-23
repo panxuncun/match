@@ -5,9 +5,9 @@ import java.util.List;
 /**
  * @Auther: sefer
  * @Date: 2020/4/30
- * @Description: 审核报名所需参数
+ * @Description: 公共DTO，审核报名或者审核报名所需参数
  */
-public class CheckEnrollmentParam {
+public class CheckParam {
     //ids
     private List<Long> ids;
     //目标状态
@@ -15,7 +15,7 @@ public class CheckEnrollmentParam {
 
     @Override
     public String toString() {
-        return "CheckEnrollmentParam{" +
+        return "CheckParam{" +
                 "ids=" + ids +
                 ", status=" + status +
                 '}';

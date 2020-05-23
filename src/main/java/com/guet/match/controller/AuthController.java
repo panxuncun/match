@@ -199,9 +199,14 @@ public class AuthController {
     public CommonResult addOrUpdateConstant(@RequestBody UmsConstant param){
         return authService.addOrUpdateConstant(param);
     }
-    
 
 
+
+    @ApiOperation("获取运动员信息by openid")
+    @GetMapping("auth/constant/info/{openId}")
+    public CommonResult getConstantByOpenId(@PathVariable String openId){
+        return authService.getConstantByOpenId(openId);
+    }
 
 
 }

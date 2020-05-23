@@ -21,6 +21,10 @@ public class AuthService {
     @Autowired
     private UmsConstantMapper constantMapper;
 
+    @Autowired
+    private UmsConstantMapper umsConstantMapper;
+
+
 
     private String APPID = "wx84487af617e5f965";
     private String APPSECRET = "a5bdd00685bec189d9002363a0ee4ef0";
@@ -74,5 +78,10 @@ public class AuthService {
             constantMapper.insertSelective(param);
         }
         return CommonResult.success(null);
+    }
+
+    //获取运动员信息by openid
+    public CommonResult getConstantByOpenId(String openId){
+        return CommonResult.success(umsConstantMapper.selectByPrimaryKey(openId));
     }
 }

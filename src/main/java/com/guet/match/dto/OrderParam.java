@@ -29,6 +29,8 @@ public class OrderParam {
     //手机号
     private String phoneNumber;
 
+    //备注
+    private String note;
 
     @Override
     public String toString() {
@@ -40,7 +42,16 @@ public class OrderParam {
                 ", contestantRealName='" + contestantRealName + '\'' +
                 ", contestantIdCard='" + contestantIdCard + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
+                ", note='" + note + '\'' +
                 '}';
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 
     public String getContestantRealName() {

@@ -96,7 +96,7 @@ public class OrganizeService {
         example.createCriteria().andUsernameEqualTo(username);
         List<UmsOrganizer> list = organizerMapper.selectByExample(example);
         if (list == null || list.size()==0){
-            logger.error("用户不存在, list->{},size->{}",list,list.size());
+            logger.error("在getOrganizerByUsername方法用户不存在,username->{}",username);
             return null;
         }
         return list.get(0);

@@ -184,7 +184,6 @@ public class AuthController {
             return CommonResult.success(map);
         }
         return CommonResult.failed("无法获取用户权限信息");
-
     }
 
 

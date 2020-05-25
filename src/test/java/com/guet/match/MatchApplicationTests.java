@@ -67,6 +67,18 @@ class MatchApplicationTests {
         //res = restTemplate.postForObject(url,data,String.class);
         //System.out.println("post返回结果："+res);
 
+        char pre = 65;
+
+        int count = 100;
+        int len = String.valueOf(count).length();
+        System.out.println(len);
+
+        for (int i = 1; i <= count; i++) {
+            String str = String.format("%0"+len+"d", i);
+            System.out.println(pre+str);
+        }
+
+
     }
 
 

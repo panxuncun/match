@@ -234,6 +234,12 @@ public class ContestController {
         return countService.countEnrollment(principal,day);
     }
 
+    @ApiOperation("生成号码牌")
+    @PostMapping("contest/createConstantNumber/{contestId}")
+    public CommonResult createConstantNumber(@PathVariable Long contestId){
+        return contestService.createConstantNumber(contestId);
+    }
+
 
 
 }

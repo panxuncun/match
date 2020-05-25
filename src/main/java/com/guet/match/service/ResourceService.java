@@ -137,7 +137,7 @@ public class ResourceService {
         return list;
     }
 
-    //获取资源权限名称，用于前端动态路由，废弃。
+    //获取资源权限名称，用于前端动态路由
     public List getResourceNameForRouter(Long id) {
         List<String> res = getResourceListByAdminId(id).stream().map(item -> item.getPermission()).collect(Collectors.toList());
         res.add("base");//为了防止0长数组而加进去，因为前端不允许0长数组

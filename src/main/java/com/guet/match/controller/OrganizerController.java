@@ -50,15 +50,8 @@ public class OrganizerController {
 
     @ApiOperation("主办方注册")
     @PostMapping("organizer/sign")
-    public CommonResult sign(@RequestBody SignParam dto) {
-        switch (organizeService.sign(dto)) {
-            case 1:
-                return CommonResult.success(null);
-            case 2:
-                return CommonResult.failed("用户名已被注册");
-            default:
-                return CommonResult.failed("操作失败，请重试");
-        }
+    public CommonResult sign(@RequestBody OrganizerSignParam dto) {
+        return organizeService.sign(dto);
 
     }
 

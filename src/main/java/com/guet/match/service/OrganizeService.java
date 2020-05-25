@@ -91,39 +91,35 @@ public class OrganizeService {
         return false;
     }
 
-    public UmsOrganizer getOrganizerByUsername(String username){
+    public UmsOrganizer getOrganizerByUsername(String username) {
         UmsOrganizerExample example = new UmsOrganizerExample();
         example.createCriteria().andUsernameEqualTo(username);
         List<UmsOrganizer> list = organizerMapper.selectByExample(example);
-        if (list == null || list.size()==0){
-            logger.error("在getOrganizerByUsername方法用户不存在,username->{}",username);
+        if (list == null || list.size() == 0) {
+            logger.error("在getOrganizerByUsername方法用户不存在,username->{}", username);
             return null;
         }
         return list.get(0);
     }
 
     //注册主办方账号
-    @Transactional
-    public int sign(SignParam dto) {
+    public CommonResult sign(OrganizerSignParam dto) {
         UmsOrganizer organizer = new UmsOrganizer();
-        if (isDuplicate(dto.getUsername())) {
-            logger.info("账号已注册{}", dto.getUsername());
-            return 2;
+        String username = dto.getUsername();
+
+        if (isDuplicate(username)) {
+            return CommonResult.failed("账号" + username + "已存在");
         }
-        try {
-            logger.info("用户注册{}", dto.toString());
-            //用户名
-            organizer.setUsername(dto.getUsername());
-            //将密码进行加密操作
-            organizer.setPassword(passwordEncoder.encode(dto.getPassword()));
-            //注册后置为初始态
-            organizer.setStatus(INIT);
-            return organizerMapper.insertSelective(organizer);
-        } catch (Exception e) {
-            logger.error("主办方注册失败：无法插入记录{}", dto.toString());
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return 0;
-        }
+
+        logger.info("用户注册{}", dto.toString());
+        //用户名
+        organizer.setUsername(dto.getUsername());
+        //将密码进行加密操作
+        organizer.setPassword(passwordEncoder.encode(dto.getPassword()));
+        organizer.setOrganizerName(dto.getOrganizerName());
+        //注册后置为初始态
+        organizer.setStatus(INIT);
+        return organizerMapper.insertSelective(organizer) == 1 ? CommonResult.success(null) : CommonResult.failed();
     }
 
     //主办方登录
@@ -131,7 +127,7 @@ public class OrganizeService {
         //-----
         UmsOrganizerExample example = new UmsOrganizerExample();
         example.createCriteria().andUsernameEqualTo(username);
-        if (organizerMapper.selectByExample(example).size() == 0){
+        if (organizerMapper.selectByExample(example).size() == 0) {
             return null;
         }
         //-----
@@ -317,7 +313,7 @@ public class OrganizeService {
         //下载文件名
         String fileName = "staff_info.xls";
         //标题（首行）
-        String[] title = {"赛事组", "角色","状态", "账号", "密码"};
+        String[] title = {"赛事组", "角色", "状态", "账号", "密码"};
         HSSFRow headRow = sheet.createRow(0);
         for (int i = 0; i < title.length; i++) {
             HSSFCell cell = headRow.createCell(i);

@@ -675,6 +675,40 @@ public class ContestService {
         return CommonResult.success(enrollmentRecordMapper.getMyContestOfIndexPage(openId));
     }
 
+    //生成号码牌
+    public CommonResult createConstantNumber(Long contestId){
+        //组别数量
+        CmsContestGroupExample groupExample = new CmsContestGroupExample();
+        groupExample.createCriteria().andContestIdEqualTo(contestId);
+        //组别ids
+        List<Long> groupIds =  groupMapper.selectByExample(groupExample).stream().map(item->item.getId()).collect(Collectors.toList());
+        //循环各组
+        for (int i = 0;i<groupIds.size();i++){
+            logger.info("=====组别号{}",groupIds.get(i));
+            CmsEnrollmentRecordExample example = new CmsEnrollmentRecordExample();
+            //得到特定组的报名记录，且审核通过的
+            example.createCriteria().andContestGroupIdEqualTo(groupIds.get(i)).andStatusEqualTo(EnrollmentStatus.PASS.getStatus());
+            List<CmsEnrollmentRecord> list = enrollmentRecordMapper.selectByExample(example);
+            //开始设置号码牌
+            //本组号码牌长度
+            //前缀ABCDEFGHIJKL
+            char pre = (char) (65+i);
+            //本组数字长度
+            int len = String.valueOf(list.size()).length();
+            for (int j = 0; j < list.size(); j++) {
+                CmsEnrollmentRecord enrollment = list.get(j);
+                String constantNumber =pre + String.format("%0"+len+"d", j+1);
+                logger.info("=====报名号{},号码牌{}",enrollment.getId(),constantNumber);
+                enrollment.setContestantNumber(constantNumber);
+                enrollmentRecordMapper.updateByPrimaryKeySelective(enrollment);
+            }
+        }
+
+        //一组的人数
+        return CommonResult.success(null);
+    }
+    
+
 
 
 }

@@ -35,7 +35,6 @@ public class ContestService {
     private CmsContestMapper contestMapper;
 
 
-
     @Autowired
     private CmsContestGroupMapper groupMapper;
 
@@ -53,6 +52,9 @@ public class ContestService {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private OmsOrderMapper orderMapper;
 
 
     /**
@@ -581,6 +583,7 @@ public class ContestService {
 
         CmsContestExample example = new CmsContestExample();
         CmsContestExample.Criteria criteria = example.createCriteria();
+        //只有审核通过的可以
         criteria.andStatusEqualTo(ContestStatus.PASS.getStatus());
         
         //类型
@@ -706,6 +709,39 @@ public class ContestService {
 
         //一组的人数
         return CommonResult.success(null);
+    }
+
+    //取消赛事
+    public CommonResult cancelContest(Long contestId){
+        CmsContest contest = contestMapper.selectByPrimaryKey(contestId);
+        if (contest == null) {
+            return CommonResult.failed("不存的赛事");
+        }
+        contest.setStatus(ContestStatus.CANCEL.getStatus());
+        contestMapper.updateByPrimaryKeySelective(contest);
+        //（通过的+正在审核的）的报名记录。设置为“赛事取消”
+        CmsEnrollmentRecordExample enrollmenExample = new CmsEnrollmentRecordExample();
+        List status = new ArrayList();
+        status.add(EnrollmentStatus.PASS.getStatus());
+        status.add(EnrollmentStatus.WAIT.getStatus());
+        enrollmenExample.createCriteria().andContestIdEqualTo(contestId).andStatusIn(status);
+        enrollmentRecordMapper.selectByExample(enrollmenExample).stream().forEach(item->{
+            //将报名设置为“赛事取消”
+            item.setStatus(EnrollmentStatus.CONTEST_CANCEL.getStatus());
+            enrollmentRecordMapper.updateByPrimaryKeySelective(item);
+        });
+        //支付的，正在审核退款的，都退款
+        OmsOrderExample orderExample = new OmsOrderExample();
+        status.clear();
+        status.add(PaymentStatus.APPLY_REFUND.getStatus());
+        status.add(PaymentStatus.PAID.getStatus());
+        orderExample.createCriteria().andContestIdEqualTo(contestId).andStatusIn(status);
+        orderMapper.selectByExample(orderExample).stream().forEach(order->{
+            order.setStatus(PaymentStatus.REFUND.getStatus());
+            orderMapper.updateByPrimaryKeySelective(order);
+        });
+        return CommonResult.success(null);
+
     }
     
 

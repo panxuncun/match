@@ -6,6 +6,7 @@ import com.guet.match.service.RecommendService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -21,12 +22,14 @@ public class RecommendController {
 
 
     @ApiOperation("添加推荐")
+    @PreAuthorize("hasAuthority('contest:recommend')")
     @PostMapping("recommend/add")
     public CommonResult addRecommend(@RequestBody CmsRecommend recommend) {
         return recommendService.addRecommend(recommend);
     }
 
     @ApiOperation("删除推荐")
+    @PreAuthorize("hasAuthority('contest:recommend')")
     @PostMapping("recommend/delete/{id}")
     public CommonResult deleteRecommendByContestId(@PathVariable Long id) {
         return recommendService.deleteRecommendByContestId(id);

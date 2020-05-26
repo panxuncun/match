@@ -10,7 +10,8 @@ public enum EnrollmentStatus {
     DELETE_FLAG(1,"删除标记"),
     TEMP(2,"订单衍生的临时数据，未支付"),
     PASS(3, "审核通过，报名成功"),
-    REFUSE(4, "审核未通过，报名失败");
+    REFUSE(4, "审核未通过，报名失败"),
+    CONTEST_CANCEL(5, "赛事取消导致报名无效");
 
     private int status;
     private String description;

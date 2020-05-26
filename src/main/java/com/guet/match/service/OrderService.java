@@ -66,8 +66,8 @@ public class OrderService {
 
 
     //添加订单,先有订单，后有记录.  -1->创建失败;  -2->已报名，拒绝订单创建;  -3->可用名额不足;  正整数(订单号)->创建成功;
-    //todo 临时创建报名记录，因为携带了很多参数，报名记录有一个字段叫 order_id,可以追溯来源的
-    //todo 加入不存在的赛事，不存的组别，会错误，但是我还每排查出来
+    // 临时创建报名记录，因为携带了很多参数，报名记录有一个字段叫 order_id,可以追溯来源的
+    // 加入不存在的赛事，不存的组别，会错误，但是我还每排查出来
     public CommonResult createOrder(OrderParam dto) {
         //判断是否已报名
         if (hasEnrollmentRecord(dto)) {
@@ -250,6 +250,7 @@ public class OrderService {
         order.setStatus(PaymentStatus.REFUND.getStatus());
         return orderMapper.updateByPrimaryKey(order);
     }
+
 
     /**
      * 公共方法

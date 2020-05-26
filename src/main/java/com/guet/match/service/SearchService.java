@@ -1,6 +1,7 @@
 package com.guet.match.service;
 
 import com.github.pagehelper.PageHelper;
+import com.guet.match.common.ContestStatus;
 import com.guet.match.mapper.ElasticsearchMapper;
 import com.guet.match.mapper.CmsContestMapper;
 import com.guet.match.model.CmsContest;
@@ -83,7 +84,7 @@ public class SearchService {
         //如果查不到东西，mysql兜底
         if (list == null || list.size() == 0) {
             CmsContestExample example = new CmsContestExample();
-            example.createCriteria().andNameLike("%" + keyword + "%");
+            example.createCriteria().andNameLike("%" + keyword + "%").andStatusEqualTo(ContestStatus.PASS.getStatus());
             list = contestMapper.selectByExample(example);
             logger.info("MySQL搜索->{},得到{}条记录", keyword, list.size());
         }

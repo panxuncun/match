@@ -13,6 +13,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -46,12 +47,14 @@ public class ContestController {
     }
 
     @ApiOperation("单个审核赛事")
+    @PreAuthorize("hasAuthority('contest:check')")
     @PostMapping("contest/check")
     public CommonResult checkContest(@RequestBody CheckContestParam dto) {
         return contestService.checkContest(dto) == 1 ? CommonResult.success(null) : CommonResult.failed();
     }
 
     @ApiOperation("主办方：单个或批量审核报名")
+    @PreAuthorize("hasAuthority('contest:check')")
     @PostMapping("contest/enrollment/check")
     public CommonResult checkContest(@RequestBody CheckParam param) {
         return contestService.checkEnrollment(param);
@@ -238,6 +241,12 @@ public class ContestController {
     @PostMapping("contest/createConstantNumber/{contestId}")
     public CommonResult createConstantNumber(@PathVariable Long contestId){
         return contestService.createConstantNumber(contestId);
+    }
+
+    @ApiOperation("取消赛事")
+    @PostMapping("contest/cancel/{contestId}")
+    public CommonResult cancelContest(@PathVariable Long contestId){
+        return contestService.cancelContest(contestId);
     }
 
 
